@@ -14,6 +14,9 @@ class Hello {
             }
             System.out.println();
         }
+
+
+        
         System.out.println("\n\n");
         for (int i = 0; i <= n; i++) {
             for (int j = i; j <= n - 1; j++) {

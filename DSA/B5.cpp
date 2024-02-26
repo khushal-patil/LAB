@@ -3,7 +3,6 @@
 
 using namespace std;
 
-
 struct node{
 	string label;
 	int ch_count;
@@ -65,17 +64,15 @@ class GT{
 		} 
 		
 		void display(node * r){
-		
-				cout<<endl;
-				cout<<"Name of Book: ";
+				cout<<"\nName of Book: ";
 				cout<<root->label<<endl;
 				cout<<"No. of Chapters: ";
 				cout<<root->ch_count<<endl;
 			
 				for(int i=0;i<root->ch_count;i++){
 					
-						cout<<endl;
-						cout<<" Name of Chapter: ";
+						
+						cout<<"\n Name of Chapter: ";
 						cout<<root->child[i]->label<<endl;
 						cout<<"	No of Sections: ";
 						cout<<root->child[i]->ch_count<<endl;
