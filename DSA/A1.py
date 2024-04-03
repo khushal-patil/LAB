@@ -4,7 +4,6 @@ class HashTable1:
     def __init__(self, size: int) -> None:
         self.record = []
         self.m = size
-
        
         for _ in range(size):
             self.record.append([0, ""])  
@@ -43,7 +42,6 @@ class HashTable2:
         self.record = []
         self.m = size
 
-      
         for _ in range(size):
             self.record.append([0, "", -1])  
 
@@ -109,7 +107,6 @@ class HashTable3:
     def __init__(self, size: int) -> None:
         self.record = []
         self.m = size
-
        
         for _ in range(size):
             self.record.append([0, ""]) 

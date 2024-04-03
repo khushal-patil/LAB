@@ -6,29 +6,30 @@ class node {
    public:
     string key, value;
     node *left, *right;
-    node();
-    node(string, string);
+    node() {
+        key = "";
+        value = "";
+        left = NULL;
+        right = NULL;
+    }
+    node(string key, string value) {
+        this->key = key;
+        this->value = value;
+        left = NULL;
+        right = NULL;
+    }
 };
-
-node::node() {
-    key = "";
-    value = "";
-    left = NULL;
-    right = NULL;
-}
-
-node::node(string key, string value) {
-    this->key = key;
-    this->value = value;
-    left = NULL;
-    right = NULL;
-}
 
 class bst {
    public:
     node *root;
-    bst();
-    bst(string, string);
+    bst(){
+         root = NULL;
+    }
+    bst(string key, string value) { 
+        root = new node(key, value); 
+    }
+
     bool insert(string, string);
     string search(string);
     bool update(string, string);
@@ -36,11 +37,6 @@ class bst {
     void display(node *cur);
     
 };
-
-bst::bst() { root = NULL; }
-
-bst::bst(string key, string value) { root = new node(key, value); }
-
 bool bst::insert(string key, string value) {
     if (root == NULL) {
         root = new node(key, value);
@@ -79,7 +75,7 @@ string bst::search(string key) {
             temp = temp->left;
         }
     }
-    return "\0";  // not present
+    return "\0"; 
 }
 
 bool bst::update(string key, string value) {
@@ -99,128 +95,32 @@ bool bst::update(string key, string value) {
 }
 
 bool bst::delete_key(string key) {
-    if (root == NULL) {
-        return 0;
-    }
-
-    node *temp, *prev;
-    prev = root;
-    temp = root;
-
-    if (temp->key == key) {
-        // delete root case
-        if (temp->left == NULL && temp->right == NULL) {
-            // no child
-            root = NULL;
-            delete temp;
-        } else if (temp->left != NULL && temp->right == NULL) {
-            // single child left
-            root = temp->left;
-            delete temp;
-        } else if (temp->left == NULL && temp->right != NULL) {
-            // single child right
-            root = temp->right;
-            delete temp;
-        } else {
-            // two child
-            // using left largest
-            node *l_temp = temp->left;
-            node *l_prev = temp;
-            if (l_temp->right == NULL) {
-                l_prev->left = l_temp->left;
-            } else {
-                while (l_temp->right != NULL) {
-                    l_prev = l_temp;
-                    l_temp = l_temp->right;
-                }
-                l_prev->right = l_temp->left;
+    node **cur = &root;
+    while (*cur != nullptr) {
+        if ((*cur)->key == key) {
+            node *temp = *cur;
+            if (temp->left == nullptr)
+                *cur = temp->right;
+            else if (temp->right == nullptr)
+                *cur = temp->left;
+            else {
+                node *successor = temp->right;
+                while (successor->left != nullptr)
+                    successor = successor->left;
+                temp->key = successor->key;
+                temp->value = successor->value;
+                cur = &temp->right;
+                key = successor->key;
+                continue;
             }
-
-            // deleting temp
-            l_temp->right = temp->right;
-            l_temp->left = temp->left;
-            root = l_temp;
             delete temp;
-        }
-        return 1;
-    } else if (temp->key < key) {
-        temp = temp->right;
-    } else {
-        temp = temp->left;
+            return true;
+        } else if ((*cur)->key < key)
+            cur = &((*cur)->right);
+        else
+            cur = &((*cur)->left);
     }
-
-    while (temp != NULL) {
-        // delete non root node
-        if (temp->key == key) {
-            if (temp->left == NULL && temp->right == NULL) {
-                // no child
-                if (temp->key < prev->key) {
-                    // left child
-                    prev->left = NULL;
-                } else {
-                    // right child
-                    prev->right = NULL;
-                }
-                delete temp;
-            } else if (temp->left != NULL && temp->right == NULL) {
-                // single child left
-                if (temp->key < prev->key) {
-                    // left child
-                    prev->left = temp->left;
-                    delete temp;
-                } else {
-                    // right child
-                    prev->right = temp->left;
-                    delete temp;
-                }
-            } else if (temp->left == NULL && temp->right != NULL) {
-                // single child right
-                if (temp->key < prev->key) {
-                    // left child
-                    prev->left = temp->right;
-                    delete temp;
-                } else {
-                    // right child
-                    prev->right = temp->right;
-                    delete temp;
-                }
-            } else {
-                // two child
-                // using left largest
-                node *l_temp = temp->left;
-                node *l_prev = temp;
-                if (l_temp->right == NULL) {
-                    l_prev->left = l_temp->left;
-                } else {
-                    while (l_temp->right != NULL) {
-                        l_prev = l_temp;
-                        l_temp = l_temp->right;
-                    }
-                    l_prev->right = l_temp->left;
-                }
-
-                // deleting temp
-                if (temp->key < prev->key) {
-                    // left child
-                    prev->left = l_temp;
-                } else {
-                    // right child
-                    prev->right = l_temp;
-                }
-                l_temp->left = temp->left;
-                l_temp->right = temp->right;
-                delete temp;
-            }
-            return 1;
-        } else if (temp->key < key) {
-            prev = temp;
-            temp = temp->right;
-        } else {
-            prev = temp;
-            temp = temp->left;
-        }
-    }
-    return 0;
+    return false;
 }
 
 void bst::display(node *cur) {
