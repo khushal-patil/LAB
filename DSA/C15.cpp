@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #define MAX_NUM_CITIES 10
-
 using namespace std;
 
 struct edge {
@@ -117,7 +116,6 @@ void graph::display_mst() {
 }
 
 int main() {
-  
     graph g;
     int start;
     cout << "Enter Start City:";

@@ -1,14 +1,13 @@
-class Nptel extends Thread {
-    public void run() {
-        System.out.println("Running");
-
+class NPTEL extends Thread{
+       public void run(){
+        System.out.println("I am from Run...");
     }
 }
 
-public class Main {
-    public static void main(String[] args) throws InterruptedException {
-        Runnable t = new Nptel();
-        Thread mythread = new Thread(t);
-        mythread.start();
+class Main {
+    public static void main(String[] args) {
+        
+    NPTEL t= new NPTEL();
+    t.start();
     }
 }

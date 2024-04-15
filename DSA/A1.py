@@ -30,7 +30,7 @@ class HashTable1:
         else: 
             while (self.record[key][0] != 0):
                 key = ((key+1) % self.m)
-
+ 
             self.record[key][0] = rec[0]
             self.record[key][1] = rec[1]
 
