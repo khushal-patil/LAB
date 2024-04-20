@@ -12,7 +12,6 @@ class priority_queue {
    private:
     string queue[MAX_SIZE];
     int priority_val[MAX_SIZE];
-
     int front;
     int rear;
 
@@ -131,8 +130,3 @@ int main() {
     return 0;
 }
 
-/*
-1 ram 2
-1 shyam 0
-1 hari 1
-*/

@@ -1,8 +1,6 @@
 #include <iomanip>
 #include <iostream>
-
 using namespace std;
-
 #define MAX_NODES 10
 
 class node {
@@ -19,15 +17,15 @@ class node {
 
 class OBST {
    public:
-    int keys[MAX_NODES] = {0};          // for storing keys
-    int p[MAX_NODES] = {0};             // for storing frequencies
-    int q[MAX_NODES] = {0};             // for storing frequencies
-    int n;                              // count of nodes
-    int c[MAX_NODES][MAX_NODES] = {0};  // cost matrix
-    int w[MAX_NODES][MAX_NODES] = {0};  // cost matrix
-    int r[MAX_NODES][MAX_NODES] = {0};  // cost matrix
+    int keys[MAX_NODES] = {0};
+    int p[MAX_NODES] = {0};        
+    int q[MAX_NODES] = {0};      
+    int n;                              
+    int c[MAX_NODES][MAX_NODES] = {0};  
+    int w[MAX_NODES][MAX_NODES] = {0};  
+    int r[MAX_NODES][MAX_NODES] = {0};  
     node* root;
-    // initialize the values
+   
     OBST(int count, int keys_arr[], int p_arr[], int q_arr[]) {
         root = NULL;
         n = count;
@@ -38,7 +36,6 @@ class OBST {
         }
     }
 
-    // display matrix
     void display_matrix(int mat[MAX_NODES][MAX_NODES]) {
         for (int i = 0; i <= n; i++) {
             for (int j = 0; j <= n; j++) {
@@ -59,25 +56,21 @@ class OBST {
         return w[i][j - 1] + p[j] + q[j];
     }
 
-    // generate cost matrix
     void generate_cost_table() {
-        // initialize diagonal
         for (int i = 0; i <= n; i++) {
             c[i][i] = 0;
             r[i][i] = 0;
             w[i][i] = q[i];
         }
 
-        // for j-i = 0 to n
         for (int diff = 1; diff <= n; diff++) {
             int i, j;
             i = 0;
             j = i + diff;
 
-            // for each pair with j-i = diff
             while (j <= n) {
                 int min_cost = INT32_MAX, min_root;
-                // getting minimum cost and root for c[i,j]
+               
                 for (int k = i + 1; k <= j; k++) {
                     int cost = c[i][k - 1] + c[k][j];
                     if (cost < min_cost) {
@@ -86,15 +79,9 @@ class OBST {
                     }
                 }
 
-                // updating the c matrix
                 w[i][j] = get_w(i, j);
                 c[i][j] = min_cost + w[i][j];
                 r[i][j] = min_root;
-
-                // cout<<i<<j<<endl;
-                // cout << "w=" << w[i][j] << endl;
-                // cout << "c=" << c[i][j] << endl;
-                // cout << "r=" << r[i][j] << endl;
 
                 i++;
                 j++;
@@ -108,7 +95,6 @@ class OBST {
         display_matrix(r);
     }
 
-    // get node for [i,j]
     node* get_node(int i, int j) {
         if (i == j) {
             return NULL;
@@ -116,9 +102,7 @@ class OBST {
 
         int rij = r[i][j];
         node* temp = new node(keys[rij]);
-        // left node will be [i,r-1]
         temp->left = get_node(i, rij - 1);
-        // right node will be [r,j]
         temp->right = get_node(rij, j);
         return temp;
     }
@@ -140,10 +124,10 @@ class OBST {
 };
 
 int main() {
-    int k[] = {0, 10, 20, 30, 40};
-    int p[] = {0, 3, 3, 1, 1};
-    int q[] = {2, 3, 1, 1, 1};
-    OBST o(4, k, p, q);
+    int k[] = {0,3,7,10,15,20,25};
+    int p[] = {0,10,3,9,2,0,10};
+    int q[] = {5,6,4,4,3,8,0};
+    OBST o(6, k, p, q);
     o.generate_cost_table();
     o.generate_obst();
     return 0;
