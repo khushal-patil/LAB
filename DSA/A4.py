@@ -1,4 +1,6 @@
-SetA = []
+
+
+SetA = [] 
 SetB = []
 
 def insert():
@@ -37,7 +39,7 @@ def intersection():
 
 def difference():
 	res =[]
-	
+										
 	for i in SetA:
 		if i not in SetB:
 			res.append(i)
@@ -97,22 +99,22 @@ def remove():
 def size():
 	ct=0
 	for i in SetA:
-		ct+=1
+		ct+=1  
 	print("Size of SetA: ",ct)
 	ct=0
 	for i in SetB:
 		ct+=1
 	print("Size of SetB: ",ct)
-	
+							 
 def subset():
 	set5 = []
-	flag=0
+	flag=False
 	for i in SetA:
 		if i in SetB:
 			set5.append(i)
-			flag=1
+			flag=True
 		
-	if flag==1:
+	if flag==True:
 		print("Subset",set5)
 		print("SetB is a Subset of SetA.")
 	else:
