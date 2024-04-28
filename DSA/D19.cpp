@@ -1,355 +1,295 @@
-
-#include <iostream>
+#include<iostream>
 using namespace std;
 
-class node {
-   public:
+class node
+{
+public:
     string key;
-    string value;
-    node* left;
-    node* right;
-    int height;
-    node(string key = "", string value = "") {
-        this->key = key;
-        this->value = value;
-        this->left = NULL;
-        this->right = NULL;
-        this->height = 1;
-    }
+    string meaning;
+    node *left;
+    node *right;
 };
 
-class AVL {
-    node* root = NULL;
-    int height(node* n) {
-        if (n == NULL) {
-            return 0;
-        }
-        return n->height;
+class AVL
+{
+    node *root;
+       public:
+               AVL()
+               {
+                   root=NULL;
+               }
+               
+                void create();
+                node* insert(node *cur,node *temp);
+               node* balance(node *temp);
+               int dif(node *temp);
+               int height(node *temp);
+               int maximum(int a,int b);
+               
+               node* LL(node *par);
+               node* RR(node *par);
+               node* LR(node *par);
+               node* RL(node *par);
+               
+               void ascending(node *temp);
+               node* delete_n(node *root,string key1);
+               void deleten();
+               
+               node* extractmin(node *t);
+               void descending(node *temp);
+               void display();
+               bool search(node *cur,string key1);
+               void search_value();
+};
+
+void AVL::create()
+{
+    char answer;
+    node *temp;
+    do
+    {
+        temp=new node();
+        cout<<"\n Enter the keyword:";
+        cin>>temp->key;
+        cout<<"\n Enter the meaning:";
+        cin>>temp->meaning;
+        temp->left=temp->right=NULL;
+
+            root=insert(root,temp);
+
+        cout<<"\n Do you want to add another word?(y/n)";
+        cin>>answer;
     }
+    while(answer=='y'||answer=='Y');
+}
 
-    int balanceFactor(node* n) {
-        if (n == NULL) {
-            return 0;
-        }
-        return (height(n->left) - height(n->right));
-    }
 
-    node* rightRotate(node* y) {
-        // get changing nodes
-        node* x = y->left;
-        node* t2 = x->right;
-
-        // change the nodes
-        x->right = y;
-        y->left = t2;
-
-        // change height
-        x->height = 1 + max(height(x->left), height(x->right));
-        y->height = 1 + max(height(y->left), height(y->right));
-
-        // return
-        return x;
-    }
-    node* leftRotate(node* x) {
-        // get changing nodes
-        node* y = x->right;
-        node* t2 = y->left;
-
-        // change the nodes
-        y->left = x;
-        x->right = t2;
-
-        // change height
-        x->height = 1 + max(height(x->left), height(x->right));
-        y->height = 1 + max(height(y->left), height(y->right));
-
-        // return
-        return y;
-    }
-
-    // recursive insertion function which will be called by insert function
-    node* insertion(node* temp, string key, string value) {
-        if (temp == NULL) {
-            node* nn = new node(key, value);
-            return nn;
-        }
-        if (key < temp->key) {
-            temp->left = insertion(temp->left, key, value);
-        }
-        if (key > temp->key) {
-            temp->right = insertion(temp->right, key, value);
-        }
-        temp->height = 1 + max(height(temp->left), height(temp->right));
-        int bf = balanceFactor(temp);
-        // LL Rotation
-        // if (bf > 1 && key < temp->left->key) {
-        if (bf > 1 && balanceFactor(root->left) >= 0) {
-            return rightRotate(temp);
-        }
-        // RR Rotation
-        // if (bf < -1 && key > temp->right->key) {
-        if (bf < -1 && balanceFactor(root->right) <= 0) {
-            return leftRotate(temp);
-        }
-        // LR Rotation
-        // if (bf > 1 && key > temp->left->key) {
-        if (bf > 1 && balanceFactor(root->left) < 0) {
-            temp->left = leftRotate(temp->left);
-            return rightRotate(temp);
-        }
-        // RL Rotation
-        // if (bf < -1 && key < temp->right->key) {
-        if (bf < -1 && balanceFactor(root->right) > 0) {
-            temp->right = rightRotate(temp->right);
-            return leftRotate(temp);
-        }
+node* AVL::insert(node *cur,node *temp)
+{
+    if(cur==NULL)
+    {
         return temp;
     }
-
-    void ascending(node* n) {
-        if (n != NULL) {
-            ascending(n->left);
-            cout << n->key << ":" << n->value << endl;
-            ascending(n->right);
-        }
+    if(temp->key<cur->key)
+    {
+        cur->left=insert(cur->left,temp);
+        cur=balance(cur);
     }
-
-    void descending(node* n) {
-        if (n != NULL) {
-            descending(n->right);
-            cout << n->key << ":" << n->value << endl;
-            descending(n->left);
-        }
+    else if(temp->key>cur->key)
+    {
+        cur->right=insert(cur->right,temp);
+        cur=balance(cur);
     }
-    bool isPresent(string key) {
-        node* temp = root;
-        while (temp != NULL) {
-            if (temp->key == key) {
-                return true;
-            } else if (temp->key < key) {
-                temp = temp->right;
-            } else {
-                temp = temp->left;
-            }
-        }
-        return false;
-    }
-    node* minNode(node* root) {
-        node* n = root;
-        while (n->left != NULL) {
-            n = n->left;
-        }
-        return n;
-    }
+    return cur;
+}
 
-    node* remove(node*& temp_root, string key) {
-        // step1 bst deletion
-        if (temp_root == NULL) {
-            return NULL;
-        }
-
-        if (key < temp_root->key) {
-            temp_root->left = remove(temp_root->left, key);
-        } else if (key > temp_root->key) {
-            temp_root->right = remove(temp_root->right, key);
-        } else {
-            node* temp1 = temp_root;
-            // one and no child
-            if (temp_root->left == NULL || temp_root->right == NULL) {
-                if (temp_root->left == NULL) {
-                    temp_root = temp_root->right;
-                } else {
-                    temp_root = temp_root->left;
-                }
-                delete temp1;
-            } else {
-                // two child
-                node* temp2 = minNode(temp_root->right);
-                temp_root->key = temp2->key;
-                temp_root->value = temp2->value;
-
-                temp_root->right = remove(temp_root->right, temp2->key);
-            }
-        }
-
-        // check if root is NULL
-        if (temp_root == NULL) return temp_root;
-
-        // step2 avl balancing
-        temp_root->height =
-            1 + max(height(temp_root->left), height(temp_root->right));
-
-        int bf = balanceFactor(temp_root);
-
-        // LL Rotation
-        // if (bf > 1 && key < temp_root->left->key) {
-        if (bf > 1 && balanceFactor(root->left) >= 0) {
-            return rightRotate(temp_root);
-        }
-        // RR Rotation
-        // if (bf < -1 && key > temp_root->right->key) {
-        if (bf < -1 && balanceFactor(root->right) <= 0) {
-            return leftRotate(temp_root);
-        }
-        // LR Rotation
-        // if (bf > 1 && key > temp_root->left->key) {
-        if (bf > 1 && balanceFactor(root->left) < 0) {
-            temp_root->left = leftRotate(temp_root->left);
-            return rightRotate(temp_root);
-        }
-        // RL Rotation
-        // if (bf < -1 && key < temp_root->right->key) {
-        if (bf < -1 && balanceFactor(root->right) > 0) {
-            temp_root->right = rightRotate(temp_root->right);
-            return leftRotate(temp_root);
-        }
-        return temp_root;
-    }
-
-   public:
-    string search(string key) {
-        node* temp = root;
-        while (temp != NULL) {
-            if (temp->key == key) {
-                return temp->value;
-            } else if (temp->key < key) {
-                temp = temp->right;
-            } else {
-                temp = temp->left;
-            }
-        }
-        return "\0";
-    }
-
-    bool insert(string key, string value) {
-        if (isPresent(key)) {
-            return false;
-        } else {
-            root = insertion(root, key, value);
-            return true;
-        }
-    }
-
-    bool update(string key, string value) {
-        node* temp = root;
-        while (temp != NULL) {
-            if (temp->key == key) {
-                temp->value = value;
-                return true;
-            } else if (temp->key < key) {
-                temp = temp->right;
-            } else {
-                temp = temp->left;
-            }
-        }
-        return false;
-    }
-
-    bool remove(string key) {
-        if (!isPresent(key)) {
-            return false;
-        } else {
-            root = remove(root, key);
-            return true;
-        }
-    }
-    void ascending() {
-        if (root == NULL) {
-            cout << "Tree is Empty" << endl;
-            return;
-        }
-
-        cout << "Ascending Traversal is" << endl;
-        ascending(root);
-    }
-
-    void descending() {
-        if (root == NULL) {
-            cout << "Tree is Empty" << endl;
-            return;
-        }
-
-        cout << "Descending Traversal is" << endl;
-        descending(root);
-    }
-};
-
-int main() {
-    // implement AVL tree
+node* AVL::balance(node *temp)
+{
+    int bal;
+    bal=dif(temp);
     
-    AVL tree;
-    int ch;
-    string k, v, ans;
-    do {
-        cout << endl;
-        cout << "--: MENU :--" << endl;
-        cout << "1. Insert" << endl;
-        cout << "2. Search" << endl;
-        cout << "3. Update" << endl;
-        cout << "4. Delete" << endl;
-        cout << "5. Display Descending" << endl;
-        cout << "6. Display Ascending" << endl;
-        cout << "0. Exit" << endl;
-        cout << "ENTER YOUR CHOICE:";
-        cin >> ch;
-        switch (ch) {
-            case 1:
-                cout << "Enter key to insert:";
-                cin >> k;
-                cout << "Enter value:";
-                cin >> v;
-                if (tree.insert(k, v)) {
-                    cout << "Element Inserted Successfully" << endl;
-                } else {
-                    cout << "Element Already Present" << endl;
-                }
-                break;
-            case 2:
-                cout << "Enter key to search:";
-                cin >> k;
-                ans = tree.search(k);
-                if (ans == "\0") {
-                    cout << "Element Not Found" << endl;
-                } else {
-                    cout << "Value is " << ans << endl;
-                }
-                break;
-            case 3:
-                cout << "Enter key to Update:";
-                cin >> k;
-                cout << "Enter new value:";
-                cin >> v;
-                if (tree.update(k, v)) {
-                    cout << "Element Updated Successfully" << endl;
-                } else {
-                    cout << "Element Not Present" << endl;
-                }
-                break;
-            case 4:
-                cout << "Enter key to Delete:";
-                cin >> k;
-                if (tree.remove(k)) {
-                    cout << "Element Deleted Successfully" << endl;
-                } else {
-                    cout << "Element Not Present" << endl;
-                }
-                break;
-            case 5:
-                cout << "Data in Descending order is " << endl;
-                tree.descending();
-                break;
-            case 6:
-                cout << "Data in Ascending order is " << endl;
-                tree.ascending();
-                break;
-            case 0:
-                cout << "Thank You!" << endl;
-                break;
-            default:
-                cout << "Please Enter a valid choice" << endl;
-                break;
-        }
-    } while (ch != 0);
+    if(bal>=2)
+    {
+        if(dif(temp->left)<0)
+            temp=LR(temp);
+        else
+            temp=LL(temp);
+    }
+    else if(bal<=-2)
+    {
+        if(dif(temp->right)<0)
+            temp=RR(temp);
+        else
+            temp=RL(temp);
+    }
+    return temp;
+}
 
-    return 0;
+
+int AVL::dif(node *temp)
+{
+    int l,r;
+    l=height(temp->left);
+    r=height(temp->right);
+    return(l-r);
+}
+
+int AVL::height(node *temp)
+{
+    if(temp==NULL)
+        return(-1);
+    else
+        return(max(height(temp->left),height(temp->right))+1);
+}
+
+int AVL::maximum(int a,int b)
+{
+    if(a>b)
+        return a;
+    else
+        return b;
+}
+
+node* AVL::LL(node *par)
+{
+    node *temp,*temp1;
+    temp=par->left;
+    temp1=temp->right;
+    temp->right=par;
+    par->left=temp1;
+    return temp;
+}
+
+node* AVL::RR(node *par)
+{
+    node *temp,*temp1;
+    temp=par->right;
+    temp1=temp->left;
+    temp->left=par;
+    par->right=temp1;
+    return temp;
+}
+
+node* AVL::LR(node *par)
+{
+    par->left=RR(par->left);
+    return(LL(par));
+}
+
+node* AVL::RL(node *par)
+{
+    par->right=LL(par->right);
+    return(RR(par));
+}
+
+void AVL::ascending(node *temp)
+{
+       if(temp!=NULL)
+       {
+               ascending(temp->left);
+               cout<<"\n\t"<<temp->key<<" : "<<temp->meaning;
+               ascending(temp->right);
+       }
+}
+
+void AVL::descending(node *temp)
+{
+       if(temp!=NULL)
+       {
+               descending(temp->right);
+               cout<<"\n\t"<<temp->key<<" : "<<temp->meaning;
+               descending(temp->left);
+       }
+}
+
+
+void AVL::display()
+{
+       cout<<"\n The keywords in ascending order are : \n";
+       ascending(root);
+       cout<<"\n The keywords in descending order are : \n";
+       descending(root);
+}
+
+bool AVL::search(node *cur,string key1)
+{
+    if(cur)
+    {
+        if(cur->key==key1)
+            return true;
+        if(cur->key>key1)
+            return search(cur->left,key1);
+        else
+            return search(cur->right,key1);
+    }
+    return false;
+}
+
+void AVL::search_value()
+{
+    string key2;
+       cout<<"\n Enter the keyword you wish to search : ";
+       cin>>key2;
+       if(search(root,key2))
+               cout<<"\n The entered keyword is present in the AVL tree";
+       else
+               cout<<"\n The entered keyword is not present in the AVL tree";
+}
+
+
+node* AVL::delete_n(node* cur,string key1)
+{
+   if ( !cur)
+       return cur;
+   if ( key1 < cur->key )
+       cur->left = delete_n(cur->left, key1);
+
+   else if( key1 > cur->key )
+       cur->right = delete_n(cur->right, key1);
+
+   else
+   {
+       node *l = cur->left;
+       node *r = cur->right;
+       delete cur;
+       if ( !r )
+           return l;
+       node *m=r;
+       
+       while(m->left)
+           m=m->left;
+       m->right = extractmin(r);
+       m->left = l;
+       return balance(m);
+   }
+   return balance(cur);
+}
+
+   node* AVL::extractmin(node *t)
+   {
+       if ( !t->left ) 
+       return t->right;
+       t->left = extractmin(t->left);
+       return balance(t);
+   }
+
+void AVL::deleten()
+{
+    string key;
+    cout<<"\n Enter the keyword to be deleted : ";
+    cin>>key;
+    root=delete_n(root,key);
+}
+
+int main()
+{
+ char c;
+ int ch;
+ AVL a;
+ do
+ {
+     cout<<"*********************************";
+      cout<<"\n 1.Insert a keyword in AVL tree.";
+      cout<<"\n 2.Display the AVL tree.";
+      cout<<"\n 3.Search a keyword";
+      cout<<"\n 4.Delete a keyword.";
+      cout<<"\n Enter your choice : ";
+      cin>>ch;
+      switch(ch)
+      {
+           case 1 : a.create();
+              break;
+           case 2 : a.display();
+              break;
+           case 3 : a.search_value();
+              break;
+           case 4 : a.deleten();
+              break;
+           default : cout<<"\n Wrong choice ! ";
+      }
+      cout<<"\n Do you want to continue? (y/n): ";
+      cin>>c;
+       }
+       while(c=='y'||c=='Y');
+ return 0;
 }
