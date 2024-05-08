@@ -1,3 +1,4 @@
+
 class HashTable1:
     """linear Probing Without Replacement"""
 
@@ -190,6 +191,8 @@ while(ch != 5):
             print("Thank you !")
         case default:
             print("Invalid Choice")
+
+
 
 
 
