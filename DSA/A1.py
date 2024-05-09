@@ -1,7 +1,6 @@
 
 class HashTable1:
     """linear Probing Without Replacement"""
-
     def __init__(self, size: int) -> None:
         self.record = []
         self.m = size
@@ -162,6 +161,7 @@ def input_records(n: int) -> list[list]:
 n = int(input("Enter the total number of records:"))
 records = input_records(n)
 ch = 1
+
 while(ch != 5):
     print("MENU")
     print("1. Input Records")

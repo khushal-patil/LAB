@@ -20,12 +20,8 @@ class GT{
 			root = NULL;
 		}
 		
-		string lbel;
-		int count;
-		
 		void create(){
 		
-				
 				root = new node;
 				
 				cout<<"Enter the Name of Book: ";
