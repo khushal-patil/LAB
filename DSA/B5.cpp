@@ -6,7 +6,6 @@ using namespace std;
 struct node{
 	string label;
 	int ch_count;
-	
 	struct node* child[10];
 	
 }*root;

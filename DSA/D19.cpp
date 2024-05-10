@@ -47,8 +47,8 @@ void AVL::create()
 {
     char answer;
     node *temp;
-    do
-    {
+  
+  
         temp = new node();
         cout << "\n Enter the keyword:";
         cin >> temp->key;
@@ -57,10 +57,6 @@ void AVL::create()
         temp->left = temp->right = NULL;
 
         root = insert(root, temp);
-
-        cout << "\n Do you want to add another word?(y/n)";
-        cin >> answer;
-    } while (answer == 'y' || answer == 'Y');
 }
 
 node *AVL::insert(node *cur, node *temp)
@@ -222,7 +218,6 @@ node *AVL::delete_n(node *cur, string key1)
 
     else if (key1 > cur->key)
         cur->right = delete_n(cur->right, key1);
-
     else
     {
         node *l = cur->left;

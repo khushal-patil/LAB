@@ -256,7 +256,7 @@ int main() {
                 }
                 cout << "Enter Employee Name:";
                 cin >> name;
-                cout << "Enter Employee Destination:";
+                cout << "Enter Employee Designation:";
                 cin >> dest;
                 cout << "Enter Employee Salary:";
                 cin >> sal;
