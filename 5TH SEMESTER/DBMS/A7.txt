@@ -1,0 +1,138 @@
+/* Write a PL/SQL block of code using parameterized Cursor that will merge the data available in
+the newly created table N_Roll Call with the data available in the table O_RollCall. If the data
+in the first table already exist in the second table then that data should be skipped. */
+
+
+create table o_rollcall1(rollno number(10),name varchar2(30),address varchar2(30));
+create table n_rollcall1(rollno number(10),name varchar2(30),address varchar2(30));
+
+insert into o_rollcall1 values(1,'tejas','kharadi');
+insert into o_rollcall1 values(2,'sawkar','koregaon park');
+insert into o_rollcall1 values(3,'yash','pcmc');
+insert into o_rollcall1 values(4,'aryan','katraj');
+insert into o_rollcall1 values(5,'mitkari','wagholi');
+insert into n_rollcall1 values(6,'john','kharadi');
+insert into n_rollcall1 values(7,'jake','america');
+insert into n_rollcall1 values(8,'alex','china');
+
+select * from o_rollcall1;
+select * from n_rollcall1;
+
+DECLARE
+  
+   CURSOR rollcall_cursor IS
+       SELECT rollno, name, address
+       FROM o_rollcall1;
+
+   
+   v_rollno n_rollcall1.rollno%TYPE;
+   v_name n_rollcall1.name%TYPE;
+   v_address n_rollcall1.address%TYPE;
+
+  
+   v_rows_merged INTEGER := 0;
+
+BEGIN
+   
+   OPEN rollcall_cursor;
+
+   
+   LOOP
+       FETCH rollcall_cursor INTO v_rollno, v_name, v_address;
+       EXIT WHEN rollcall_cursor%NOTFOUND;
+
+       
+       SELECT COUNT(*)
+       INTO v_rows_merged
+       FROM n_rollcall1
+       WHERE rollno = v_rollno;
+
+      
+       IF v_rows_merged = 0 THEN
+           INSERT INTO n_rollcall1 (rollno, name, address)
+           VALUES (v_rollno, v_name, v_address);
+       END IF;
+   END LOOP;
+
+   
+   CLOSE rollcall_cursor;
+   COMMIT;
+
+   
+   DBMS_OUTPUT.PUT_LINE('Records merged from o_rollcall1 to n_rollcall1.');
+
+EXCEPTION
+   WHEN OTHERS THEN
+       
+       ROLLBACK;
+       DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+END;
+/
+
+
+
+select * from o_rollcall1;
+select * from n_rollcall1 ORDER BY rollno;
+
+
+
+insert into n_rollcall1 values(9,'naruto','japan');
+insert into n_rollcall1 values(10,'luffy','japan');
+
+
+
+CREATE OR REPLACE PROCEDURE merge_rollcalls IS
+      CURSOR rollcall_cursor(p_rollno o_rollcall1.rollno%TYPE) IS
+       SELECT rollno, name, address
+       FROM o_rollcall1
+       WHERE rollno = p_rollno;
+
+  
+   v_rollno n_rollcall1.rollno%TYPE;
+   v_name n_rollcall1.name%TYPE;
+   v_address n_rollcall1.address%TYPE;
+
+   
+   v_rows_merged INTEGER := 0;
+
+BEGIN
+  
+   FOR record IN (SELECT DISTINCT rollno FROM o_rollcall1) LOOP
+       
+       OPEN rollcall_cursor(record.rollno);
+       
+       
+       LOOP
+           FETCH rollcall_cursor INTO v_rollno, v_name, v_address;
+           EXIT WHEN rollcall_cursor%NOTFOUND;
+
+           SELECT COUNT(*) INTO v_rows_merged FROM n_rollcall1 WHERE rollno = v_rollno;
+           IF v_rows_merged = 0 THEN
+               INSERT INTO n_rollcall1 (rollno, name, address)
+               VALUES (v_rollno, v_name, v_address);
+           END IF;
+       END LOOP;
+
+       
+       CLOSE rollcall_cursor;
+   END LOOP;
+   COMMIT;
+   DBMS_OUTPUT.PUT_LINE('Records merged from o_rollcall1 to n_rollcall1.');
+
+EXCEPTION
+   WHEN OTHERS THEN
+       
+       ROLLBACK;
+       DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+END;
+/
+
+
+BEGIN
+   merge_rollcalls;
+END;
+/
+
+
+SELECT * FROM o_rollcall1;
+SELECT * FROM n_rollcall1 ORDER BY rollno;

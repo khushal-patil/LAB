@@ -1,0 +1,199 @@
+1. Consider following relation and solve the queries: Create different tables given below with
+appropriate constraints like primary key, foreign key, check constrains, not null etc.
+Account (Acc_no, branch_name,balance)
+Branch (branch_name,branch_city,assets)
+Customer (cust_name,cust_street,cust_city)
+Depositor (cust_name,acc_no)
+Loan (loan_no,branch_name,amount)
+Borrower (cust_name,loan_no)
+
+1. Create a View1 to display List all customers in alphabetical order who have loan from Pune_Station branch.
+mysql> create view View1 AS
+    -> select Borrower.cust_name, Borrower.loan_no, Loan.amount from Borrower
+    -> inner join Loan on Borrower.loan_no = Loan.loan_no
+    -> where branch_name="Pune-Station"
+    -> Order By Borrower.cust_name ASC;
+Query OK, 0 rows affected (0.12 sec)
+
+mysql> select * from View1;
++----------------+---------+----------+
+| cust_name      | loan_no | amount   |
++----------------+---------+----------+
+| Aayush Jadhav  |    9001 | 89000.00 |
+| Dnyanesh Deore |    9002 | 49000.00 |
+| Nayan Bhadane  |    9005 | 62400.00 |
+| Pranav Patil   |    9003 | 59000.00 |
+| Sumit Shelar   |    9004 | 62000.00 |
++----------------+---------+----------+
+5 rows in set (0.00 sec)
+
+
+2. Create View2 on branch table by selecting any two columns and perform insert update delete operations.
+mysql> create view View2 AS select branch_name,branch_city from Branch;
+Query OK, 0 rows affected (0.12 sec)
+
+mysql> insert into View2 values("Katraj-Branch","Katraj");
+Query OK, 1 row affected (0.09 sec)
+
+mysql> insert into View2 values("Swargate-Branch","Swargate");
+Query OK, 1 row affected (0.09 sec)
+
+mysql> select * from View2;
++----------------+-------------+
+| branch_name    | branch_city |
++----------------+-------------+
+| Akurdi-Branch  | PCMC        |
+| Katraj-Branch  | Katraj      |
+| Nigdi-Branch   | PCMC        |
+| Pune-Station   | Pune        |
+| Swargate-Branch| Swargate    |
+| Yerwada-Branch | Pune        |
++----------------+-------------+
+6 rows in set (0.00 sec)
+
+mysql> update View2 set branch_city="Nashik" where branch_name="Katraj-Branch";
+Query OK, 1 row affected (0.08 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> update View2 set branch_city="Nashik" where branch_name="Swargate-Branch";
+Query OK, 1 row affected (0.10 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from View2;
++----------------+-------------+
+| branch_name    | branch_city |
++----------------+-------------+
+| Akurdi-Branch  | PCMC        |
+| Katraj-Branch  | Nashik      |
+| Nigdi-Branch   | PCMC        |
+| Pune-Station   | Pune        |
+| Swargate-Branch| Nashik      |
+| Yerwada-Branch | Pune        |
++----------------+-------------+
+6 rows in set (0.00 sec)
+
+mysql> delete from View2 where branch_city="Nashik";
+Query OK, 2 rows affected (0.09 sec)
+
+mysql> select * from View2;
++----------------+-------------+
+| branch_name    | branch_city |
++----------------+-------------+
+| Akurdi-Branch  | PCMC        |
+| Nigdi-Branch   | PCMC        |
+| Pune-Station   | Pune        |
+| Yerwada-Branch | Pune        |
++----------------+-------------+
+4 rows in set (0.00 sec)
+
+
+3. Create View3 on borrower and depositor table by selecting any one column from each table perform insert update delete operations.
+ANS. In Borrower and Depositer Table Contains Foreign Key Columns thats why we can't  able to insert or update or delete operation on any table. 
+
+4. Create Union of left and right joint for all customers who have an account or loan or both at bank.
+mysql> select Customer.cust_name from Customer                                      
+-> left join Depositer ON Customer.cust_name = Depositer.cust_name              
+-> UNION                                                                        
+-> select Customer.cust_name from Customer                                      
+-> right join Borrower ON Customer.cust_name = Borrower.cust_name;
++------------------+
+| cust_name        |
++------------------+
+| Aayush Jadhav    |
+| Abhishek Patil   |
+| Anuj Jadhav      |
+| Aryan Patil      |
+| Chaitnya Mitkari |
+| Dnyanesh Deore   |
+| Gaurav Pawar     |
+| Khushal Patil    |
+| Nayan Bhadane    |
+| Pradyumna Sawkar |
+| Pranav Patil     |
+| Prathmesh Dive   |
+| Rahul Patil      |
+| Sarthak Yere     |
+| Sumit Shelar     |
+| Tejas Danane     |
+| Yash Patil       |
++------------------+
+17 rows in set (0.00 sec)
+
+5. Display content of View1,View2,View3.
+mysql> select * from View1;
++----------------+---------+----------+
+| cust_name      | loan_no | amount   |
++----------------+---------+----------+
+| Aayush Jadhav  |    9001 | 89000.00 |
+| Dnyanesh Deore |    9002 | 49000.00 |
+| Nayan Bhadane  |    9005 | 62400.00 |
+| Pranav Patil   |    9003 | 59000.00 |
+| Sumit Shelar   |    9004 | 62000.00 |
++----------------+---------+----------+
+5 rows in set (0.00 sec)
+
+mysql> select * from View2;
++----------------+-------------+
+| branch_name    | branch_city |
++----------------+-------------+
+| Akurdi-Branch  | PCMC        |
+| Nigdi-Branch   | PCMC        |
+| Pune-Station   | Pune        |
+| Yerwada-Branch | Pune        |
++----------------+-------------+
+4 rows in set (0.00 sec)
+
+mysql> select * from View3;
++---------------+--------+
+| cust_name     | Acc_no |
++---------------+--------+
+| Aryan Patil   |   1013 |
+| Khushal Patil |   1015 |
+| Yash Patil    |   2013 |
++---------------+--------+
+3 rows in set (0.00 sec)
+
+6. Create Simple and Unique index.
+mysql> create index index1 ON Customer(cust_name);
+Query OK, 0 rows affected (0.32 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> create unique index index2 on Borrower(loan_no);
+Query OK, 0 rows affected (0.31 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+
+7. Display index Information.
+mysql> show indexes from Customer;
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Table    | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Customer |          0 | PRIMARY  |            1 | cust_name   | A         |          17 |     NULL | NULL   |      | BTREE      |         |               |
+| Customer |          1 | index1   |            1 | cust_name   | A         |          17 |     NULL | NULL   |      | BTREE      |         |               |
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+2 rows in set (0.00 sec)
+
+mysql> mysql> show indexes from Borrower;
++----------+------------+-----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Table    | Non_unique | Key_name  | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
++----------+------------+-----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Borrower |          0 | index2    |            1 | loan_no     | A         |          10 |     NULL | NULL   | YES  | BTREE      |         |               |
+| Borrower |          1 | loan_no   |            1 | loan_no     | A         |          10 |     NULL | NULL   | YES  | BTREE      |         |               |
+| Borrower |          1 | cust_name |            1 | cust_name   | A         |          10 |     NULL | NULL   | YES  | BTREE      |         |               |
++----------+------------+-----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+3 rows in set (0.00 sec)
+
+
+8. Truncate table Customer.
+mysql> set FOREIGN_KEY_CHECKS = 0;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> truncate table Customer;
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> set FOREIGN_KEY_CHECKS = 1;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from Customer;
+Empty set (0.00 sec)
+

@@ -1,0 +1,172 @@
+2. Consider following Relation:
+Companies (comp_id, name, cost, year)
+C001 ONGC 2000 2010
+C002 HPCL 2500 2012
+C005 IOCL 1000 2014
+C006 BHEL 3000 2015
+Orders (comp_id, domain, quantity)
+C001 Oil 109
+C002 Gas 121
+C005 Telecom 115
+
+Create above tables with appropriate constraints execute the following query:
+
+1. Find names, costs, domains and quantities for companies using inner join.
+mysql> select Companies.name, Companies.cost, Orders.domain, Orders.quantity from Companies INNER JOIN Orders ON Companies.comp_id = Orders.comp_id;
++------+------+---------+----------+
+| name | cost | domain  | quantity |
++------+------+---------+----------+
+| ONGC | 2000 | Oil     |      109 |
+| HPCL | 2500 | Gas     |      121 |
+| IOCL | 1000 | Telecom |      115 |
++------+------+---------+----------+
+3 rows in set (0.00 sec)
+
+2. Find names, costs, domains and quantities for companies using left outer join.
+mysql> select Companies.name, Companies.cost,Orders.domain,Orders.quantity from Companies left outer join Orders on Companies.comp_id = Orders.comp_id;
++------+------+---------+----------+
+| name | cost | domain  | quantity |
++------+------+---------+----------+
+| ONGC | 2000 | Oil     |      109 |
+| HPCL | 2500 | Gas     |      121 |
+| IOCL | 1000 | Telecom |      115 |
+| BHEL | 3000 | NULL    |     NULL |
++------+------+---------+----------+
+4 rows in set (0.05 sec)
+
+3. Find names, costs, domains and quantities for companies using right outer join.
+mysql> select Companies.name, Companies.cost,Orders.domain,Orders.quantity from Companies right outer join Orders on Companies.comp_id = Orders.comp_id;
++------+------+---------+----------+
+| name | cost | domain  | quantity |
++------+------+---------+----------+
+| ONGC | 2000 | Oil     |      109 |
+| HPCL | 2500 | Gas     |      121 |
+| IOCL | 1000 | Telecom |      115 |
++------+------+---------+----------+
+3 rows in set (0.00 sec)
+
+4. Find names, costs, domains and quantities for companies using Union operator.
+mysql> select Companies.name,Companies.cost,Orders.domain,Orders.quantity from Companies left join Orders on Companies.comp_id = Orders.comp_id
+    -> UNION
+    -> select Companies.name,Companies.cost,Orders.domain,Orders.quantity from Companies right join Orders on Companies.comp_id = Orders.comp_id;
++------+------+---------+----------+
+| name | cost | domain  | quantity |
++------+------+---------+----------+
+| ONGC | 2000 | Oil     |      109 |
+| HPCL | 2500 | Gas     |      121 |
+| IOCL | 1000 | Telecom |      115 |
+| BHEL | 3000 | NULL    |     NULL |
++------+------+---------+----------+
+4 rows in set (0.00 sec)
+
+5. Create View View1 by selecting both tables to show company name and quantities.
+mysql> create view View4 as select Companies.name,Orders.quantity from Companies left join Orders on Companies.comp_id = Orders.comp_id 
+    -> UNION
+    -> select Companies.name,Orders.quantity from Companies right join Orders on Companies.comp_id = Orders.comp_id;               
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> select * from View4;
++------+----------+
+| name | quantity |
++------+----------+
+| ONGC |      109 |
+| HPCL |      121 |
+| IOCL |      115 |
+| BHEL |     NULL |
++------+----------+
+4 rows in set (0.00 sec)
+
+6. Create View2 on Companies table by selecting any two columns and perform insert update delete operations.
+mysql> create or replace view View5 as select comp_id,name from Companies;
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> select * from View5;
++---------+------+
+| comp_id | name |
++---------+------+
+| C001    | ONGC |
+| C002    | HPCL |
+| C005    | IOCL |
+| C006    | BHEL |
++---------+------+
+4 rows in set (0.00 sec)
+
+mysql> insert into View5 values("C007","DRDO");
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into View5 values("C008","SRD");
+Query OK, 1 row affected (0.04 sec)
+
+mysql> select * from View5;
++---------+------+
+| comp_id | name |
++---------+------+
+| C001    | ONGC |
+| C002    | HPCL |
+| C005    | IOCL |
+| C006    | BHEL |
+| C007    | DRDO |
+| C008    | SRD  |
++---------+------+
+6 rows in set (0.00 sec)
+
+mysql> update View5 set name="SSD" where comp_id="C007";
+Query OK, 1 row affected (0.05 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from View5;
++---------+------+
+| comp_id | name |
++---------+------+
+| C001    | ONGC |
+| C002    | HPCL |
+| C005    | IOCL |
+| C006    | BHEL |
+| C007    | SSD  |
+| C008    | SRD  |
++---------+------+
+6 rows in set (0.00 sec)
+
+mysql> delete from View5 where comp_id="C005";
+Query OK, 1 row affected (0.03 sec)
+
+mysql> delete from View5 where comp_id="C006";
+Query OK, 1 row affected (0.04 sec)
+
+mysql> select * from View5;
++---------+------+
+| comp_id | name |
++---------+------+
+| C001    | ONGC |
+| C002    | HPCL |
+| C007    | SSD  |
+| C008    | SRD  |
++---------+------+
+4 rows in set (0.00 sec)
+
+7. Display content of View1, View2.
+mysql> select * from View4;
++------+----------+
+| name | quantity |
++------+----------+
+| ONGC |      109 |
+| HPCL |      121 |
+| IOCL |      115 |
+| BHEL |     NULL |
++------+----------+
+4 rows in set (0.00 sec)
+
+mysql> select * from View5;
++---------+------+
+| comp_id | name |
++---------+------+
+| C001    | ONGC |
+| C002    | HPCL |
+| C007    | SSD  |
+| C008    | SRD  |
++---------+------+
+4 rows in set (0.00 sec)
+
+
+
+

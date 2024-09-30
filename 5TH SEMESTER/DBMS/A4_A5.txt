@@ -1,0 +1,107 @@
+-- Create Borrower table
+CREATE TABLE Borrower (
+    Rollno NUMBER(4),                -- Roll number of the borrower
+    Name VARCHAR2(20),               -- Name of the borrower
+    DateofIssue DATE,                -- Date when the book was issued
+    NameofBook VARCHAR2(30),         -- Name of the book borrowed
+    Status VARCHAR2(10)              -- Status of the book (I for Issued, R for Returned)
+);
+
+-- Insert sample data into Borrower table
+INSERT INTO Borrower VALUES (14, 'Ram', TO_DATE('2024-09-19', 'YYYY-MM-DD'), 'DBMS', 'I');
+INSERT INTO Borrower VALUES (27, 'Soham', TO_DATE('2024-07-24', 'YYYY-MM-DD'), 'Theory of Computation', 'I');
+INSERT INTO Borrower VALUES (34, 'Mohan', TO_DATE('2024-09-25', 'YYYY-MM-DD'), 'Computer Networks', 'I');
+INSERT INTO Borrower VALUES (48, 'Om', TO_DATE('2024-04-19', 'YYYY-MM-DD'), 'SPOS', 'I');
+
+-- Select to verify data
+SELECT * FROM Borrower;
+
+-- Create Fine table
+CREATE TABLE Fine (
+    Rollno NUMBER(4),               -- Roll number of the borrower
+    Dates DATE,                      -- Date of fine calculation
+    Amount NUMBER(10)               -- Fine amount
+);
+
+
+
+
+
+CREATE OR REPLACE PROCEDURE calc_Fine(
+    r IN NUMBER,                    -- Roll number of the borrower
+    b IN VARCHAR2                   -- Name of the book
+) 
+IS
+    doi Borrower.DateofIssue%TYPE;  -- Variable to store Date of Issue
+    diff NUMBER;                    -- Variable to store the number of days since the book was issued
+    fine_amount NUMBER := 0;        -- Fine amount variable
+BEGIN
+    -- Fetch Date of Issue from Borrower table based on Roll number and Book name
+    SELECT DateofIssue INTO doi 
+    FROM Borrower 
+    WHERE Rollno = r AND NameofBook = b;
+
+    -- Calculate the number of days between the current date and the date of issue
+    diff := TRUNC(SYSDATE) - TRUNC(doi);
+
+    -- Fine calculation based on the number of days
+    IF diff BETWEEN 15 AND 30 THEN
+        fine_amount := diff * 5;  -- Rs 5 per day for 15 to 30 days
+    ELSIF diff > 30 THEN
+        fine_amount := 30 * 5 + (diff - 30) * 50;  -- Rs 5 per day for first 30 days, Rs 50 per day thereafter
+    END IF;
+
+    -- If fine is applicable, insert the record into the Fine table
+    IF fine_amount > 0 THEN
+        INSERT INTO Fine (Rollno, Dates, Amount) VALUES (r, SYSDATE, fine_amount);
+    END IF;
+
+    -- Commit the transaction
+    COMMIT;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('No such borrower or book found.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+
+
+CREATE OR REPLACE PROCEDURE submit(
+    r IN NUMBER                    -- Roll number of the borrower
+)
+IS
+BEGIN
+    -- Update the status of the book to 'R' (Returned)
+    UPDATE Borrower 
+    SET Status = 'R' 
+    WHERE Rollno = r;
+
+    -- Delete any existing fine for the borrower from the Fine table
+    DELETE FROM Fine WHERE Rollno = r;
+
+    -- Commit the transaction
+    COMMIT;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+/
+BEGIN
+  calc_Fine(14, 'DBMS');
+  calc_Fine(27, 'Theory of Computation');
+  calc_Fine(34, 'Computer Networks');
+  calc_Fine(48, 'SPOS');
+END;
+/
+SELECT * FROM Fine;
+BEGIN
+  submit(14);
+  submit(27);
+  submit(34);
+  submit(48);
+END;
+/
+SELECT * FROM Borrower;
+SELECT * FROM Fine;

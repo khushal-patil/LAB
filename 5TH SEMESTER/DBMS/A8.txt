@@ -1,0 +1,51 @@
+
+/*Write a database trigger on Library table. 
+The System should keep track of the records that are being updated or deleted. 
+The old value of updated or deleted records should be added in Library_Audit table. */
+
+
+CREATE TABLE library (bno NUMBER(5), bname VARCHAR2(40), author VARCHAR2(20), allowed_days NUMBER(5));
+CREATE TABLE library_audit (bno NUMBER(5), old_all_days NUMBER(5),  new_all_days NUMBER(5));
+
+
+
+INSERT INTO library (bno, bname, author, allowed_days) 
+VALUES (1, 'Database Systems', 'Khushal Patil', 10);
+INSERT INTO library (bno, bname, author, allowed_days) 
+VALUES (2, 'System Programming', 'Tejas Danane', 20);
+INSERT INTO library (bno, bname, author, allowed_days) 
+VALUES (3, 'Computer Network & Security', 'Aryan Patil', 18);
+INSERT INTO library (bno, bname, author, allowed_days) 
+VALUES (4, 'Theory of Computation', 'Sarthak Yere', 24);
+INSERT INTO library (bno, bname, author, allowed_days) 
+VALUES (5, 'Internet of Things', 'Yash Patil', 12);
+
+
+
+SELECT * FROM library;
+
+
+
+
+CREATE OR REPLACE TRIGGER tr1
+BEFORE UPDATE ON library
+FOR EACH ROW
+BEGIN
+  INSERT INTO library_audit (bno, old_all_days, new_all_days)
+  VALUES (:NEW.bno, :OLD.allowed_days, :NEW.allowed_days);
+END;
+/
+
+
+
+SELECT * FROM library_audit;
+
+UPDATE library SET allowed_days = 15 WHERE bno = 1;
+UPDATE library SET allowed_days = 25 WHERE bno = 2;
+UPDATE library SET allowed_days = 13 WHERE bno = 3;
+UPDATE library SET allowed_days = 19 WHERE bno = 4;
+UPDATE library SET allowed_days = 17 WHERE bno = 5;
+
+
+SELECT * FROM library;
+SELECT * FROM library_audit;

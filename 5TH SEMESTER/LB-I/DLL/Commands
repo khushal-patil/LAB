@@ -1,0 +1,34 @@
+admin1@linux:~/Videos/F23122004_SPOS/DLL$ javac -h . B1.java
+admin1@linux:~/Videos/F23122004_SPOS/DLL$ gcc -I/usr/lib/jvm/java-11-openjdk-amd64/include -I/usr/lib/jvm/java-11-openjdk-amd64/include/linux -o B1.so -shared -fPIC B1.c
+admin1@linux:~/Videos/F23122004_SPOS/DLL$ java -Djava.library.path=. B1
+
+Enter value of a : 
+10
+
+Enter value of b : 
+2
+
+ENTER YOUR CHOICE : 
+1
+
+10 + 2 = 12
+
+ENTER YOUR CHOICE : 
+2
+
+10 - 2 = 8
+
+ENTER YOUR CHOICE : 
+3
+
+10 * 2 = 20
+
+ENTER YOUR CHOICE : 
+4
+
+10 / 2 = 5
+
+ENTER YOUR CHOICE : 
+5
+Your choice is wrong.
+
