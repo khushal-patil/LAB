@@ -1,0 +1,5 @@
+ADDITION #null#null#null
+MOV ax,#null
+ADD ax,#null
+ADD ax,#null
+MEND

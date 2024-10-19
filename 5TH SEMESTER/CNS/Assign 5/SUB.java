@@ -118,7 +118,6 @@ public class SUB {
     }
 
     private static void getsubnet(int cidr) {
-        // TODO Auto-generated method stub
 
         int x = cidr % 8;
         int t = 8 - x;

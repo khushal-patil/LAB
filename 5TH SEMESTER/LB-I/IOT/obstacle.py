@@ -26,6 +26,7 @@ try:
                 GPIO.output(led, False) 
                 time.sleep(0.2)         
         else:
+            print('Object Not Detected')
             GPIO.output(buzzer, False)
             GPIO.output(led, False)  
 
