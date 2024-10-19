@@ -1,8 +1,0 @@
-MACRO
-ADDITION &amp;arg1,&amp;arg2,&amp;arg3
-MOV ax,&amp;arg1
-ADD ax,&amp;arg2
-ADD ax,&amp;arg3
-MEND
-ADDITION 34,45,44
-END
