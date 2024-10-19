@@ -1,0 +1,18 @@
+CREATE TABLE areas (radius NUMBER(5),area NUMBER(10, 2)); 
+ 
+DECLARE 
+  r NUMBER(5);  
+  a NUMBER(10, 2);  
+  pi CONSTANT NUMBER := 3.14159;  
+BEGIN 
+  FOR r IN 5..9 LOOP 
+    a := pi * r * r; 
+    INSERT INTO areas (radius, area) VALUES (r, a); 
+  END LOOP; 
+END; 
+/ 
+ 
+SELECT * FROM areas; 
+ 
+ 
+ 

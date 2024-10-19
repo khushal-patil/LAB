@@ -1,0 +1,51 @@
+CREATE OR REPLACE FUNCTION Age_calc(  
+    dob IN DATE,  
+    months OUT NUMBER,  
+    days OUT NUMBER  
+) RETURN NUMBER IS  
+    current_date DATE := SYSDATE;    
+    var_years NUMBER;                 
+    var_months NUMBER;   
+ var_days NUMBER;  
+  
+BEGIN  
+    var_years := EXTRACT(YEAR FROM current_date) - EXTRACT(YEAR FROM dob);  
+    var_months := EXTRACT(MONTH FROM current_date) - EXTRACT(MONTH FROM 
+dob);  
+      
+    IF var_months < 0 THEN  
+        var_years := var_years - 1;  
+        var_months := var_months + 12;  
+    END IF;  
+ var_days := EXTRACT(DAY FROM current_date) - EXTRACT(DAY FROM dob);  
+   
+    IF var_days < 0 THEN  
+     var_months := var_months - 1;  
+  
+     var_days := var_days + EXTRACT(DAY FROM 
+LAST_DAY(ADD_MONTHS(dob, var_months + 1)));  
+      
+     IF var_months < 0 THEN  
+          var_months := var_months + 12;  
+          var_years := var_years - 1;  
+     END IF;  
+ END IF;  
+ days := var_days;  
+    months := var_months;  
+    RETURN var_years;  
+  
+END Age_calc;  
+/ 
+ 
+DECLARE  
+    dob DATE := TO_DATE('24/04/2003', 'DD/MM/YYYY');  
+    tempy NUMBER;  
+    tempm NUMBER;  
+ tempd NUMBER;  
+  
+BEGIN  
+    tempy := Age_calc(dob, tempm,tempd);  
+    dbms_output.put_line('Age: ' || tempy || ' years, ' || tempm || ' months, ' || tempd || ' days');  
+END;  
+ 
+/

@@ -1,0 +1,208 @@
+1. Find the names of all branches in loan relation.
+Ans. mysql> select distinct branch_name from Branch;
++---------------+
+| branch_name   |
++---------------+
+| Akurdi-Branch |
+| Nigdi-Branch  |
++---------------+
+2 rows in set (0.00 sec)
+
+
+2. Find all loan numbers for loans made at Akurdi Branch with loan amount > 12000.
+Ans. mysql> select loan_no from Loan where branch_name='Akurdi-Branch' and amount >
+12000;
++---------+
+| loan_no |
++---------+
+|    7001 |
++---------+
+1 row in set (0.02 sec)
+
+
+3. Find all customers who have a loan from bank. Find their names,loan_no and loan 
+amount.
+Ans. mysql> SELECT Borrower.cust_name, Borrower.loan_no, Loan.amount from Borrower 
+inner join Loan on Borrower.loan_no = Loan.loan_no;
++---------------+---------+----------+
+| cust_name     | loan_no | amount   |
++---------------+---------+----------+
+| Khushal Patil |    7001 | 15000.00 |
+| Aryan Patil   |    7004 |  6000.00 |
+| Sarthak Yere  |    7002 |  1320.00 |
+| Tejas Danane  |    8001 | 77000.00 |
+| Yash Patil    |    8003 | 50000.00 |
++---------------+---------+----------+
+5 rows in set (0.00 sec)
+
+
+4. List all customers in alphabetical order who have loan from Akurdi branch.
+Ans. mysql> SELECT Borrower.cust_name, Borrower.loan_no, Loan.amount from Borrower
+     -> inner join Loan on Borrower.loan_no = Loan.loan_no 
+     -> where branch_name="Akurdi-Branch" 
+     -> Order By Borrower.cust_name ASC;
++---------------+---------+----------+
+| cust_name     | loan_no | amount   |
++---------------+---------+----------+
+| Aryan Patil   |    7004 |  6000.00 |
+| Khushal Patil |    7001 | 15000.00 |
+| Sarthak Yere  |    7002 |  1320.00 |
++---------------+---------+----------+
+3 rows in set (0.00 sec)
+
+
+5. Find all customers who have an account or loan or both at bank.
+Ans. mysql> select distinct Customer.cust_name from Customer
+    -> left join Depositer ON Customer.cust_name = Depositer.cust_name
+    -> left join Borrower ON Customer.cust_name = Borrower.cust_name
+    -> where Depositer.Acc_no is not null OR Borrower.loan_no is not null;
++---------------+
+| cust_name     |
++---------------+
+| Anuj Jadhav   |
+| Aryan Patil   |
+| Gaurav Pawar  |
+| Khushal Patil |
+| Sarthak Yere  |
+| Tejas Danane  |
+| Yash Patil    |
++---------------+
+7 rows in set (0.00 sec)
+
+
+6. Find all customers who have both account and loan at bank.
+Ans. mysql> select distinct Customer.cust_name from Customer
+    -> left join Depositer ON Customer.cust_name = Depositer.cust_name
+    -> left join Borrower ON Customer.cust_name = Borrower.cust_name
+    -> where Depositer.Acc_no is not null AND Borrower.loan_no is not null;
++---------------+
+| cust_name     |
++---------------+
+| Aryan Patil   |
+| Khushal Patil |
+| Yash Patil    |
++---------------+
+3 rows in set (0.00 sec)
+
+
+7. Find all customers who have account but no loan at the bank.
+Ans. mysql> select distinct Customer.cust_name from Customer
+    -> left join Depositer ON Customer.cust_name = Depositer.cust_name
+    -> left join Borrower ON Customer.cust_name = Borrower.cust_name
+    -> where Depositer.Acc_no is not null and Borrower.loan_no is null;
++--------------+
+| cust_name    |
++--------------+
+| Anuj Jadhav  |
+| Gaurav Pawar |
++--------------+
+2 rows in set (0.00 sec)
+
+
+8. Find the average account balance at each branch
+Ans. mysql> select branch_name,AVG(balance) From Account group by branch_name;
++---------------+--------------+
+| branch_name   | AVG(balance) |
++---------------+--------------+
+| Akurdi-Branch |        46400 |
+| Nigdi-Branch  |        33600 |
++---------------+--------------+
+2 rows in set (0.00 sec)
+
+
+9. Find no. of depositors at each branch.
+Ans. mysql> select Branch.branch_name,COUNT(Depositer.cust_name) as No_depositers 
+from Branch
+    -> join Account ON Branch.branch_name = Account.branch_name
+    -> join Depositer ON Account.Acc_no = Depositer.Acc_no
+    -> Group by Branch.branch_name;
++---------------+---------------+
+| branch_name   | No_depositers |
++---------------+---------------+
+| Akurdi-Branch |             3 |
+| Nigdi-Branch  |             2 |
++---------------+---------------+
+2 rows in set (0.02 sec)
+
+
+10. Find name of Customer and city where customer name starts with Letter P.
+Ans. mysql> select cust_name,cust_city from Customer where cust_name LIKE 'P%' 
+OR'p%';
++------------------+-----------+
+| cust_name        | cust_city |
++------------------+-----------+
+| Pradyumna Sawkar | Pune      |
+| Prathmesh Dive   | Pune      |
++------------------+-----------+
+2 rows in set, 1 warning (0.00 sec)
+
+
+11. Display distinct cities of branch.
+Ans. mysql> select distinct branch_city from Branch;
++-------------+
+| branch_city |
++-------------+
+| PCMC        |
+| Pune        |
++-------------+
+2 rows in set (0.00 sec)
+
+
+12. Find the branches where average account balance > 12000
+Ans. mysql> select branch_name from Account Group by branch_name Having AVG(assets)
+> 12000;
++---------------+
+| branch_name   |
++---------------+
+| Akurdi-Branch |
+| Nigdi-Branch  |
++---------------+
+2 rows in set (0.00 sec)
+
+
+13. Find number of tuples in customer relation.
+Ans. mysql> select COUNT(*) as No_of_Cust from Customer;
++------------+
+| No_of_Cust |
++------------+
+|         10 |
++------------+
+1 row in set (0.00 sec)
+
+
+14. Calculate total loan amount given by bank.
+Ans. mysql> select branch_name,SUM(amount) as Loan_Amount from Loan Group By 
+branch_name;
++---------------+-------------+
+| branch_name   | Loan_Amount |
++---------------+-------------+
+| Akurdi-Branch |       23720 |
+| Nigdi-Branch  |      129444 |
++---------------+-------------+
+2 rows in set (0.00 sec)
+
+
+15. Delete all loans with loan amount between 1300 and 1500.
+Ans. mysql> delete from Borrower where loan_no IN ( select loan_no from Loan where 
+amount between 1300 and 1500);
+Query OK, 1 row affected (0.03 sec)
+mysql> delete from Loan where amount between 1300 and 1500;
+Query OK, 1 row affected (0.03 sec)
+
+
+16. Delete all tuples at every branch located in Nigdi.
+mysql> delete from Borrower where loan_no IN (select loan_no from Loan where 
+branch_name IN (select branch_name from Branch where branch_city = 'Nigdi'));
+Query OK, 2 row affected (0.03 sec)
+mysql> delete from Loan where branch_name IN (select branch_name from Branch where 
+branch_city = 'Nigdi');
+Query OK, 2 row affected (0.03 sec)
+mysql> delete from Depositor 
+where Acc_no IN (select Acc_no from Account where branch_name IN (select 
+branch_name from Branch where branch_city = 'Nigdi'));
+Query OK, 2 row affected (0.03 sec)
+mysql> delete from Account where branch_name IN (select branch_name from Branch 
+where branch_city = 'Nigdi');
+Query OK, 5 row affected (0.03 sec)
+mysql> delete from Branch where branch_city = 'Nigdi';
+Query OK, 1 row affected (0.03 sec)
