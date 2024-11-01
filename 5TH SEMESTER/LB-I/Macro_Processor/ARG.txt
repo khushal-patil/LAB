@@ -1,0 +1,9 @@
+&X	
+&Y	
+&REG1	AREG
+&A	
+&B	
+&REG2	BREG
+&P	
+&Q	
+&REG2	BREG
