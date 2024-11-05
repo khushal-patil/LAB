@@ -1,6 +1,44 @@
 
 import java.io.*;
 
+class mdt {
+    String stmnt;
+
+    public mdt() {
+    }
+
+    public mdt(String stmnt) {
+        this.stmnt = stmnt;
+    }
+}
+
+class mnt {
+    String name;
+    int addr;
+    int arg_cnt;
+
+    public mnt(String name, int addr, int arg_cnt) {
+        this.name = name;
+        this.addr = addr;
+        this.arg_cnt = arg_cnt;
+    }
+}
+
+class arglist {
+    String argname;
+    String value;
+
+    public arglist(String argname) {
+        this.argname = argname;
+        this.value = "";
+    }
+
+    public arglist(String argname, String value) {
+        this.argname = argname;
+        this.value = value;
+    }
+}
+
 public class PASS_2 {
 
     public static void main(String[] args) throws IOException {
@@ -53,7 +91,7 @@ public class PASS_2 {
 
         br1 = new BufferedReader(new FileReader("input.txt"));
         arglist[] actual_parameter = new arglist[10];
-        BufferedWriter bw1 = new BufferedWriter(new FileWriter("Output.txt"));
+        BufferedWriter bw1 = new BufferedWriter(new FileWriter("Output_Pass23.txt"));
         while ((line = br1.readLine()) != null) {
             line = line.replaceAll(",", " ");
             String[] tokens = line.split("\\s+");

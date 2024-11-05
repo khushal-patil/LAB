@@ -6,4 +6,4 @@
 &REG2	BREG
 &P	
 &Q	
-&REG2	BREG
+&REG3	CREG

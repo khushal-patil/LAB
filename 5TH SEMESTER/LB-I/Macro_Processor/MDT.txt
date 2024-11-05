@@ -1,15 +1,15 @@
-	INCR	&X	,&Y	,&REG1	=	AREG
-	MOVER	#3	,#1
-	ADD	#3	,#2
-	MOVEM	#3	,#1
+	INCR	&X	,&Y	,&REG1
+	MOVER	,#3	#1
+	ADD	,#3	,#2
+	MOVEM	,#3	#1
 	MEND
-	DECR	&A	,&B	,&REG2	=	BREG
-	MOVER	#6	,#4
-	SUB	#6	,#5
-	MOVEM	#6	,#4
+	DECR	&A	,&B	,&REG2
+	MOVER	,#6	,#4
+	SUB	,#6	,#5
+	MOVEM	,#6	,#4
 	MEND
-	KHUSH	&P	,&Q	,&REG2	=	BREG
-	MOVER	#6	#9	,#7
-	SUB	#6	#9	,#8
-	MOVEM	#6	#9	,#7
+	KHUSH	&P	,&Q	,&REG3
+	MOVER	,#9	,#7
+	SUB	,#9	,#8
+	MOVEM	,#9	,#7
 	MEND
