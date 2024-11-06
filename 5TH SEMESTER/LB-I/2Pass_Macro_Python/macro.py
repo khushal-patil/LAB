@@ -1,129 +1,113 @@
-file = []
+# Read input file
 with open("input.txt", "r") as f:
     file = f.readlines()
 
-f = open("mdt.txt", "w")
-f.close()
-f = open("mdt.txt", "r")
-f2 = f.readlines()
-f.close()
-mdpt = len(f2) + 1
+# Initialize MDT (Macro Definition Table) pointer and empty lists
+mdt_pointer = 1
+mnt_pointer = 1
+ala = []  # Argument List Array
 
-ala = []
-mnt = open("mnt.txt", "w")
-mdt = open("mdt.txt", "w")
-ic = open("ic.txt", "w")
-flag = 0
+# Create and clear MDT, MNT, and IC files
+with open("mdt.txt", "w") as mdt, open("mnt.txt", "w") as mnt, open("ic.txt", "w") as ic:
+    pass  # Just clear files
 
+# Open files for writing macro definitions and intermediate code
+mdt = open("mdt.txt", "a")
+mnt = open("mnt.txt", "a")
+ic = open("ic.txt", "a")
+
+is_macro = False  # Flag to indicate macro definition
+
+# Pass 1: Process macros and create MDT, MNT
 for line in file:
-    l = str(line[0:len(line)-1])
-    if l == "MACRO":
-        flag = 1
-    elif l == "MEND":
-        mdt.write(l + "\n")
-        mdpt += 1
-        flag = 0
-        
-    elif flag == 1:
-        mdt.write(l + "\n")
-        temp = str(l).split()
-        mnt.write(temp[0] + " " + str(mdpt) + "\n")
-        ala = str(temp[1]).split(",")
-        mdpt += 1
-        flag += 1
+    line = line.strip()
 
-    elif flag > 1:
-        temp = str(l).split()
-        part2 = str(temp[1]).split(",")
-        mdt.write(temp[0] + " ")
-        args = []
-        for i in part2:
-            substituted = False
-            for j in range(len(ala)):
-                t = str(ala[j]).split("=")
-                if t[0] == i:  
-                    args.append("#" + str(j))
-                    substituted = True
-                    break
-            if not substituted:  
-                args.append(i)
-
-        mdt.write(",".join(args) + "\n")
-        mdpt += 1
+    if line == "MACRO":
+        is_macro = True
+    elif line == "MEND":
+        mdt.write("MEND\n")
+        mdt_pointer += 1
+        is_macro = False
+    elif is_macro:
+        tokens = line.split()
+        macro_name = tokens[0]
+        parameters = tokens[1:] if len(tokens) > 1 else []
+        mnt.write(f"{mnt_pointer} {macro_name} {mdt_pointer}\n")
+        mnt_pointer += 1
+        ala = parameters  # Store arguments in ALA
+        mdt.write(line + "\n")
+        mdt_pointer += 1
     else:
-        ic.write(line)
-    
-ic.close()
-mnt.close()
-mdt.close()
+        ic.write(line + "\n")  # Write non-macro lines to IC
 
-ic = open("ic.txt", "r")
-mnt = open("mnt.txt", "r")
-mdt = open("mdt.txt", "r")
-i = ic.readlines()
-n = mnt.readlines()
-m = mdt.readlines()
-ic.close()
-mnt.close()
+# Close files after Pass 1
 mdt.close()
+mnt.close()
+ic.close()
 
+# Open files for Pass 2
+with open("ic.txt", "r") as ic, open("mnt.txt", "r") as mnt, open("mdt.txt", "r") as mdt:
+    ic_lines = ic.readlines()
+    mnt_lines = mnt.readlines()
+    mdt_lines = mdt.readlines()
+
+# Open output and argument files
+output = open("output.txt", "w")
 arg_file = open("arg.txt", "w")
 
-f = open("output.txt", "w")
-for line in i:
-    flag = 0
-    temp = str(line).split()
+# Pass 2: Expand macros
+for line in ic_lines:
+    line_tokens = line.split()
+    if not line_tokens:
+        continue
+    macro_call = line_tokens[0]
+    found_macro = False
 
-    for i2 in n:
-        t = str(i2).split()
-        if t[0] == temp[0]:  
-            flag = 1
-            mdpt = int(str(t[1]))
+    # Check if the line matches any macro in MNT
+    for mnt_entry in mnt_lines:
+        mnt_tokens = mnt_entry.split()
+        if mnt_tokens[1] == macro_call:
+            found_macro = True
+            mdt_pointer = int(mnt_tokens[2])
             break
-    
-    if flag == 1:
-        
-        ala = str(temp[1]).split(",")
-        flag += 1
 
-        lis = []
-        for i2 in range(mdpt - 1, len(m)):
-            st = str(m[i2])[0:len(m[i2]) - 1]
-            if st == "MEND":
+    if found_macro:
+        # Retrieve actual arguments from macro call
+        actual_args = line_tokens[1].split(",") if len(line_tokens) > 1 else []
+        
+        # Retrieve macro definition from MDT
+        expanded_lines = []
+        for mdt_line in mdt_lines[mdt_pointer - 1:]:
+            mdt_line = mdt_line.strip()
+            if mdt_line == "MEND":
                 break
+            expanded_lines.append(mdt_line)
+
+        formal_args = []
+        for idx, exp_line in enumerate(expanded_lines):
+            tokens = exp_line.split()
+            if idx == 0:
+                formal_args = tokens[1:]
+                arg_file.write(f"Macro Name: {macro_call}\n")
+                arg_file.write("Formal Parameters: " + ", ".join(formal_args) + "\n")
+                arg_file.write("Actual Parameters: " + ", ".join(actual_args) + "\n\n")
             else:
-                lis.append(st)
-        
-        ala2 = []
-        for item in range(len(lis)):
-            tmp = str(lis[item]).split()
-            if item == 0:
-                ala2 = str(tmp[1]).split(",")
-                 
-                arg_file.write(f"Macro Name: {temp[0]}\n")
-                arg_file.write("Formal Parameters: " + ", ".join(ala2) + "\n")
-                arg_file.write("Actual Parameters: " + ", ".join(ala) + "\n\n")
+                output.write(tokens[0] + " ")
 
-            if item > 0:
-                f.write(tmp[0] + " ")
+                # Substitute formal parameters with actual arguments
+                args = []
+                for param in tokens[1].split(","):
+                    for j, formal in enumerate(formal_args):
+                        if param == formal:
+                            args.append(actual_args[j] if j < len(actual_args) else param)
+                            break
+                    else:
+                        args.append(param)
+                output.write(",".join(args) + "\n")
+    else:
+        # Write non-macro lines directly to output
+        output.write(line)
 
-            tmp = str(tmp[1]).split(",")
-            buffer = ""
-
-            for k in tmp:
-                for ii in range(len(ala2)):
-                    if k == "#" + str(ii):
-                        
-                        if ii < len(ala) and ala[ii] != "":
-                            buffer += ala[ii] + ","
-                        else:
-                            buffer += ala2[ii] + ","
-            if item > 0:
-                f.write(buffer[0:len(buffer) - 1] + "\n")
-
-    elif flag == 0:
-        f.write(line)
-f.close()
+# Close output and argument files
+output.close()
 arg_file.close()
-
-

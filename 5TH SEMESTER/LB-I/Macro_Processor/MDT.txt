@@ -1,15 +1,10 @@
-	INCR	&X	,&Y	,&REG1
-	MOVER	,#3	#1
-	ADD	,#3	,#2
-	MOVEM	,#3	#1
-	MEND
-	DECR	&A	,&B	,&REG2
-	MOVER	,#6	,#4
-	SUB	,#6	,#5
-	MOVEM	,#6	,#4
-	MEND
-	KHUSH	&P	,&Q	,&REG3
-	MOVER	,#9	,#7
-	SUB	,#9	,#8
-	MOVEM	,#9	,#7
-	MEND
+INCR &X,&Y
+MOVER &AREG,&X
+ADD &AREG,&Y
+MOVEM &AREG,&X
+MEND
+DECR &A,&B
+MOVER &BREG,&A
+SUB &BREG,&B
+MOVEM &BREG,&A
+MEND

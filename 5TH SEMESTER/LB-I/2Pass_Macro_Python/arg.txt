@@ -1,8 +1,0 @@
-Macro Name: INCR
-Formal Parameters: &X, &Y, &REG=AREG
-Actual Parameters: N1, N2, REG=CREG
-
-Macro Name: DECR
-Formal Parameters: &A, &B, &REG=BREG
-Actual Parameters: N1, N2
-
