@@ -117,6 +117,35 @@ source_code = [
     "END"
 ]
 
+# source_code = [
+   
+#     "MACRO",
+#     "M1 &X, &Y, &A=AREG, &B=",
+#     "MOVER &A, &X",
+#     "ADD &A, ='1'",
+#     "MOVER &B, &Y",
+#     "ADD &B, ='5'",
+#     "MEND",
+#     "MACRO",
+#     "M2 &P, &Q, &U=CREG, &V=DREG",
+#     "MOVER &U, &P",
+#     "MOVER &V, &Q",
+#     "ADD &U, ='15'",
+#     "ADD &V, ='10'",
+#     "MEND",
+#     "START 100",
+#     "MOVER AREG, 10", 
+#     "ADD AREG, ='1'",
+#     "MOVER CREG, 20",
+#     "ADD CREG, ='5'",
+#     "MOVER BREG, 100", 
+#     "MOVER AREG, 200",
+#     "ADD BREG, ='15'",
+#     "ADD AREG, ='10'",
+#     "END"
+# ]
+
+
 process_pass1(source_code)
 display()
 print("\nPASS 2:")

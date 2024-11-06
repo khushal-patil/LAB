@@ -1,0 +1,8 @@
+Macro Name: M1
+Formal Parameters: &X,, &Y,, &A=AREG,, &B=
+Actual Parameters: 10,20 
+
+Macro Name: M2
+Formal Parameters: &P,, &Q,, &U=CREG,, &V=DREG
+Actual Parameters: 100, 
+
