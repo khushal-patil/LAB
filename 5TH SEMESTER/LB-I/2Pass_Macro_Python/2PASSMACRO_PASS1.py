@@ -6,7 +6,7 @@ intermediate_code = []
 
 
 def process_pass1(source_code):
-    mdt_index = 0
+    mdt_index = 1
     macro_definition = []
     current_macro_name = None
     inside_macro = False
@@ -20,17 +20,20 @@ def process_pass1(source_code):
 
         if tokens[0] == 'MACRO': 
             inside_macro = True
+            
             continue
-
+            
         if inside_macro and tokens[0] == 'MEND':  
             inside_macro = False
             macro_definition_table[current_macro_name] = macro_definition[:]
             macro_name_table[current_macro_name] = mdt_index
             arguments_table[current_macro_name] = current_arguments[:]
             mdt_index += len(macro_definition)
+            mdt_index+=1
             macro_definition = []
             current_arguments = []
             current_macro_name = None
+            
             continue
 
         if inside_macro: 
@@ -38,9 +41,11 @@ def process_pass1(source_code):
                 current_macro_name = tokens[0]
                 current_arguments = tokens[1:] 
             macro_definition.append(line.strip())
+           
         else:
-            intermediate_code.append(line.strip())  
-
+            intermediate_code.append(line.strip())
+              
+        
 def process_pass2(source_code):
     output = []
     inside_macro = False
