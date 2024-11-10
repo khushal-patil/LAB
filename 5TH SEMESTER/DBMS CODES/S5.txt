@@ -34,6 +34,38 @@ CREATE TABLE Manages (
     FOREIGN KEY (employee_name) REFERENCES Employee(employee_name),
     FOREIGN KEY (manager_name) REFERENCES Employee(employee_name)
 );
+
+
+-- Inserting data into Employee table
+INSERT INTO Employee (emp_id, employee_name, street, city) VALUES
+(1, 'John Doe', '123 Elm Street', 'New York'),
+(2, 'Alice Smith', '456 Maple Avenue', 'San Francisco'),
+(3, 'Bob Johnson', '789 Oak Drive', 'Los Angeles'),
+(4, 'Eve Davis', '321 Pine Road', 'Chicago'),
+(5, 'Tom Harris', '654 Birch Boulevard', 'Seattle');
+
+-- Inserting data into Company table
+INSERT INTO Company (company_name, city, asset) VALUES
+('TCS', 'Mumbai', 5000000.00),
+('InfoSys', 'Pune', 8000000.00),
+('TechM', 'Chennai', 6000000.00),
+('Accenture', 'Bangalore', 10000000.00);
+
+-- Inserting data into Works table (employee-company relationships)
+INSERT INTO Works (employee_name, company_name, salary) VALUES
+('John Doe', 'TCS', 12000.00),
+('Alice Smith', 'InfoSys', 9500.00),
+('Bob Johnson', 'TechM', 11000.00),
+('Eve Davis', 'TCS', 9000.00),
+('Tom Harris', 'Accenture', 15000.00);
+
+-- Inserting data into Manages table (employee-manager relationships)
+INSERT INTO Manages (employee_name, manager_name) VALUES
+('John Doe', 'Tom Harris'),
+('Alice Smith', 'Bob Johnson'),
+('Eve Davis', 'John Doe');
+
+
 Create above tables with appropriate constraints like primary key, foreign key, not null etc.  
 1.	Find the names of all employees who work for ‘TCS’. 
 SELECT employee_name
