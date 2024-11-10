@@ -55,6 +55,51 @@ CREATE TABLE Borrower (
     FOREIGN KEY (loan_no) REFERENCES Loan(loan_no)
 );
 
+-- Insert data into Branch table
+INSERT INTO Branch (branch_name, branch_city, assets) VALUES
+('Wadia College', 'Pune', 1000000.00),
+('Main_Branch', 'Mumbai', 2000000.00),
+('West_Branch', 'Delhi', 1500000.00);
+
+-- Insert data into Account table
+INSERT INTO Account (Acc_no, branch_name, balance) VALUES
+(101, 'Wadia College', 25000.00),
+(102, 'Main_Branch', 12000.00),
+(103, 'West_Branch', 22000.00),
+(104, 'Wadia College', 18000.00),
+(105, 'Main_Branch', 35000.00);
+
+-- Insert data into Customer table
+INSERT INTO Customer (cust_name, cust_street, cust_city) VALUES
+('John Doe', '123 Elm Street', 'Pune'),
+('Alice Smith', '456 Maple Avenue', 'Mumbai'),
+('Bob Johnson', '789 Oak Drive', 'Delhi'),
+('Eve Davis', '321 Pine Road', 'Bangalore'),
+('Tom Harris', '654 Birch Boulevard', 'Chennai'),
+('Peter Pan', '101 Dream Lane', 'Pune');
+
+-- Insert data into Depositor table
+INSERT INTO Depositor (cust_name, acc_no) VALUES
+('John Doe', 101),
+('Alice Smith', 102),
+('Bob Johnson', 103),
+('Eve Davis', 104),
+('Peter Pan', 105);
+
+-- Insert data into Loan table
+INSERT INTO Loan (loan_no, branch_name, amount) VALUES
+(201, 'Wadia College', 15000.00),
+(202, 'Main_Branch', 5000.00),
+(203, 'West_Branch', 12000.00),
+(204, 'Wadia College', 30000.00),
+(205, 'Main_Branch', 18000.00);
+
+-- Insert data into Borrower table
+INSERT INTO Borrower (cust_name, loan_no) VALUES
+('Alice Smith', 202),
+('Bob Johnson', 203),
+('Peter Pan', 204);
+
 Create above tables with appropriate constraints like primary key, foreign key, not null etc. 
 1.	Find all customers who have both account and loan at bank.
 SELECT DISTINCT Depositor.cust_name
