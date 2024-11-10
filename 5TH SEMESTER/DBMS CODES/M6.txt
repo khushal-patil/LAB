@@ -28,6 +28,8 @@ x. Address: Array of Embedded Doc (PAddr, LAddr) Execute the following query:
     { "PAddr": "123 Main St", "LAddr": "Pune" }
   ]
 }
+
+
 1.	Display the total salary of per company 
 var map = function() {
   emit(this['Company Name'], this['Salary']);
@@ -38,6 +40,10 @@ var reduce = function(key, values) {
 };
 
 db.Employee.mapReduce(map, reduce, { out: "total_salary_per_company" });
+
+db.total_salary_per_company.find();
+
+
 2.	Display the total salary of company Name:"TCS"
 var map = function() {
   if (this['Company Name'] == 'TCS') {
@@ -50,6 +56,8 @@ var reduce = function(key, values) {
 };
 
 db.Employee.mapReduce(map, reduce, { out: "total_salary_tcs" }); 
+db.total_salary_tcs.find();
+
 3.	Return the average salary of company whose address is “Pune".
 var map = function() {
   for (var i = 0; i < this.Address.length; i++) {
@@ -74,7 +82,11 @@ var finalize = function(key, reducedValue) {
   return reducedValue;
 };
 
-db.Employee.mapReduce(map, reduce, { out: "average_salary_pune", finalize: finalize }); 
+db.Employee.mapReduce(map, reduce, { out: "average_salary_pune", finalize: finalize });
+
+db.average_salary_pune.find().pretty();
+
+
 4.	Display total count for “City=Pune” 
 var map = function() {
   for (var i = 0; i < this.Address.length; i++) {
@@ -89,6 +101,9 @@ var reduce = function(key, values) {
 };
 
 db.Employee.mapReduce(map, reduce, { out: "count_pune" });
+db.count_pune.find();
+
+
 5.	Return count for city pune and age greater than 40.
 var map = function() {
   for (var i = 0; i < this.Address.length; i++) {
@@ -102,4 +117,5 @@ var reduce = function(key, values) {
   return Array.sum(values);
 };
 
-db.Employee.mapReduce(map, reduce, { out: "count_pune_above_40" }); 
+db.Employee.mapReduce(map, reduce, { out: "count_pune_above_40" });
+db.count_pune_above_40.find().pretty();

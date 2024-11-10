@@ -8,6 +8,75 @@ vii.	Expertise: Array
 viii.	DOB: String or Date 
 ix.	Email id: String x. Contact: String  
 xi. Address: Array of Embedded Doc (PAddr, LAddr) 
+
+db.Employee.insertMany([
+  {
+    "Emp_id": 1,
+    "Name": { "FName": "Swapnil", "LName": "Jadhav" },
+    "Company Name": "TCS",
+    "Salary": 120000,
+    "Designation": "DBA",
+    "Age": 32,
+    "Expertise": ["SQL", "MongoDB", "Database Management"],
+    "DOB": "1991-03-15",
+    "Email id": "swapnil.jadhav@tcs.com",
+    "Contact": "123-456-7890",
+    "Address": [{ "PAddr": "123 Main St", "LAddr": "Pune" }]
+  },
+  {
+    "Emp_id": 2,
+    "Name": { "FName": "John", "LName": "Doe" },
+    "Company Name": "TCS",
+    "Salary": 150000,
+    "Designation": "Developer",
+    "Age": 29,
+    "Expertise": ["Java", "MongoDB", "Spring Boot"],
+    "DOB": "1994-06-20",
+    "Email id": "john.doe@tcs.com",
+    "Contact": "234-567-8901",
+    "Address": [{ "PAddr": "456 Elm St", "LAddr": "Mumbai" }]
+  },
+  {
+    "Emp_id": 3,
+    "Name": { "FName": "Sarah", "LName": "Smith" },
+    "Company Name": "Infosys",
+    "Salary": 140000,
+    "Designation": "DBA",
+    "Age": 36,
+    "Expertise": ["SQL", "Oracle", "Database Management"],
+    "DOB": "1987-11-10",
+    "Email id": "sarah.smith@infosys.com",
+    "Contact": "345-678-9012",
+    "Address": [{ "PAddr": "789 Pine St", "LAddr": "Bangalore" }]
+  },
+  {
+    "Emp_id": 4,
+    "Name": { "FName": "Michael", "LName": "Johnson" },
+    "Company Name": "Wipro",
+    "Salary": 130000,
+    "Designation": "DBA",
+    "Age": 40,
+    "Expertise": ["SQL", "PostgreSQL", "Database Management"],
+    "DOB": "1983-08-22",
+    "Email id": "michael.johnson@wipro.com",
+    "Contact": "456-789-0123",
+    "Address": [{ "PAddr": "321 Oak St", "LAddr": "Chennai" }]
+  },
+  {
+    "Emp_id": 5,
+    "Name": { "FName": "Jessica", "LName": "Taylor" },
+    "Company Name": "TCS",
+    "Salary": 125000,
+    "Designation": "Developer",
+    "Age": 28,
+    "Expertise": ["Java", "Node.js", "React"],
+    "DOB": "1995-05-13",
+    "Email id": "jessica.taylor@tcs.com",
+    "Contact": "567-890-1234",
+    "Address": [{ "PAddr": "102 Birch St", "LAddr": "Pune" }]
+  }
+]);
+
 Insert at least 5 documents in collection by considering above attribute and execute following: 
 1.	Using aggregation Return separates value in the Expertise array and return sum of each element of array. 
 db.Employee.aggregate([
@@ -38,19 +107,36 @@ db.Employee.aggregate([
 ])
 5.	To Create Compound Indexes on Name: 1, Age: -1 
 db.Employee.createIndex({ "Name.FName": 1, "Age": -1 })
+
+
 6.	Create an Index on Emp_id field, compare the time require to search Emp_id before and after creating an index. (Hint Add at least 10000 Documents) 
-// To test search time without index
-let startTime = new Date();
-db.Employee.find({ "Emp_id": 5000 }).toArray(); // Search for a specific Emp_id
-let endTime = new Date();
-print("Time without index:", endTime - startTime, "ms");
+
+let employees = [];
+for (let i = 1; i <= 1000; i++) {
+  let employee = {
+    "Emp_id": i,
+    "Name": { "FName": "FName" + i, "LName": "LName" + i },
+    "Company Name": "Company" + (i % 3 + 1),  // Randomly assign to Company1, Company2, Company3
+    "Salary": 120000 + (i * 10),  // Increment salary by 10 per employee
+    "Designation": i % 2 === 0 ? "DBA" : "Developer",  // Alternate Designation
+    "Age": 20 + (i % 40),  // Random age between 20 and 60
+    "Expertise": ["SQL", "MongoDB", "JavaScript", "Node.js", "React"].slice(0, (i % 5) + 1),  // Random expertise
+    "DOB": "1990-01-01",  // Static Date of Birth (could randomize if needed)
+    "Email id": "emp" + i + "@company.com",
+    "Contact": "123-456-78" + (i % 10),  // Generate a mock contact number
+    "Address": [{ "PAddr": "Address" + i, "LAddr": i % 3 === 0 ? "Pune" : "Mumbai" }]
+  };
+  employees.push(employee);
+}
+
+// Insert the 1000 documents in the collection
+db.Employee.insertMany(employees);
+
 db.Employee.find({ "Emp_id": 5000 }).explain("executionStats")
 db.Employee.createIndex({ "Emp_id": 1 })
 db.Employee.find({ "Emp_id": 5000 }).explain("executionStats")
-// To test search time after index creation
-startTime = new Date();
-db.Employee.find({ "Emp_id": 5000 }).toArray(); // Search for a specific Emp_id
-endTime = new Date();
-print("Time with index:", endTime - startTime, "ms");
+
+
+
 7.	Return a List of Indexes on created on employee Collection. 
 db.Employee.getIndexes()
