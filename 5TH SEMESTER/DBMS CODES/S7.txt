@@ -1,0 +1,50 @@
+ 
+Consider following Relation  
+Account (Acc_no, branch_name,balance) 
+Branch(branch_name,branch_city,assets) 
+Customer(cust_name,cust_street,cust_city) 
+Depositor(cust_name,acc_no) 
+Loan(loan_no,branch_name,amount) 
+Borrower(cust_name,loan_no) Execute the following query: 
+1.	Create a View1 to display List all customers in alphabetical order who have loan from Pune_Station branch. 
+CREATE VIEW View1 AS
+SELECT Customer.cust_name
+FROM Customer
+JOIN Borrower ON Customer.cust_name = Borrower.cust_name
+JOIN Loan ON Borrower.loan_no = Loan.loan_no
+WHERE Loan.branch_name = 'Pune_Station'
+ORDER BY Customer.cust_name;
+2.	Create View2 on branch table by selecting any two columns and perform insert update delete operations. 
+CREATE VIEW View2 AS
+SELECT branch_name, branch_city
+FROM Branch;
+INSERT INTO View2 (branch_name, branch_city) VALUES ('New_Branch', 'New_City');
+UPDATE View2
+SET branch_city = 'Updated_City'
+WHERE branch_name = 'New_Branch';
+DELETE FROM View2
+WHERE branch_name = 'New_Branch';
+3.	Create View3 on borrower and depositor table by selecting any one column from each table perform insert update delete operations. 
+CREATE VIEW View3 AS
+SELECT Borrower.cust_name AS borrower_name, Depositor.acc_no AS depositor_acc_no
+FROM Borrower JOIN Depositor ON Borrower.cust_name = Depositor.cust_name;
+INSERT INTO View3 (borrower_name, depositor_acc_no) VALUES ('John Doe', 12345);
+UPDATE View3
+SET depositor_acc_no = 54321
+WHERE borrower_name = 'John Doe';
+DELETE FROM View3
+WHERE borrower_name = 'John Doe';
+4.	Create Union of left and right joint for all customers who have an account or loan or both at bank 
+SELECT DISTINCT cust_name
+FROM Depositor
+LEFT JOIN Borrower ON Depositor.cust_name = Borrower.cust_name
+UNION
+SELECT DISTINCT cust_name
+FROM Borrower
+RIGHT JOIN Depositor ON Borrower.cust_name = Depositor.cust_name;
+5.	Create Simple and Unique index. 
+CREATE INDEX idx_customer_city ON Customer (cust_city);
+        CREATE UNIQUE INDEX idx_branch_name ON Branch (branch_name);
+6.	Display index Information. 
+     SHOW INDEX FROM Customer;
+     SHOW INDEX FROM Branch;

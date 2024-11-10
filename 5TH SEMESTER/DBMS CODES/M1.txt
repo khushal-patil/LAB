@@ -1,0 +1,131 @@
+ 
+Design and Develop MongoDB Queries using CRUD operations: 
+Create Employee collection by considering following Fields:   
+i.	Name:  Embedded Doc (FName, LName) 
+ii.	Company Name: String  
+iii.	Salary: Number 
+iv.	Designation: String 
+v.	Age: Number 
+vi.	Expertise: Array  
+vii.	DOB: String or Date 
+viii.	Email id: String ix. Contact: String  
+x. Address: Array of Embedded Doc (PAddr, LAddr) 
+Insert at least 5 documents in collection by considering above attribute and execute following queries: 
+db.Employee.insertMany([
+  {
+    "Name": { "FName": "John", "LName": "Doe" },
+    "Company Name": "TCS",
+    "Salary": 50000,
+    "Designation": "Programmer",
+    "Age": 28,
+    "Expertise": ["Java", "Spring", "MongoDB"],
+    "DOB": "1995-06-15",
+    "Email id": "john.doe@tcs.com",
+    "Contact": "9876543210",
+    "Address": [
+      { "PAddr": "123 Main St", "LAddr": "Mumbai" }
+    ]
+  },
+  {
+    "Name": { "FName": "Jane", "LName": "Smith" },
+    "Company Name": "Infosys",
+    "Salary": 45000,
+    "Designation": "Tester",
+    "Age": 24,
+    "Expertise": ["Testing", "Automation", "Selenium"],
+    "DOB": "1999-04-12",
+    "Email id": "jane.smith@infosys.com",
+    "Contact": "9871234567",
+    "Address": [
+      { "PAddr": "456 Elm St", "LAddr": "Pune" }
+    ]
+  },
+  {
+    "Name": { "FName": "Alice", "LName": "Johnson" },
+    "Company Name": "Infosys",
+    "Salary": 55000,
+    "Designation": "Programmer",
+    "Age": 30,
+    "Expertise": ["Java", "Python", "C++"],
+    "DOB": "1993-05-20",
+    "Email id": "alice.johnson@infosys.com",
+    "Contact": "5559876543",
+    "Address": [
+      { "PAddr": "789 Oak St", "LAddr": "Chennai" }
+    ]
+  },
+  {
+    "Name": { "FName": "Bob", "LName": "Williams" },
+    "Company Name": "TCS",
+    "Salary": 60000,
+    "Designation": "Manager",
+    "Age": 35,
+    "Expertise": ["Project Management", "Agile", "Scrum"],
+    "DOB": "1988-11-30",
+    "Email id": "bob.williams@tcs.com",
+    "Contact": "7776543210",
+    "Address": [
+      { "PAddr": "123 Pine St", "LAddr": "Bangalore" }
+    ]
+  },
+  {
+    "Name": { "FName": "Eve", "LName": "Davis" },
+    "Company Name": "TCS",
+    "Salary": 70000,
+    "Designation": "Programmer",
+    "Age": 27,
+    "Expertise": ["Java", "Spring Boot", "Microservices"],
+    "DOB": "1996-03-15",
+    "Email id": "eve.davis@tcs.com",
+    "Contact": "6669876543",
+    "Address": [
+      { "PAddr": "234 Maple St", "LAddr": "Chennai" }
+    ]
+  }
+]);
+1.	Select all documents where the Designation field has the value "Programmer" and the value of the salary field is greater than 30000. 
+db.Employee.find(
+  { 
+    "Designation": "Programmer", 
+    "Salary": { $gt: 30000 } 
+  }
+);
+2.	Creates a new document if no document in the employee collection contains 
+ {Designation: "Tester", Company_name: "TCS", Age: 25} 
+var existingDoc = db.Employee.findOne({ "Designation": "Tester", "Company Name": "TCS", "Age": 25 });
+if (!existingDoc) {
+  db.Employee.insertOne({
+    "Name": { "FName": "Sam", "LName": "Taylor" },
+    "Company Name": "TCS",
+    "Salary": 40000,
+    "Designation": "Tester",
+    "Age": 25,
+    "Expertise": ["Automation", "Selenium", "JMeter"],
+    "DOB": "1998-01-10",
+    "Email id": "sam.taylor@tcs.com",
+    "Contact": "9876543212",
+    "Address": [
+      { "PAddr": "123 Park Ave", "LAddr": "Pune" }
+    ]
+  });
+}
+3.	Increase salary of each Employee working with “Infosys" 10000. 
+db.Employee.updateMany(
+  { "Company Name": "Infosys" },
+  { $inc: { "Salary": 10000 } }
+); 
+4.	Finds all employees working with "TCS" and reduce their salary by 5000. 
+db.Employee.updateMany(
+  { "Company Name": "TCS" },
+  { $inc: { "Salary": -5000 } }
+);
+5.	Return documents where Designation is not equal to "Tester". 
+db.Employee.find(
+  { "Designation": { $ne: "Tester" } }
+);
+6.	Find all employee with Exact Match on an Array having Expertise: 
+['Mongodb','Mysql','Cassandra'] 
+db.Employee.find(
+  { "Expertise": ["Mongodb", "Mysql", "Cassandra"] }
+);
+ 

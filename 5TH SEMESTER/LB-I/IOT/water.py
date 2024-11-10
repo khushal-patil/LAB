@@ -13,4 +13,3 @@ while True:
     else:
         GPIO.output(6, False)   # Keep LED OFF if no water detected
 
-GPIO.cleanup()

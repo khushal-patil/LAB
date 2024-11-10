@@ -1,0 +1,133 @@
+ 
+Design and Develop MongoDB Queries using CRUD operations: 
+Create Employee collection by considering following Fields:   i. Emp_id : Number 
+ii.	Name:  Embedded Doc (FName, LName) 
+iii.	Company Name: String  
+iv.	Salary: Number 
+v.	Designation: String 
+vi.	Age: Number 
+vii.	Expertise: Array  
+viii.	DOB: String or Date 
+ix.	Email id: String x. Contact: String  
+xi. Address: Array of Embedded Doc (PAddr, LAddr) 
+Insert at least 5 documents in collection by considering above attribute and execute following queries: 
+db.Employee.insertMany([
+  {
+    "Emp_id": 1001,
+    "Name": { "FName": "John", "LName": "Doe" },
+    "Company Name": "TCS",
+    "Salary": 120000,
+    "Designation": "Tester",
+    "Age": 25,
+    "Expertise": ["Automation", "Testing", "Java"],
+    "DOB": "1998-01-15",
+    "Email id": "john.doe@tcs.com",
+    "Contact": "987-654-3210",
+    "Address": [
+      { "PAddr": "123 Main St", "LAddr": "Pune", "Pin_code": "411001" }
+    ]
+  },
+  {
+    "Emp_id": 1002,
+    "Name": { "FName": "Jane", "LName": "Smith" },
+    "Company Name": "TCS",
+    "Salary": 100000,
+    "Designation": "Developer",
+    "Age": 30,
+    "Expertise": ["NodeJS", "MongoDB", "JavaScript"],
+    "DOB": "1993-07-20",
+    "Email id": "jane.smith@tcs.com",
+    "Contact": "987-123-4567",
+    "Address": [
+      { "PAddr": "456 Elm St", "LAddr": "Mumbai", "Pin_code": "400001" }
+    ]
+  },
+  {
+    "Emp_id": 1003,
+    "Name": { "FName": "Bob", "LName": "Williams" },
+    "Company Name": "Wipro",
+    "Salary": 140000,
+    "Designation": "Tester",
+    "Age": 28,
+    "Expertise": ["Manual Testing", "SQL", "Agile"],
+    "DOB": "1995-05-30",
+    "Email id": "bob.williams@wipro.com",
+    "Contact": "666-432-9876",
+    "Address": [
+      { "PAddr": "789 Oak St", "LAddr": "Bangalore", "Pin_code": "560001" }
+    ]
+  },
+  {
+    "Emp_id": 1004,
+    "Name": { "FName": "Alice", "LName": "Johnson" },
+    "Company Name": "TCS",
+    "Salary": 110000,
+    "Designation": "Developer",
+    "Age": 26,
+    "Expertise": ["Java", "Spring", "Hibernate"],
+    "DOB": "1997-08-10",
+    "Email id": "alice.johnson@tcs.com",
+    "Contact": "555-555-5555",
+    "Address": [
+      { "PAddr": "321 Pine St", "LAddr": "Pune", "Pin_code": "411001" }
+    ]
+  },
+  {
+    "Emp_id": 1005,
+    "Name": { "FName": "Eve", "LName": "Davis" },
+    "Company Name": "Accenture",
+    "Salary": 130000,
+    "Designation": "Manager",
+    "Age": 35,
+    "Expertise": ["Project Management", "Leadership", "Agile"],
+    "DOB": "1988-03-20",
+    "Email id": "eve.davis@accenture.com",
+    "Contact": "111-222-3333",
+    "Address": [
+      { "PAddr": "500 Maple St", "LAddr": "Chennai", "Pin_code": "600001" }
+    ]
+  }
+]);
+1.	Creates a new document if no document in the employee collection contains 
+{Designation: "Tester", Company_name: "TCS", Age: 25} 
+var existingDoc = db.Employee.findOne({ "Designation": "Tester", "Company Name": "TCS", "Age": 25 });
+if (!existingDoc) {
+  db.Employee.insertOne({
+    "Emp_id": 1006,
+    "Name": { "FName": "Sam", "LName": "Taylor" },
+    "Company Name": "TCS",
+    "Salary": 90000,
+    "Designation": "Tester",
+    "Age": 25,
+    "Expertise": ["Automation", "Selenium", "Testing"],
+    "DOB": "1998-03-25",
+    "Email id": "sam.taylor@tcs.com",
+    "Contact": "123-321-4321",
+    "Address": [
+      { "PAddr": "777 Park Ave", "LAddr": "Pune", "Pin_code": "411001" }
+    ]
+  });
+}
+2.	Finds all employees working with Company_name: "TCS" and increase their salary by 2000.  
+db.Employee.updateMany(
+  { "Company Name": "TCS" },
+  { $inc: { "Salary": 2000 } }
+);
+3.	Matches all documents where the value of the field Address is an embedded document that contains only the field city with the value "Pune" and the field Pin_code with the value "411001".
+db.Employee.find({
+  "Address": {
+    $elemMatch: {
+      "LAddr": "Pune",
+      "Pin_code": "411001"
+    }
+  }
+}); 
+4.	Find employee details who are working as "Developer" or "Tester".
+db.Employee.find({
+  "Designation": { $in: ["Developer", "Tester"] }
+}); 
+5.	Drop Single documents where designation="Developer". 
+db.Employee.deleteOne({ "Designation": "Developer" });
+6.	Count number of documents in employee collection. 
+db.Employee.countDocuments();
+ 

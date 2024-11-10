@@ -1,0 +1,56 @@
+Create Employee collection by considering following Fields:   i. Emp_id : Number 
+ii.	Name:  Embedded Doc (FName, LName) 
+iii.	Company Name: String  
+iv.	Salary: Number 
+v.	Designation: String 
+vi.	Age: Number 
+vii.	Expertise: Array  
+viii.	DOB: String or Date 
+ix.	Email id: String x. Contact: String  
+xi. Address: Array of Embedded Doc (PAddr, LAddr) 
+Insert at least 5 documents in collection by considering above attribute and execute following: 
+1.	Using aggregation Return separates value in the Expertise array and return sum of each element of array. 
+db.Employee.aggregate([
+  { $unwind: "$Expertise" },   // Unwind the expertise array to separate each expertise into a document
+  { $group: { _id: "$Expertise", totalCount: { $sum: 1 } } }  // Group by expertise and count the occurrences
+])
+2.	Using Aggregate method return Max and Min Salary for each company.
+db.Employee.aggregate([
+  { $group: {
+      _id: "$Company Name", 
+      maxSalary: { $max: "$Salary" }, 
+      minSalary: { $min: "$Salary" }
+  }}
+]) 
+3.	Using Aggregate method find Employee with Total Salary for Each City with Designation="DBA".  
+db.Employee.aggregate([
+  { $match: { "Designation": "DBA" } },  // Filter by designation "DBA"
+  { $group: { 
+      _id: { "city": { $arrayElemAt: ["$Address.LAddr", 0] } },  // Group by city
+      totalSalary: { $sum: "$Salary" } 
+  }}
+])
+4.	Using aggregation method Return separates value in the Expertise array for employee name where Swapnil Jadhav 
+db.Employee.aggregate([
+  { $match: { "Name.FName": "Swapnil", "Name.LName": "Jadhav" } },  // Filter by employee name
+  { $unwind: "$Expertise" },   // Unwind the expertise array
+  { $project: { Expertise: 1 } }   // Return expertise field
+])
+5.	To Create Compound Indexes on Name: 1, Age: -1 
+db.Employee.createIndex({ "Name.FName": 1, "Age": -1 })
+6.	Create an Index on Emp_id field, compare the time require to search Emp_id before and after creating an index. (Hint Add at least 10000 Documents) 
+// To test search time without index
+let startTime = new Date();
+db.Employee.find({ "Emp_id": 5000 }).toArray(); // Search for a specific Emp_id
+let endTime = new Date();
+print("Time without index:", endTime - startTime, "ms");
+db.Employee.find({ "Emp_id": 5000 }).explain("executionStats")
+db.Employee.createIndex({ "Emp_id": 1 })
+db.Employee.find({ "Emp_id": 5000 }).explain("executionStats")
+// To test search time after index creation
+startTime = new Date();
+db.Employee.find({ "Emp_id": 5000 }).toArray(); // Search for a specific Emp_id
+endTime = new Date();
+print("Time with index:", endTime - startTime, "ms");
+7.	Return a List of Indexes on created on employee Collection. 
+db.Employee.getIndexes()

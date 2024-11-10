@@ -1,0 +1,84 @@
+ 
+Consider following Relation  
+Account (Acc_no, branch_name,balance) 
+Branch(branch_name,branch_city,assets) 
+Customer(cust_name,cust_street,cust_city) 
+Depositor(cust_name,acc_no) 
+Loan(loan_no,branch_name,amount) 
+Borrower(cust_name,loan_no) 
+
+-- Account table
+CREATE TABLE Account (
+    Acc_no INT PRIMARY KEY,
+    branch_name VARCHAR(50) NOT NULL,
+    balance DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (branch_name) REFERENCES Branch(branch_name)
+);
+
+-- Branch table
+CREATE TABLE Branch (
+    branch_name VARCHAR(50) PRIMARY KEY,
+    branch_city VARCHAR(50) NOT NULL,
+    assets DECIMAL(15, 2) NOT NULL
+);
+
+-- Customer table
+CREATE TABLE Customer (
+    cust_name VARCHAR(50) PRIMARY KEY,
+    cust_street VARCHAR(50) NOT NULL,
+    cust_city VARCHAR(50) NOT NULL
+);
+
+-- Depositor table (association between Customer and Account)
+CREATE TABLE Depositor (
+    cust_name VARCHAR(50),
+    acc_no INT,
+    PRIMARY KEY (cust_name, acc_no),
+    FOREIGN KEY (cust_name) REFERENCES Customer(cust_name),
+    FOREIGN KEY (acc_no) REFERENCES Account(Acc_no)
+);
+
+-- Loan table
+CREATE TABLE Loan (
+    loan_no INT PRIMARY KEY,
+    branch_name VARCHAR(50) NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (branch_name) REFERENCES Branch(branch_name)
+);
+
+-- Borrower table (association between Customer and Loan)
+CREATE TABLE Borrower (
+    cust_name VARCHAR(50),
+    loan_no INT,
+    PRIMARY KEY (cust_name, loan_no),
+    FOREIGN KEY (cust_name) REFERENCES Customer(cust_name),
+    FOREIGN KEY (loan_no) REFERENCES Loan(loan_no)
+);
+
+Create above tables with appropriate constraints like primary key, foreign key, not null etc. 
+1.	Find all customers who have both account and loan at bank.
+SELECT DISTINCT Depositor.cust_name
+FROM Depositor
+JOIN Borrower ON Depositor.cust_name = Borrower.cust_name; 
+2.	Find all customers who have an account or loan or both at bank.
+SELECT DISTINCT cust_name
+FROM (
+    SELECT cust_name FROM Depositor
+    UNION
+    SELECT cust_name FROM Borrower
+) AS AllCustomers; 
+3.	Find all customers who have account but no loan at the bank. 
+SELECT DISTINCT Depositor.cust_name
+FROM Depositor
+LEFT JOIN Borrower ON Depositor.cust_name = Borrower.cust_name
+WHERE Borrower.cust_name IS NULL;
+4.	Find average account balance at ‘Wadia College’ branch. 
+SELECT AVG(balance) AS average_balance
+FROM Account
+WHERE branch_name = 'Wadia College';
+5.	Find no. of depositors at each branch 
+SELECT Account.branch_name, COUNT(DISTINCT Depositor.cust_name) AS num_depositors
+FROM Account
+JOIN Depositor ON Account.Acc_no = Depositor.acc_no
+GROUP BY Account.branch_name;
+ 

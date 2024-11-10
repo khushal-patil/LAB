@@ -1,0 +1,96 @@
+ 
+Write an Unnamed PL/SQL of code for the following requirements: - 
+Schema: 
+   Borrower (Rollin, Name, DateofIssue, NameofBook, Status) 
+   Fine (Roll_no,Date,Amt) 
+Accept roll_no & name of book from user. 
+Check the number of days (from date of issue). 
+1.	If days are between 15 to 30 then fine amounts will be Rs 5 per day. 
+2.	If no. of days>30, per day fine will be Rs 50 per day & for days less than 30, Rs. 5 per day. 
+3.	After submitting the book, status will change from I to R. 
+4.	If condition of fine is true, then details will be stored into fine table. 
+-- Create the Borrower table to store information about borrowed books
+CREATE TABLE Borrower (
+    Rollin NUMBER PRIMARY KEY,                 -- Roll number of the student (Primary Key)
+    Name VARCHAR2(100) NOT NULL,                -- Name of the student
+    DateofIssue DATE NOT NULL,                  -- Date when the book was issued
+    NameofBook VARCHAR2(255) NOT NULL,          -- Name of the borrowed book
+    Status CHAR(1) CHECK (Status IN ('I', 'R')) -- Status of the book (I = Issued, R = Returned)
+);
+
+-- Create the Fine table to store the fine details
+CREATE TABLE Fine (
+    Roll_no NUMBER,                             -- Roll number of the student
+    Date DATE DEFAULT SYSDATE,                  -- Date when the fine is registered
+    Amt NUMBER(10, 2),                          -- Amount of the fine
+    CONSTRAINT fk_rollno FOREIGN KEY (Roll_no) REFERENCES Borrower(Rollin) -- Foreign Key referencing Borrower table
+);
+
+
+DECLARE
+    v_roll_no   NUMBER;        -- Variable to hold roll number
+    v_name      VARCHAR2(100);  -- Variable to hold name of the book
+    v_dateofissue DATE;        -- Variable to hold date of issue of the book
+    v_days      NUMBER;        -- Variable to calculate number of days
+    v_fine_amt  NUMBER := 0;   -- Variable to hold the fine amount
+    v_status    CHAR(1);       -- Variable to hold the current status of the book
+BEGIN
+    -- Accept roll_no and name of the book as inputs from the user
+    v_roll_no := &roll_no;
+    v_name := '&book_name';
+    
+    -- Retrieve the DateofIssue and Status for the provided roll_no and NameofBook
+    SELECT DateofIssue, Status INTO v_dateofissue, v_status
+    FROM Borrower
+    WHERE Rollin = v_roll_no AND NameofBook = v_name;
+    
+    -- Calculate the number of days from DateofIssue to today's date
+    v_days := TRUNC(SYSDATE) - v_dateofissue;
+    
+    -- If days between 15 and 30, fine will be Rs. 5 per day
+    IF v_days BETWEEN 15 AND 30 THEN
+        v_fine_amt := v_days * 5;
+    
+    -- If days are greater than 30, fine is Rs. 50 per day for first 30 days and Rs. 5 per day after
+    ELSIF v_days > 30 THEN
+        v_fine_amt := (30 * 50) + ((v_days - 30) * 5);
+    END IF;
+
+    -- If there is a fine, insert into Fine table and update Status in Borrower table
+    IF v_fine_amt > 0 THEN
+        -- Insert the fine details into Fine table
+        INSERT INTO Fine (Roll_no, Date, Amt) 
+        VALUES (v_roll_no, SYSDATE, v_fine_amt);
+        
+        -- Update the Status in Borrower table to 'R' (Returned)
+        UPDATE Borrower 
+        SET Status = 'R'
+        WHERE Rollin = v_roll_no AND NameofBook = v_name;
+        
+        -- Commit the changes to database
+        COMMIT;
+    ELSE
+        -- If no fine, just update the status of the book to 'R'
+        UPDATE Borrower
+        SET Status = 'R'
+        WHERE Rollin = v_roll_no AND NameofBook = v_name;
+        
+        -- Commit the changes to database
+        COMMIT;
+    END IF;
+    
+    -- Output the fine amount if any
+    IF v_fine_amt > 0 THEN
+        DBMS_OUTPUT.PUT_LINE('Fine to be paid: Rs. ' || v_fine_amt);
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('No fine. Book returned on time.');
+    END IF;
+    
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('No record found for the provided Roll number and Book name.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+END;
+/
+ 

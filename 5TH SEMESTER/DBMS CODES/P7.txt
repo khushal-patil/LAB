@@ -1,0 +1,39 @@
+ 
+Create a stored function titled 'Age_calc'. 
+Accept the date of birth of a person as a parameter. 
+Calculate the age of the person in years, months and days e.g. 3 years, 2months, 10 days. 
+Return the age in years directly (with the help of Return statement). The months and days are to be returned indirectly in the form of OUT parameters. 
+ 
+ CREATE OR REPLACE FUNCTION Age_calc (
+    dob IN DATE,  -- Date of birth of the person
+    months OUT NUMBER,  -- The calculated months, returned as OUT parameter
+    days OUT NUMBER  -- The calculated days, returned as OUT parameter
+) 
+RETURN NUMBER  -- The age in years
+IS
+    v_age_in_years NUMBER;  -- Variable to store the age in years
+    v_age_in_months NUMBER;  -- Variable to store the age in months
+    v_age_in_days NUMBER;  -- Variable to store the age in days
+BEGIN
+    -- Calculate the age in months from the date of birth till the current date
+    v_age_in_months := MONTHS_BETWEEN(SYSDATE, dob);
+    
+    -- Calculate the years part (truncate months to years)
+    v_age_in_years := TRUNC(v_age_in_months / 12);
+    
+    -- Calculate remaining months after extracting the years
+    months := TRUNC(v_age_in_months) - (v_age_in_years * 12);
+    
+    -- Calculate remaining days by subtracting the full years and months from the current date
+    v_age_in_days := SYSDATE - (ADD_MONTHS(dob, v_age_in_years * 12 + months));
+    days := TRUNC(v_age_in_days);
+    
+    -- Return the age in years directly
+    RETURN v_age_in_years;
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        -- Handle exceptions and return 0 for error case
+        RETURN 0;
+END Age_calc;
+/

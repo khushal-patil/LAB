@@ -1,0 +1,42 @@
+ 
+Trigger: Write a after trigger for Insert, update and delete event considering following requirement: 
+Emp(Emp_no, Emp_name, Emp_salary) 
+-- Emp table
+CREATE TABLE Emp (
+    Emp_no INT PRIMARY KEY,
+    Emp_name VARCHAR(50) NOT NULL,
+    Emp_salary DECIMAL(10, 2) NOT NULL
+);
+
+-- Tracking table
+CREATE TABLE Tracking (
+    Emp_no INT,
+    Emp_salary DECIMAL(10, 2),
+    FOREIGN KEY (Emp_no) REFERENCES Emp(Emp_no)
+);
+a)	Trigger should be initiated when salary tried to be inserted is less than Rs.50,000/- 
+-- Trigger for INSERT and UPDATE operations
+CREATE TRIGGER trg_track_low_salary
+AFTER INSERT OR UPDATE ON Emp
+FOR EACH ROW
+BEGIN
+    -- Check if the inserted or updated salary is less than 50,000
+    IF NEW.Emp_salary < 50000 THEN
+        -- Insert the employee details into the Tracking table
+        INSERT INTO Tracking (Emp_no, Emp_salary)
+        VALUES (NEW.Emp_no, NEW.Emp_salary);
+    END IF;
+END;
+b)	Trigger should be initiated when salary tried to be updated for value less than Rs. 50,000/- 
+-- Trigger for DELETE operation
+CREATE TRIGGER trg_track_deleted_salary
+AFTER DELETE ON Emp
+FOR EACH ROW
+BEGIN
+    -- Log the deleted record (optional)
+    INSERT INTO Tracking (Emp_no, Emp_salary)
+    VALUES (OLD.Emp_no, OLD.Emp_salary);
+END;
+
+Also the new values expected to be inserted will be stored in new table Tracking(Emp_no,Emp_salary). 
+ 

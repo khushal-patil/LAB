@@ -1,0 +1,49 @@
+ 
+Write a Stored Procedure namely proc_Grade for the categorization of student. If marks scored by students in examination is <=1500 and marks>=990 then student will be placed in distinction category if marks scored are between 989 and 900 categories is first class, if marks 899 and 825 category is Higher Second Class. 
+Write a PL/SQL block for using procedure created with above requirement. 
+Stud_Marks(name, total_marks),  
+Result (Roll,Name, Class) 
+
+CREATE TABLE Stud_Marks (
+    name VARCHAR2(50) NOT NULL,       -- Student name
+    total_marks NUMBER NOT NULL,      -- Total marks scored by the student
+    CONSTRAINT pk_stud_marks PRIMARY KEY (name)  -- Primary key constraint
+);
+
+CREATE TABLE Result (
+    Roll NUMBER PRIMARY KEY,          -- Unique roll number
+    Name VARCHAR2(50) NOT NULL,       -- Student name
+    Class VARCHAR2(50) NOT NULL       -- Categorized class (Distinction, First Class, etc.)
+);
+ 
+
+CREATE OR REPLACE PROCEDURE proc_Grade (
+    p_name IN VARCHAR2,    -- Name of the student
+    p_marks IN NUMBER      -- Total marks scored by the student
+) 
+IS
+    v_class VARCHAR2(20);  -- Variable to hold the category/class of the student
+BEGIN
+    -- Categorization based on marks
+    IF p_marks >= 990 AND p_marks <= 1500 THEN
+        v_class := 'Distinction';
+    ELSIF p_marks >= 900 AND p_marks <= 989 THEN
+        v_class := 'First Class';
+    ELSIF p_marks >= 825 AND p_marks <= 899 THEN
+        v_class := 'Higher Second Class';
+    ELSE
+        v_class := 'Not Categorized';  -- In case marks don't fit into any category
+    END IF;
+
+    -- Insert the result into Result table
+    INSERT INTO Result (Name, Class)
+    VALUES (p_name, v_class);
+
+    COMMIT;  -- Commit the transaction
+EXCEPTION
+    WHEN OTHERS THEN
+        -- Handle any exceptions (e.g., insertion failure)
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error occurred while categorizing the student.');
+END proc_Grade;
+/

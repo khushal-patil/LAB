@@ -1,0 +1,36 @@
+Trigger: Create a row level trigger for the CUSTOMERS table that would fire INSERT or UPDATE or DELETE operations performed on the CUSTOMERS table. This trigger will display the salary difference between the old values and new values. 
+CREATE TABLE CUSTOMERS (
+    customer_id INT PRIMARY KEY,
+    customer_name VARCHAR(100),
+    salary DECIMAL(10, 2)
+);
+
+CREATE OR REPLACE TRIGGER salary_difference_trigger
+AFTER INSERT OR UPDATE OR DELETE ON CUSTOMERS
+FOR EACH ROW
+DECLARE
+    salary_diff DECIMAL(10, 2);
+BEGIN
+    -- For INSERT operation, no old salary, just display message
+    IF INSERTING THEN
+        DBMS_OUTPUT.PUT_LINE('New customer inserted: ' || :NEW.customer_name || 
+                             ' with salary ' || :NEW.salary);
+    END IF;
+
+    -- For UPDATE operation, calculate the salary difference
+    IF UPDATING THEN
+        salary_diff := :NEW.salary - :OLD.salary;
+        DBMS_OUTPUT.PUT_LINE('Salary updated for customer: ' || :OLD.customer_name || 
+                             ' from ' || :OLD.salary || ' to ' || :NEW.salary || 
+                             '. Difference: ' || salary_diff);
+    END IF;
+
+    -- For DELETE operation, show the salary before the record is deleted
+    IF DELETING THEN
+        salary_diff := :OLD.salary;  -- Display the salary before deletion
+        DBMS_OUTPUT.PUT_LINE('Customer deleted: ' || :OLD.customer_name || 
+                             ' with salary ' || :OLD.salary || 
+                             '. Difference: ' || salary_diff);
+    END IF;
+END;
+/

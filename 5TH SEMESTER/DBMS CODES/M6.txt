@@ -1,0 +1,105 @@
+ 
+Design MongoDB database and perform following Map reduce operation: 
+Create Employee collection by considering following Fields:   
+i.	Name:  Embedded Doc (FName, LName) 
+ii.	Company Name: String  
+iii.	Salary: Number 
+iv.	Designation: String 
+v.	Age: Number 
+vi.	Expertise: Array  
+vii.	DOB: String or Date 
+viii.	Email id: String ix. Contact: String  
+x. Address: Array of Embedded Doc (PAddr, LAddr) Execute the following query: 
+
+{
+  "Name": {
+    "FName": "John",
+    "LName": "Doe"
+  },
+  "Company Name": "TCS",
+  "Salary": 120000,
+  "Designation": "DBA",
+  "Age": 32,
+  "Expertise": ["SQL", "MongoDB", "Database Management"],
+  "DOB": "1991-03-15",
+  "Email id": "john.doe@example.com",
+  "Contact": "123-456-7890",
+  "Address": [
+    { "PAddr": "123 Main St", "LAddr": "Pune" }
+  ]
+}
+1.	Display the total salary of per company 
+var map = function() {
+  emit(this['Company Name'], this['Salary']);
+};
+
+var reduce = function(key, values) {
+  return Array.sum(values);
+};
+
+db.Employee.mapReduce(map, reduce, { out: "total_salary_per_company" });
+2.	Display the total salary of company Name:"TCS"
+var map = function() {
+  if (this['Company Name'] == 'TCS') {
+    emit(this['Company Name'], this['Salary']);
+  }
+};
+
+var reduce = function(key, values) {
+  return Array.sum(values);
+};
+
+db.Employee.mapReduce(map, reduce, { out: "total_salary_tcs" }); 
+3.	Return the average salary of company whose address is “Pune".
+var map = function() {
+  for (var i = 0; i < this.Address.length; i++) {
+    if (this.Address[i].LAddr == 'Pune') {
+      emit(this['Company Name'], { salary: this['Salary'], count: 1 });
+    }
+  }
+};
+
+var reduce = function(key, values) {
+  var totalSalary = 0;
+  var totalCount = 0;
+  values.forEach(function(value) {
+    totalSalary += value.salary;
+    totalCount += value.count;
+  });
+  return { salary: totalSalary, count: totalCount };
+};
+
+var finalize = function(key, reducedValue) {
+  reducedValue.averageSalary = reducedValue.salary / reducedValue.count;
+  return reducedValue;
+};
+
+db.Employee.mapReduce(map, reduce, { out: "average_salary_pune", finalize: finalize }); 
+4.	Display total count for “City=Pune” 
+var map = function() {
+  for (var i = 0; i < this.Address.length; i++) {
+    if (this.Address[i].LAddr == 'Pune') {
+      emit('Pune', 1);
+    }
+  }
+};
+
+var reduce = function(key, values) {
+  return Array.sum(values);
+};
+
+db.Employee.mapReduce(map, reduce, { out: "count_pune" });
+5.	Return count for city pune and age greater than 40.
+var map = function() {
+  for (var i = 0; i < this.Address.length; i++) {
+    if (this.Address[i].LAddr == 'Pune' && this['Age'] > 40) {
+      emit('Pune_Above_40', 1);
+    }
+  }
+};
+
+var reduce = function(key, values) {
+  return Array.sum(values);
+};
+
+db.Employee.mapReduce(map, reduce, { out: "count_pune_above_40" }); 

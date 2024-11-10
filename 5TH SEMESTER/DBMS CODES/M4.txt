@@ -1,0 +1,136 @@
+ 
+Design and Develop MongoDB Queries using Aggregation operations: 
+Create Employee collection by considering following Fields:   i. Emp_id : Number 
+ii.	Name:  Embedded Doc (FName, LName) 
+iii.	Company Name: String  
+iv.	Salary: Number 
+v.	Designation: String 
+vi.	Age: Number 
+vii.	Expertise: Array  
+viii.	DOB: String or Date 
+ix.	Email id: String x. Contact: String  
+xi. Address: Array of Embedded Doc (PAddr, LAddr) 
+
+db.Employee.insertMany([
+  {
+    "Emp_id": 1001,
+    "Name": { "FName": "John", "LName": "Doe" },
+    "Company Name": "TechCorp",
+    "Salary": 120000,
+    "Designation": "DBA",
+    "Age": 32,
+    "Expertise": ["SQL", "MongoDB", "Database Management"],
+    "DOB": ISODate("1991-03-15"),
+    "Email id": "john.doe@example.com",
+    "Contact": "123-456-7890",
+    "Address": [
+      { "PAddr": "123 Main St", "LAddr": "Cityville" },
+      { "PAddr": "456 Elm St", "LAddr": "Townsville" }
+    ]
+  },
+  {
+    "Emp_id": 1002,
+    "Name": { "FName": "Jane", "LName": "Smith" },
+    "Company Name": "WebSoft",
+    "Salary": 200000,
+    "Designation": "DBA",
+    "Age": 30,
+    "Expertise": ["NoSQL", "MongoDB", "DBA"],
+    "DOB": ISODate("1993-07-20"),
+    "Email id": "jane.smith@example.com",
+    "Contact": "987-654-3210",
+    "Address": [
+      { "PAddr": "789 Oak St", "LAddr": "Lakeside" },
+      { "PAddr": "321 Pine St", "LAddr": "Riverside" }
+    ]
+  },
+  {
+    "Emp_id": 1003,
+    "Name": { "FName": "Swapnil", "LName": "Jadhav" },
+    "Company Name": "TechCorp",
+    "Salary": 180000,
+    "Designation": "Engineer",
+    "Age": 28,
+    "Expertise": ["Python", "MongoDB"],
+    "DOB": ISODate("1995-01-10"),
+    "Email id": "swapnil.jadhav@example.com",
+    "Contact": "555-789-1234",
+    "Address": [
+      { "PAddr": "500 Maple St", "LAddr": "Cityville" },
+      { "PAddr": "700 Cedar St", "LAddr": "Uptown" }
+    ]
+  },
+  {
+    "Emp_id": 1004,
+    "Name": { "FName": "Amit", "LName": "Patel" },
+    "Company Name": "WebSoft",
+    "Salary": 250000,
+    "Designation": "DBA",
+    "Age": 34,
+    "Expertise": ["MySQL", "MongoDB", "DBA"],
+    "DOB": ISODate("1989-05-05"),
+    "Email id": "amit.patel@example.com",
+    "Contact": "666-432-9876",
+    "Address": [
+      { "PAddr": "123 Elm St", "LAddr": "Woodland" },
+      { "PAddr": "900 Birch St", "LAddr": "Hillside" }
+    ]
+  },
+  {
+    "Emp_id": 1005,
+    "Name": { "FName": "Emily", "LName": "White" },
+    "Company Name": "TechCorp",
+    "Salary": 220000,
+    "Designation": "Manager",
+    "Age": 40,
+    "Expertise": ["Leadership", "Project Management"],
+    "DOB": ISODate("1983-11-15"),
+    "Email id": "emily.white@example.com",
+    "Contact": "888-555-1234",
+    "Address": [
+      { "PAddr": "100 Pine St", "LAddr": "Mountainview" },
+      { "PAddr": "400 Oak St", "LAddr": "Seaside" }
+    ]
+  }
+]);Insert at least 5 documents in collection by considering above attribute and execute following: 
+1.	Using aggregation Return Designation with Total Salary is Above 200000. 
+db.Employee.aggregate([
+  { $group: { _id: "$Designation", totalSalary: { $sum: "$Salary" } } },
+  { $match: { totalSalary: { $gt: 200000 } } }
+]);
+2.	Using Aggregate method returns names and _id in upper case and in alphabetical order. 
+db.Employee.aggregate([
+  { $project: { 
+      Name: { $concat: [{ $toUpper: "$Name.FName" }, " ", { $toUpper: "$Name.LName" }] },
+      _id: 1
+    }
+  },
+  { $sort: { Name: 1 } }
+]);
+
+
+3.	Using aggregation method find Employee with Total Salary for Each City with Designation="DBA". 
+db.Employee.aggregate([
+  { $match: { Designation: "DBA" } },
+  { $unwind: "$Address" },
+  { $group: { _id: "$Address.LAddr", totalSalary: { $sum: "$Salary" } } }
+]);
+4.	Create Single Field Indexes on Designation field of employee collection 
+db.Employee.createIndex({ "Designation": 1 });
+5.	To Create Multikey Indexes on Expertise field of employee collection. 
+db.Employee.createIndex({ "Expertise": 1 });
+6.	Create an Index on Emp_id field, compare the time require to search Emp_id before and after creating an index. (Hint Add at least 10000 Documents)
+let start = new Date();
+db.Employee.find({ "Emp_id": 5000 });
+let end = new Date();
+print("Time before index: " + (end - start) + " ms");
+
+db.Employee.createIndex({ "Emp_id": 1 });
+
+start = new Date();
+db.Employee.find({ "Emp_id": 5000 });
+end = new Date();
+print("Time after index: " + (end - start) + " ms");
+
+7.	Return a List of Indexes on created on employee Collection.  
+db.Employee.getIndexes();
