@@ -1,42 +1,62 @@
  
-Trigger: Write a after trigger for Insert, update and delete event considering following requirement: 
-Emp(Emp_no, Emp_name, Emp_salary) 
--- Emp table
+Trigger: Write a after trigger for Insert, update and delete event considering following requirement:
+Emp(Emp_no, Emp_name, Emp_salary)
+a) Trigger should be initiated when salary tried to be inserted is less than Rs.50,000/-
+b) Trigger should be initiated when salary tried to be updated for value less than Rs. 50,000/-
+Also the new values expected to be inserted will be stored in new table Tracking(Emp_no,Emp_salary).
+
+
 CREATE TABLE Emp (
-    Emp_no INT PRIMARY KEY,
-    Emp_name VARCHAR(50) NOT NULL,
-    Emp_salary DECIMAL(10, 2) NOT NULL
+    Emp_no NUMBER PRIMARY KEY,
+    Emp_name VARCHAR2(20),
+    Emp_salary NUMBER
 );
 
--- Tracking table
+
 CREATE TABLE Tracking (
-    Emp_no INT,
-    Emp_salary DECIMAL(10, 2),
-    FOREIGN KEY (Emp_no) REFERENCES Emp(Emp_no)
+    Emp_no NUMBER,
+    Emp_salary NUMBER,
+    status VARCHAR2(10),
+    CONSTRAINT fk_emp FOREIGN KEY (Emp_no) REFERENCES Emp(Emp_no)
 );
-a)	Trigger should be initiated when salary tried to be inserted is less than Rs.50,000/- 
--- Trigger for INSERT and UPDATE operations
-CREATE TRIGGER trg_track_low_salary
-AFTER INSERT OR UPDATE ON Emp
+
+
+CREATE OR REPLACE TRIGGER aftert1
+AFTER INSERT OR UPDATE OR DELETE
+ON Emp
 FOR EACH ROW
 BEGIN
-    -- Check if the inserted or updated salary is less than 50,000
-    IF NEW.Emp_salary < 50000 THEN
-        -- Insert the employee details into the Tracking table
-        INSERT INTO Tracking (Emp_no, Emp_salary)
-        VALUES (NEW.Emp_no, NEW.Emp_salary);
+    -- Insert action
+    IF INSERTING THEN
+        IF :NEW.Emp_salary < 50000 THEN
+            INSERT INTO Tracking (Emp_no, Emp_salary, status)
+            VALUES (:NEW.Emp_no, :NEW.Emp_salary, 'INSERT');
+        END IF;
+    -- Update action
+    ELSIF UPDATING THEN
+        IF :NEW.Emp_salary < 50000 THEN
+            INSERT INTO Tracking (Emp_no, Emp_salary, status)
+            VALUES (:NEW.Emp_no, :NEW.Emp_salary, 'UPDATE');
+        END IF;
+    -- Delete action
+    ELSIF DELETING THEN
+        IF :OLD.Emp_salary < 50000 THEN
+            INSERT INTO Tracking (Emp_no, Emp_salary, status)
+            VALUES (:OLD.Emp_no, :OLD.Emp_salary, 'DELETE');
+        END IF;
     END IF;
 END;
-b)	Trigger should be initiated when salary tried to be updated for value less than Rs. 50,000/- 
--- Trigger for DELETE operation
-CREATE TRIGGER trg_track_deleted_salary
-AFTER DELETE ON Emp
-FOR EACH ROW
-BEGIN
-    -- Log the deleted record (optional)
-    INSERT INTO Tracking (Emp_no, Emp_salary)
-    VALUES (OLD.Emp_no, OLD.Emp_salary);
-END;
+/
 
-Also the new values expected to be inserted will be stored in new table Tracking(Emp_no,Emp_salary). 
- 
+-- Insert some sample data into Emp table
+INSERT INTO Emp (Emp_no, Emp_name, Emp_salary) VALUES (1, 'Khushal', 56000);
+INSERT INTO Emp (Emp_no, Emp_name, Emp_salary) VALUES (2, 'Gaurav', 45000);
+UPDATE Emp SET Emp_salary = 30000 WHERE Emp_no = 2;
+DELETE FROM Emp WHERE Emp_no = 4;
+INSERT INTO Emp (Emp_no, Emp_name, Emp_salary) VALUES (6, 'Aryan', 40000);
+
+SELECT * FROM Tracking;
+
+
+
+

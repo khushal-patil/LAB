@@ -1,5 +1,4 @@
-CREATE TABLE Borrower (Rollno NUMBER(4), Name VARCHAR2(20), DateofIssue DATE,             
-NameofBook VARCHAR2(30), Status VARCHAR2(10)); 
+CREATE TABLE Borrower (Rollno NUMBER(4), Name VARCHAR2(20), DateofIssue DATE, NameofBook VARCHAR2(30), Status VARCHAR2(10)); 
  
 INSERT INTO Borrower VALUES (14, 'Ram', TO_DATE('2024-09-10', 'YYYY-MM-DD'), 'DBMS', 'I'); 
 INSERT INTO Borrower VALUES (27, 'Soham', TO_DATE('2024-09-10', 'YYYY-MM-DD'), 'Theory of Computation', 'I'); 

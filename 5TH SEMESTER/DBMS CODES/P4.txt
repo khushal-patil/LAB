@@ -4,62 +4,60 @@ Write a PL/SQL block for following requirements and handle the exceptions. Roll 
  CREATE TABLE stud (
     roll INT PRIMARY KEY,
     name VARCHAR(100),
-    attendance DECIMAL(5, 2),  -- Attendance percentage
-    status VARCHAR(20)         -- Status: Detained / Not Detained
+    attendance DECIMAL(5, 2),  
+    status VARCHAR(20)         
 );
 
+
+INSERT INTO stud (roll, name, attendance, status) VALUES (1, 'Alice', 80.5, NULL);
+INSERT INTO stud (roll, name, attendance, status) VALUES (2, 'Bob', 72.0, NULL);
+INSERT INTO stud (roll, name, attendance, status) VALUES (3, 'Charlie', 65.3, NULL);
+INSERT INTO stud (roll, name, attendance, status) VALUES (4, 'David', 90.0, NULL);
+INSERT INTO stud (roll, name, attendance, status) VALUES (5, 'Eve', 50.0, NULL);
+
+
 DECLARE
-    -- Variable to store the roll number entered by the user
     v_roll INT;
-    
-    -- Variable to store the attendance of the student
     v_attendance DECIMAL(5, 2);
-    
-    -- Variable to store the current student's status
-    v_status VARCHAR(20);
-    
+    v_status VARCHAR2(20);
 BEGIN
-    -- Prompt the user to input the roll number
-    v_roll := &roll_no;  -- This will prompt the user to enter the roll number
-    
-    -- Fetch the student's attendance from the stud table
+    -- Prompt for roll number
+    v_roll := &roll_no;
+
     BEGIN
+        -- Retrieve attendance and status for the given roll number
         SELECT attendance, status
         INTO v_attendance, v_status
         FROM stud
         WHERE roll = v_roll;
+        
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            -- Handle the case when no student with the given roll number is found
             DBMS_OUTPUT.PUT_LINE('No student found with roll number ' || v_roll);
-            RAISE;  -- Raise exception to exit the block
+            RAISE;  -- Exit the block
         WHEN OTHERS THEN
-            -- Handle any other exceptions
             DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
-            RAISE;  -- Raise exception to exit the block
+            RAISE;  -- Exit the block
     END;
-    
-    -- Check the attendance and update the status accordingly
+
+    -- Check attendance and update status accordingly
     IF v_attendance < 75 THEN
-        -- If attendance is less than 75%, set status to "Detained"
         DBMS_OUTPUT.PUT_LINE('Term not granted');
         UPDATE stud
         SET status = 'Detained'
         WHERE roll = v_roll;
     ELSE
-        -- If attendance is 75% or more, set status to "Not Detained"
         DBMS_OUTPUT.PUT_LINE('Term granted');
         UPDATE stud
         SET status = 'Not Detained'
         WHERE roll = v_roll;
     END IF;
-    
-    -- Commit the changes to the database
+
+    -- Commit the transaction
     COMMIT;
-    
+
 EXCEPTION
     WHEN OTHERS THEN
-        -- In case of any error, rollback the transaction
         ROLLBACK;
         DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
 END;

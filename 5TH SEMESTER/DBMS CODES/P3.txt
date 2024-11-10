@@ -1,45 +1,65 @@
 Write a PL/SQL block of code using Cursor that will merge the data available in the newly created table N_Roll Call with the data available in the table O_RollCall. If the data in the first table already exist in the second table, then that data should be skipped.
 
+
+CREATE TABLE N_RollCall (
+    roll_no NUMBER PRIMARY KEY,
+    student_name VARCHAR2(50) NOT NULL
+);
+
+CREATE TABLE O_RollCall (
+    roll_no NUMBER PRIMARY KEY,
+    student_name VARCHAR2(50) NOT NULL
+);
+
+INSERT INTO N_RollCall (roll_no, student_name) VALUES (1, 'Alice');
+INSERT INTO N_RollCall (roll_no, student_name) VALUES (2, 'Bob');
+INSERT INTO N_RollCall (roll_no, student_name) VALUES (3, 'Charlie');
+INSERT INTO N_RollCall (roll_no, student_name) VALUES (4, 'David');
+INSERT INTO N_RollCall (roll_no, student_name) VALUES (5, 'Eve');
+
+INSERT INTO O_RollCall (roll_no, student_name) VALUES (1, 'Alice');
+INSERT INTO O_RollCall (roll_no, student_name) VALUES (3, 'Charlie');
+
+
 DECLARE
-    -- Declare cursor to select data from N_RollCall table
+    
     CURSOR cur_rollcall IS
         SELECT roll_no, student_name
         FROM N_RollCall;
 
-    -- Declare variables to hold cursor data
     v_roll_no INT;
-    v_student_name VARCHAR(50);
+    v_student_name VARCHAR2(50);
+    v_count INT;
 BEGIN
-    -- Open the cursor
+    
     OPEN cur_rollcall;
 
-    -- Loop through each record in the cursor
     LOOP
         FETCH cur_rollcall INTO v_roll_no, v_student_name;
         EXIT WHEN cur_rollcall%NOTFOUND;
 
-        -- Check if the record already exists in O_RollCall table
         BEGIN
-            -- If the record doesn't exist, insert it into O_RollCall
-            IF NOT EXISTS (SELECT 1 FROM O_RollCall WHERE roll_no = v_roll_no) THEN
-                INSERT INTO O_RollCall (roll_no, student_name)
-                VALUES (v_roll_no, v_student_name);
+            
+            SELECT COUNT(*)
+            INTO v_count
+            FROM O_RollCall
+            WHERE roll_no = v_roll_no;
+
+            IF v_count = 0 THEN
+                INSERT INTO O_RollCall (roll_no, student_name) VALUES (v_roll_no, v_student_name);
             END IF;
         EXCEPTION
             WHEN DUP_VAL_ON_INDEX THEN
-                -- Skip insertion if duplicate value error occurs (e.g., unique constraint violation)
+               
                 NULL;
         END;
 
     END LOOP;
 
-    -- Close the cursor
     CLOSE cur_rollcall;
 
-    -- Commit the changes
     COMMIT;
 
-    -- Output a success message
     DBMS_OUTPUT.PUT_LINE('Data from N_RollCall merged into O_RollCall successfully.');
 END;
-/ 
+/

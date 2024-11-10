@@ -98,4 +98,8 @@ RIGHT JOIN Orders AS O ON CM.Cust_no = O.Cust_no;
 Full Outer Join (if supported by the DBMS): List all customers and all orders, matching where possible.
 SELECT CM.Cust_name, O.Order_no, O.Order_date, O.Qty_Ordered
 FROM Cust_Master AS CM
-FULL OUTER JOIN Orders AS O ON CM.Cust_no = O.Cust_no; 
+LEFT JOIN Orders AS O ON CM.Cust_no = O.Cust_no
+UNION
+SELECT CM.Cust_name, O.Order_no, O.Order_date, O.Qty_Ordered
+FROM Cust_Master AS CM
+RIGHT JOIN Orders AS O ON CM.Cust_no = O.Cust_no;
