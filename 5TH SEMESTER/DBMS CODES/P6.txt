@@ -5,7 +5,7 @@ Stud_Marks(name, total_marks),
 Result (Roll,Name, Class) 
 
 
-
+ set serveroutput on;
 CREATE TABLE Stud_Marks (
     name VARCHAR2(50) NOT NULL,       
     total_marks NUMBER NOT NULL,      

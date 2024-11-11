@@ -5,7 +5,7 @@ a) Trigger should be initiated when salary tried to be inserted is less than Rs.
 b) Trigger should be initiated when salary tried to be updated for value less than Rs. 50,000/-
 Also the new values expected to be inserted will be stored in new table Tracking(Emp_no,Emp_salary).
 
-
+ set serveroutput on;
 CREATE TABLE Emp (
     Emp_no NUMBER PRIMARY KEY,
     Emp_name VARCHAR2(20),

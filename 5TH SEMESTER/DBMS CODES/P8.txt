@@ -1,6 +1,6 @@
  
 Write a Row Level Before and After Trigger on Library table. The System should keep track of the records that are being updated or deleted. The old value of updated or deleted records should be added in Library_Audit table. 
- 
+ set serveroutput on;
 CREATE TABLE lib_tab(book_name VARCHAR2(25),status VARCHAR2(15)); 
  
 CREATE TABLE library_audit(date_modified DATE, book_name VARCHAR2(25),old_status 

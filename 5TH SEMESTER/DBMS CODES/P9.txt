@@ -1,6 +1,6 @@
 Trigger: Create a row level trigger for the CUSTOMERS table that would fire INSERT or UPDATE or DELETE operations performed on the CUSTOMERS table. This trigger will display the salary difference between the old values and new values.
 
- 
+  set serveroutput on;
 CREATE TABLE CUSTOMERS (
     customer_id INT PRIMARY KEY,
     customer_name VARCHAR(100),

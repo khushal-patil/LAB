@@ -4,7 +4,7 @@ Accept the date of birth of a person as a parameter.
 Calculate the age of the person in years, months and days e.g. 3 years, 2months, 10 days. 
 Return the age in years directly (with the help of Return statement). The months and days are to be returned indirectly in the form of OUT parameters. 
  
-
+set serveroutput on;
 CREATE OR REPLACE FUNCTION Age_calc (
     dob IN DATE,
     months OUT NUMBER, 

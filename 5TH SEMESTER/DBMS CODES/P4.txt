@@ -1,6 +1,6 @@
  
 Write a PL/SQL block for following requirements and handle the exceptions. Roll no. of students will be entered by the user. Attendance of roll no. entered by user will be checked in the Stud table. If attendance is less than 75% then display the message “Term not granted” and set the status in stud table as “Detained”. Otherwise display message “Term granted” and set the status in stud table as “Not Detained”. Student (Roll, Name, Attendance, Status) 
- 
+  set serveroutput on;
  CREATE TABLE stud (
     roll INT PRIMARY KEY,
     name VARCHAR(100),

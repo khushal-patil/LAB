@@ -1,6 +1,6 @@
 Write a PL/SQL block of code using Cursor that will merge the data available in the newly created table N_Roll Call with the data available in the table O_RollCall. If the data in the first table already exist in the second table, then that data should be skipped.
 
-
+ set serveroutput on;
 CREATE TABLE N_RollCall (
     roll_no NUMBER PRIMARY KEY,
     student_name VARCHAR2(50) NOT NULL

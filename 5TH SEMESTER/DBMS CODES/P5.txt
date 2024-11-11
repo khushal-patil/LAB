@@ -1,7 +1,7 @@
 Write a PL/SQL Block to increase the salary of employees by 10% of existing salary, who are having salary less than average salary of organization, whenever such salary updates take place, a record for same is maintained in the increment_salary table. 
 emp(emp_no, salary) increment_salary(emp_no, salary) 
 
-
+ set serveroutput on;
 CREATE TABLE emp (
     emp_no INT PRIMARY KEY,
     salary DECIMAL(10, 2)
