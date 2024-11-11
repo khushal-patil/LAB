@@ -4,62 +4,56 @@ Accept the date of birth of a person as a parameter.
 Calculate the age of the person in years, months and days e.g. 3 years, 2months, 10 days. 
 Return the age in years directly (with the help of Return statement). The months and days are to be returned indirectly in the form of OUT parameters. 
  
+
 CREATE OR REPLACE FUNCTION Age_calc (
     dob IN DATE,
     months OUT NUMBER, 
     days OUT NUMBER  
 ) 
-RETURN NUMBER  -- The age in years
+RETURN NUMBER  
 IS
     v_age_in_years NUMBER;  
     v_age_in_months NUMBER;  
     v_age_in_days NUMBER;  
 BEGIN
-    
     v_age_in_months := MONTHS_BETWEEN(SYSDATE, dob);
-    
     
     v_age_in_years := TRUNC(v_age_in_months / 12);
     
-    
     months := TRUNC(v_age_in_months) - (v_age_in_years * 12);
-    
     
     v_age_in_days := SYSDATE - (ADD_MONTHS(dob, v_age_in_years * 12 + months));
     days := TRUNC(v_age_in_days);
-    
     
     RETURN v_age_in_years;
     
 EXCEPTION
     WHEN OTHERS THEN
-        
         RETURN 0;
 END Age_calc;
 /
 
-CREATE OR REPLACE PROCEDURE Show_Age (
-    p_dob IN DATE  
-) 
+
+CREATE OR REPLACE PROCEDURE Print_Age
 IS
-    v_years NUMBER;
-    v_months NUMBER;
-    v_days NUMBER;
+    dob DATE;
+    years NUMBER;
+    months NUMBER;
+    days NUMBER;
 BEGIN
-    
-    v_years := Age_calc(p_dob, v_months, v_days);
+   
+    dbms_output.put_line('Enter date of birth (YYYY-MM-DD): ');
+    dob := TO_DATE('&dob', 'YYYY-MM-DD');
 
    
-    DBMS_OUTPUT.PUT_LINE('Age: ' || v_years || ' years, ' || v_months || ' months, ' || v_days || ' days.');
-EXCEPTION
-    WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE('Error calculating age: ' || SQLERRM);
-END Show_Age;
+    years := Age_calc(dob, months, days);
+
+    
+    dbms_output.put_line('Age: ' || years || ' years, ' || months || ' months, ' || days || ' days.');
+END Print_Age;
 /
 
 BEGIN
-    Show_Age(TO_DATE('1990-01-15', 'YYYY-MM-DD'));
+    Print_Age;
 END;
 /
-
-
