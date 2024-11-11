@@ -1,0 +1,53 @@
+DECLARE
+    v_roll_no        NUMBER;
+    v_name_of_book   VARCHAR2(100);
+    v_date_of_issue  DATE;
+    v_current_date   DATE := SYSDATE;
+    v_days           NUMBER;
+    v_fine_amt       NUMBER := 0;
+    v_status         CHAR(1);
+BEGIN
+    -- Accept roll number and name of book from user
+    v_roll_no := &roll_no;  -- Take roll_no as input from the user
+    v_name_of_book := '&name_of_book'; -- Take book name as input from the user
+
+    -- Fetch the DateofIssue and Status from Borrower table for given roll_no and book name
+    SELECT DateofIssue, Status
+    INTO v_date_of_issue, v_status
+    FROM Borrower
+    WHERE Rollin = v_roll_no AND NameofBook = v_name_of_book;
+
+    -- Calculate the number of days between the current date and date of issue
+    v_days := (v_current_date - v_date_of_issue);
+
+    -- Check the fine conditions and calculate fine
+    IF v_days BETWEEN 15 AND 30 THEN
+        -- Fine is Rs 5 per day if days are between 15 and 30
+        v_fine_amt := v_days * 5;
+    ELSIF v_days > 30 THEN
+        -- Fine is Rs 50 per day for days greater than 30, Rs 5 for days between 15 and 30
+        v_fine_amt := (v_days - 30) * 50 + 30 * 5;
+    END IF;
+
+    -- If fine is applicable, store the fine details into Fine table
+    IF v_fine_amt > 0 THEN
+        INSERT INTO Fine (Roll_no, Date, Amt)
+        VALUES (v_roll_no, v_current_date, v_fine_amt);
+    END IF;
+
+    -- Change the status from 'I' to 'R' after the book is returned
+    UPDATE Borrower
+    SET Status = 'R'
+    WHERE Rollin = v_roll_no AND NameofBook = v_name_of_book;
+
+    -- Commit the changes
+    COMMIT;
+
+    -- Display the fine amount
+    IF v_fine_amt > 0 THEN
+        DBMS_OUTPUT.PUT_LINE('Fine for roll number ' || v_roll_no || ' is: Rs ' || v_fine_amt);
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('No fine applicable for roll number ' || v_roll_no);
+    END IF;
+END;
+/

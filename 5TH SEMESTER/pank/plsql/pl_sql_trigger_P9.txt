@@ -1,0 +1,53 @@
+-- Create the CUSTOMERS table
+CREATE TABLE CUSTOMERS (
+    customer_id NUMBER PRIMARY KEY,
+    customer_name VARCHAR2(100),
+    salary NUMBER(10, 2)
+);
+
+-- Insert sample data into the CUSTOMERS table
+INSERT INTO CUSTOMERS VALUES (1, 'Rajesh Kumar', 50000);
+INSERT INTO CUSTOMERS VALUES (2, 'Anita Sharma', 75000);
+INSERT INTO CUSTOMERS VALUES (3, 'Vikram Singh', 60000);
+
+-- Commit the sample data
+COMMIT;
+
+CREATE OR REPLACE TRIGGER trg_customers_salary_diff
+AFTER INSERT OR UPDATE OR DELETE ON CUSTOMERS
+FOR EACH ROW
+DECLARE
+    v_salary_difference NUMBER;
+BEGIN
+    -- Calculate salary difference for UPDATE operation
+    IF UPDATING THEN
+        v_salary_difference := :NEW.salary - :OLD.salary;
+        DBMS_OUTPUT.PUT_LINE('Salary difference for updated record: ' || v_salary_difference);
+    ELSIF DELETING THEN
+        -- Display old salary for DELETE operation
+        DBMS_OUTPUT.PUT_LINE('Deleted record with salary: ' || :OLD.salary);
+    ELSIF INSERTING THEN
+        -- Display new salary for INSERT operation
+        DBMS_OUTPUT.PUT_LINE('Inserted record with salary: ' || :NEW.salary);
+    END IF;
+END;
+/
+
+SET SERVEROUTPUT ON;
+
+-- Insert a new customer to test the INSERT condition
+INSERT INTO CUSTOMERS (customer_id, customer_name, salary) VALUES (4, 'Suresh Patel', 65000);
+COMMIT;
+
+select * from CUSTOMERS;
+
+-- Update an existing customer to test the UPDATE condition
+UPDATE CUSTOMERS SET salary = 70000 WHERE customer_id = 1;
+COMMIT;
+
+-- Delete a customer to test the DELETE condition
+DELETE FROM CUSTOMERS WHERE customer_id = 2;
+COMMIT;
+
+
+
