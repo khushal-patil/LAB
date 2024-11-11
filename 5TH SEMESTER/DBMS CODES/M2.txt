@@ -110,6 +110,8 @@ if (!existingDoc) {
       { "PAddr": "123 Park Ave", "LAddr": "Pune" }
     ]
   });
+}else{
+ print('record already exits')
 }
 3.	Selects all documents in the collection where the field age has a value less than 30 or the value of the salary field is greater than 40000. 
 db.Employee.find({
