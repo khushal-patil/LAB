@@ -7,45 +7,41 @@ Depositor(cust_name,acc_no)
 Loan(loan_no,branch_name,amount) 
 Borrower(cust_name,loan_no) Execute the following query: 
 
--- Create Account table
 CREATE TABLE Account (
-    Acc_no INT PRIMARY KEY,
+    acc_no INT PRIMARY KEY,
     branch_name VARCHAR(50),
-    balance DECIMAL(10, 2)
+    balance DECIMAL(15, 2),
+    FOREIGN KEY (branch_name) REFERENCES Branch(branch_name)
 );
 
--- Create Branch table
 CREATE TABLE Branch (
     branch_name VARCHAR(50) PRIMARY KEY,
     branch_city VARCHAR(50),
     assets DECIMAL(15, 2)
 );
 
--- Create Customer table
 CREATE TABLE Customer (
-    cust_name VARCHAR(50) PRIMARY KEY,
+    cust_name VARCHAR(50),
     cust_street VARCHAR(50),
-    cust_city VARCHAR(50)
+    cust_city VARCHAR(50),
+    PRIMARY KEY (cust_name)
 );
 
--- Create Depositor table (Many-to-many relationship between Customer and Account)
 CREATE TABLE Depositor (
     cust_name VARCHAR(50),
     acc_no INT,
     PRIMARY KEY (cust_name, acc_no),
     FOREIGN KEY (cust_name) REFERENCES Customer(cust_name),
-    FOREIGN KEY (acc_no) REFERENCES Account(Acc_no)
+    FOREIGN KEY (acc_no) REFERENCES Account(acc_no)
 );
 
--- Create Loan table
 CREATE TABLE Loan (
     loan_no INT PRIMARY KEY,
     branch_name VARCHAR(50),
-    amount DECIMAL(10, 2),
+    amount DECIMAL(15, 2),
     FOREIGN KEY (branch_name) REFERENCES Branch(branch_name)
 );
 
--- Create Borrower table (Many-to-many relationship between Customer and Loan)
 CREATE TABLE Borrower (
     cust_name VARCHAR(50),
     loan_no INT,
@@ -54,19 +50,19 @@ CREATE TABLE Borrower (
     FOREIGN KEY (loan_no) REFERENCES Loan(loan_no)
 );
 
--- Insert data into Branch table
+
 INSERT INTO Branch (branch_name, branch_city, assets) VALUES
 ('Pune_Station', 'Pune', 500000.00),
 ('Mumbai_Central', 'Mumbai', 700000.00),
 ('Delhi_City', 'Delhi', 600000.00);
 
--- Insert data into Account table
+
 INSERT INTO Account (Acc_no, branch_name, balance) VALUES
 (101, 'Pune_Station', 10000.00),
 (102, 'Mumbai_Central', 15000.00),
 (103, 'Delhi_City', 5000.00);
 
--- Insert data into Customer table
+
 INSERT INTO Customer (cust_name, cust_street, cust_city) VALUES
 ('John Doe', '123 Elm Street', 'Pune'),
 ('Alice Smith', '456 Maple Avenue', 'Mumbai'),
@@ -74,20 +70,20 @@ INSERT INTO Customer (cust_name, cust_street, cust_city) VALUES
 ('Eve Davis', '321 Pine Road', 'Bangalore'),
 ('Tom Harris', '654 Birch Boulevard', 'Pune');
 
--- Insert data into Depositor table
+
 INSERT INTO Depositor (cust_name, acc_no) VALUES
 ('John Doe', 101),
 ('Alice Smith', 102),
 ('Bob Johnson', 103),
 ('Eve Davis', 101);
 
--- Insert data into Loan table
+
 INSERT INTO Loan (loan_no, branch_name, amount) VALUES
 (1, 'Pune_Station', 20000.00),
 (2, 'Mumbai_Central', 30000.00),
 (3, 'Delhi_City', 15000.00);
 
--- Insert data into Borrower table
+
 INSERT INTO Borrower (cust_name, loan_no) VALUES
 ('John Doe', 1),
 ('Tom Harris', 2),
@@ -101,6 +97,7 @@ JOIN Borrower ON Customer.cust_name = Borrower.cust_name
 JOIN Loan ON Borrower.loan_no = Loan.loan_no
 WHERE Loan.branch_name = 'Pune_Station'
 ORDER BY Customer.cust_name;
+
 2.	Create View2 on branch table by selecting any two columns and perform insert update delete operations. 
 CREATE VIEW View2 AS
 SELECT branch_name, branch_city
@@ -111,6 +108,7 @@ SET branch_city = 'Updated_City'
 WHERE branch_name = 'New_Branch';
 DELETE FROM View2
 WHERE branch_name = 'New_Branch';
+
 3.	Create View3 on borrower and depositor table by selecting any one column from each table perform insert update delete operations. 
 CREATE VIEW View3 AS
 SELECT Borrower.cust_name AS borrower_name, Depositor.acc_no AS depositor_acc_no
@@ -121,6 +119,8 @@ SET depositor_acc_no = 54321
 WHERE borrower_name = 'John Doe';
 DELETE FROM View3
 WHERE borrower_name = 'John Doe';
+
+
 4.	Create Union of left and right joint for all customers who have an account or loan or both at bank 
 SELECT DISTINCT cust_name
 FROM Depositor
@@ -129,8 +129,11 @@ UNION
 SELECT DISTINCT cust_name
 FROM Borrower
 RIGHT JOIN Depositor ON Borrower.cust_name = Depositor.cust_name;
+
+
 5.	Create Simple and Unique index. 
 CREATE INDEX idx_customer_city ON Customer (cust_city);
+
         CREATE UNIQUE INDEX idx_branch_name ON Branch (branch_name);
 6.	Display index Information. 
      SHOW INDEX FROM Customer;
