@@ -120,16 +120,18 @@ db.Employee.aggregate([
 db.Employee.createIndex({ "Name": 1, Age: -1 })
 
 // Step 8: Create an index on Emp_id and measure search performance
-db.Employee.createIndex({ Emp_id: 1 })
+
 
 // To compare search time, use this search before and after creating the index:
-console.time("Search without index")
+const start = Date.now();
 db.Employee.find({ Emp_id: 105 })
-console.timeEnd("Search without index")
-
-console.time("Search with index")
+const end = Date.now();
+print("Execution time: " + (end - start) + "ms");
+db.Employee.createIndex({ Emp_id: 1 })
+const start = Date.now();
 db.Employee.find({ Emp_id: 105 })
-console.timeEnd("Search with index")
+const end = Date.now();
+print("Execution time: " + (end - start) + "ms");
 
 // Step 9: List all indexes on the Employee collection
 db.Employee.getIndexes()

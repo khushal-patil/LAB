@@ -136,7 +136,15 @@ db.Employee.find({ "Emp_id": 5000 }).explain("executionStats")
 db.Employee.createIndex({ "Emp_id": 1 })
 db.Employee.find({ "Emp_id": 5000 }).explain("executionStats")
 
-
+const start = Date.now();
+db.Employee.find({ Emp_id: 105 })
+const end = Date.now();
+print("Execution time: " + (end - start) + "ms");
+db.Employee.createIndex({ Emp_id: 1 })
+const start = Date.now();
+db.Employee.find({ Emp_id: 105 })
+const end = Date.now();
+print("Execution time: " + (end - start) + "ms");
 
 7.	Return a List of Indexes on created on employee Collection. 
 db.Employee.getIndexes()
