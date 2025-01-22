@@ -9,7 +9,9 @@ class Process {
 public class RRScheduling {
 
     public static void main(String[] args) {
-        int n, sumBurst = 0, quantum, time;
+        float n, sumBurst = 0;
+        int time;
+        float quantum;
         double avgWAT = 0, avgTAT = 0;
         Scanner sc = new Scanner(System.in);
         Queue<Integer> q = new LinkedList<>();
@@ -18,7 +20,7 @@ public class RRScheduling {
 
         System.out.println("*** RR Scheduling (Preemptive) ***");
         System.out.print("Enter Number of Process: ");
-        n = sc.nextInt();
+        n = sc.nextFloat();
         Process[] p = new Process[n];
         for (int i = 0; i < n; i++) {
             p[i] = new Process();
@@ -33,7 +35,7 @@ public class RRScheduling {
             System.out.println();
         }
         System.out.print("\nEnter time quantum: ");
-        quantum = sc.nextInt();
+        quantum = sc.nextFloat();
 
         Process pTemp;
         for (int i = 0; i < n - 1; i++) {

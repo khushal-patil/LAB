@@ -1,0 +1,76 @@
+public class DESFromScratch {
+
+    // Example: Initial Permutation Table (shortened for simplicity)
+    private static final int[] IP = {58, 50, 42, 34, 26, 18, 10, 2, 
+                                     60, 52, 44, 36, 28, 20, 12, 4};
+
+    // Example: Final Permutation Table (shortened for simplicity)
+    private static final int[] FP = {40, 8, 48, 16, 56, 24, 64, 32};
+
+    // Example S-box (only one for simplicity)
+    private static final int[][] S_BOX = {
+        {14, 4, 13, 1, 2, 15, 11, 8},
+        {3, 10, 6, 12, 5, 9, 0, 7}
+    };
+
+    public static void main(String[] args) {
+        String plaintext = "1010101010111100"; // Example binary input (64-bit)
+        String key = "0101010101010101";     // Example binary key (64-bit)
+
+        System.out.println("Plaintext: " + plaintext);
+
+        // Step 1: Initial Permutation
+        String permutedText = permute(plaintext, IP);
+        System.out.println("After Initial Permutation: " + permutedText);
+
+        // Step 2: Feistel rounds (simplified)
+        String encryptedText = feistelRounds(permutedText, key);
+        System.out.println("After Feistel Rounds: " + encryptedText);
+
+        // Step 3: Final Permutation
+        String ciphertext = permute(encryptedText, FP);
+        System.out.println("Ciphertext: " + ciphertext);
+    }
+
+    // Permutation function
+    public static String permute(String input, int[] table) {
+        StringBuilder output = new StringBuilder();
+        for (int position : table) {
+            output.append(input.charAt(position - 1)); // Table is 1-based
+        }
+        return output.toString();
+    }
+
+    // Simplified Feistel rounds (1 round as example)
+    public static String feistelRounds(String input, String key) {
+        // Split into left and right halves
+        String left = input.substring(0, input.length() / 2);
+        String right = input.substring(input.length() / 2);
+
+        // Feistel function (simplified)
+        String expandedRight = right + right; // Fake expansion (double it)
+        String xorResult = xor(expandedRight, key); // XOR with key
+        String substituted = substitute(xorResult); // S-box substitution
+
+        // Swap left and right
+        return right + xor(left, substituted); // Swap halves
+    }
+
+    // XOR function
+    public static String xor(String a, String b) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < a.length(); i++) {
+            result.append(a.charAt(i) == b.charAt(i) ? '0' : '1');
+        }
+        return result.toString();
+    }
+
+    // Substitution function using S-box (simplified)
+    public static String substitute(String input) {
+        // Divide input into 6-bit chunks
+        String chunk = input.substring(0, 6); // Take first 6 bits as example
+        int row = Integer.parseInt("" + chunk.charAt(0) + chunk.charAt(5), 2); // First and last bits
+        int col = Integer.parseInt(chunk.substring(1, 5), 2); // Middle 4 bits
+        return Integer.toBinaryString(S_BOX[row][col]); // Substitute
+    }
+}
