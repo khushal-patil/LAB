@@ -9,6 +9,6 @@ def and_xor_string(input_string):
         xor_result = ascii_value ^ 127
         print(f"{char:<10} {ascii_value:<10} {and_result:<10} {xor_result:<10}")
 
-# Input string
+
 input_string = input("Enter the String: ")
 and_xor_string(input_string)
