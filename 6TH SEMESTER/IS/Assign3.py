@@ -10,6 +10,11 @@ class SimplifiedAES:
     
     def __init__(self, key):
         self.pre_round_key, self.round1_key, self.round2_key = self.key_expansion(key)
+        print("Generated Keys:")
+        print("Pre-Round Key  :", self.pre_round_key)
+        print("Round 1 Key    :", self.round1_key)
+        print("Round 2 Key    :",self.round2_key)
+        print("-" * 40)
     
     def sub_word(self, word):
         return (self.sBox[(word >> 4)] << 4) + self.sBox[word & 0x0F]
@@ -71,6 +76,7 @@ class SimplifiedAES:
         ]
     
     def encrypt(self, plaintext):
+        print("---------------- Encryption ----------------------")
         state = self.int_to_state(plaintext)
         print("Initial State: ", state)
         
@@ -101,6 +107,7 @@ class SimplifiedAES:
         return self.state_to_int(state)
 
     def decrypt(self, ciphertext):
+        print("---------------- Decryption ----------------------")
         state = self.int_to_state(ciphertext)
         print("Initial Ciphertext State: ", state)
         
