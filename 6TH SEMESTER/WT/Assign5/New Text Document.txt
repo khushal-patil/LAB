@@ -1,3 +1,0 @@
-java -cp .;mysql-connector-java-8.0.30.jar MySQLConnect1
-
-javac -cp .;mysql-connector-java-8.0.30.jar MySQLConnect1.java

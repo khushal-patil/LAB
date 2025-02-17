@@ -1,0 +1,24 @@
+for jdk 11.0.23
+javac -cp .;servlet-api.jar;mysql-connector-java.jar  EbookshopServlet.java
+
+for jdk 17.0.14
+
+javac -cp .:jakarta.servlet-api-6.0.0.jar:mysql-connector-java-8.0.30.jar EbookshopServlet.java
+
+CREATE DATABASE IF NOT EXISTS Assign5;
+USE Assign5;
+
+CREATE TABLE IF NOT EXISTS ebookshop (
+    book_id INT AUTO_INCREMENT PRIMARY KEY,
+    book_title VARCHAR(255) NOT NULL,
+    book_author VARCHAR(255) NOT NULL,
+    book_price DECIMAL(10,2) NOT NULL,
+    quantity INT NOT NULL
+);
+
+INSERT INTO ebookshop (book_title, book_author, book_price, quantity) VALUES
+('The Catcher in the Rye', 'J.D. Salinger', 10.99, 5),
+('To Kill a Mockingbird', 'Harper Lee', 12.50, 8),
+('1984', 'George Orwell', 15.75, 10),
+('Pride and Prejudice', 'Jane Austen', 9.99, 6),
+('The Great Gatsby', 'F. Scott Fitzgerald', 11.25, 4);
