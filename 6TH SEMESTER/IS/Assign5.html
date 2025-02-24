@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diffie-Hellman Key Exchange</title>
+    <script>
+        // Large prime number (P) and primitive root (G)
+        const P = BigInt("23"); // Small prime for demo (use a larger prime in production)
+        const G = BigInt("9");  // Primitive root modulo P
+
+        // Generate a random private key for Bob
+        function generatePrivateKey() {
+            return BigInt(Math.floor(Math.random() * 10) + 1); // Keeping it simple for demo
+        }
+
+        // Compute public key: (G^privateKey) % P
+        function computePublicKey(privateKey) {
+            return modExp(G, privateKey, P);
+        }
+
+        // Modular exponentiation: (base^exp) % mod
+        function modExp(base, exp, mod) {
+            let result = BigInt(1);
+            base = base % mod;
+            while (exp > 0) {
+                if (exp % BigInt(2) == BigInt(1)) {
+                    result = (result * base) % mod;
+                }
+                exp = exp / BigInt(2);
+                base = (base * base) % mod;
+            }
+            return result;
+        }
+
+        // Compute shared secret: (receivedPublicKey^privateKey) % P
+        function computeSharedSecret(receivedPublicKey, privateKey) {
+            return modExp(receivedPublicKey, privateKey, P);
+        }
+
+        function exchangeKeys() {
+            const alicePrivateKey = BigInt(document.getElementById("alicePrivateKey").value);
+            const alicePublicKey = computePublicKey(alicePrivateKey);
+
+            const bobPrivateKey = generatePrivateKey();
+            const bobPublicKey = computePublicKey(bobPrivateKey);
+
+            // Compute shared secret for both parties
+            const aliceSharedSecret = computeSharedSecret(bobPublicKey, alicePrivateKey);
+            const bobSharedSecret = computeSharedSecret(alicePublicKey, bobPrivateKey);
+
+            // Display results
+            document.getElementById("alicePublicKey").innerText = alicePublicKey.toString();
+            document.getElementById("bobPublicKey").innerText = bobPublicKey.toString();
+            document.getElementById("sharedSecretAlice").innerText = aliceSharedSecret.toString();
+            document.getElementById("sharedSecretBob").innerText = bobSharedSecret.toString();
+
+            if (aliceSharedSecret === bobSharedSecret) {
+                document.getElementById("result").innerText = "Key Exchange Successful!";
+            } else {
+                document.getElementById("result").innerText = "Key Exchange Failed!";
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Diffie-Hellman Key Exchange</h2>
+    
+    <label>Enter Alice's Private Key:</label>
+    <input type="number" id="alicePrivateKey" min="1" max="10">
+    <button onclick="exchangeKeys()">Exchange Keys</button>
+
+    <h3>Public Keys:</h3>
+    <p>Alice's Public Key: <span id="alicePublicKey"></span></p>
+    <p>Bob's Public Key: <span id="bobPublicKey"></span></p>
+
+    <h3>Shared Secret:</h3>
+    <p>Alice's Computed Shared Secret: <span id="sharedSecretAlice"></span></p>
+    <p>Bob's Computed Shared Secret: <span id="sharedSecretBob"></span></p>
+
+    <h3>Result:</h3>
+    <p id="result"></p>
+</body>
+</html>
