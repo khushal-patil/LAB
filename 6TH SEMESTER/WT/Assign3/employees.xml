@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml-stylesheet type="text/css" href="styles.css"?>
+<document>
+  <heading>Infosys</heading>
+  <employee>
+    <name>
+      <lastname>Sharma</lastname>
+      <firstname>Aarav</firstname>
+    </name>
+    <hiredate>January 10, 2010</hiredate>
+    <projects>
+      <project>
+        <id>101</id>
+        <product>Software License</product>
+        <price>$500.00</price>
+      </project>
+      <project>
+        <id>102</id>
+        <product>Cloud Server</product>
+        <price>$1200.00</price>
+      </project>
+    </projects>
+  </employee>
+  <employee>
+    <name>
+      <lastname>Verma</lastname>
+      <firstname>Priya</firstname>
+    </name>
+    <hiredate>March 15, 2012</hiredate>
+    <projects>
+      <project>
+        <id>103</id>
+        <product>AI Module</product>
+        <price>$1500.00</price>
+      </project>
+      <project>
+        <id>104</id>
+        <product>Data Analysis Tool</product>
+        <price>$800.00</price>
+      </project>
+    </projects>
+  </employee>
+  <employee>
+    <name>
+      <lastname>Reddy</lastname>
+      <firstname>Vikram</firstname>
+    </name>
+    <hiredate>July 20, 2015</hiredate>
+    <projects>
+      <project>
+        <id>105</id>
+        <product>ERP System</product>
+        <price>$2500.00</price>
+      </project>
+      <project>
+        <id>106</id>
+        <product>CRM Software</product>
+        <price>$1350.00</price>
+      </project>
+    </projects>
+  </employee>
+  <employee>
+    <name>
+      <lastname>Gupta</lastname>
+      <firstname>Sneha</firstname>
+    </name>
+    <hiredate>May 18, 2016</hiredate>
+    <projects>
+      <project>
+        <id>107</id>
+        <product>Cybersecurity Suite</product>
+        <price>$3000.00</price>
+      </project>
+      <project>
+        <id>108</id>
+        <product>Firewall System</product>
+        <price>$1800.00</price>
+      </project>
+    </projects>
+  </employee>
+  <employee>
+    <name>
+      <lastname>Iyer</lastname>
+      <firstname>Aditya</firstname>
+    </name>
+    <hiredate>August 5, 2017</hiredate>
+    <projects>
+      <project>
+        <id>109</id>
+        <product>Blockchain Platform</product>
+        <price>$4000.00</price>
+      </project>
+      <project>
+        <id>110</id>
+        <product>Crypto Wallet</product>
+        <price>$900.00</price>
+      </project>
+    </projects>
+  </employee>
+  <employee>
+    <name>
+      <lastname>Patel</lastname>
+      <firstname>Neha</firstname>
+    </name>
+    <hiredate>November 25, 2018</hiredate>
+    <projects>
+      <project>
+        <id>111</id>
+        <product>HR Management System</product>
+        <price>$1200.00</price>
+      </project>
+      <project>
+        <id>112</id>
+        <product>Payroll Software</product>
+        <price>$700.00</price>
+      </project>
+    </projects>
+  </employee>
+  <employee>
+    <name>
+      <lastname>Desai</lastname>
+      <firstname>Kiran</firstname>
+    </name>
+    <hiredate>February 3, 2019</hiredate>
+    <projects>
+      <project>
+        <id>113</id>
+        <product>IoT Sensor System</product>
+        <price>$5000.00</price>
+      </project>
+      <project>
+        <id>114</id>
+        <product>Smart Home Automation</product>
+        <price>$3500.00</price>
+      </project>
+    </projects>
+  </employee>
+  <employee>
+    <name>
+      <lastname>Joshi</lastname>
+      <firstname>Aryan</firstname>
+    </name>
+    <hiredate>June 14, 2020</hiredate>
+    <projects>
+      <project>
+        <id>115</id>
+        <product>Machine Learning API</product>
+        <price>$6000.00</price>
+      </project>
+      <project>
+        <id>116</id>
+        <product>Data Visualization Tool</product>
+        <price>$2100.00</price>
+      </project>
+    </projects>
+  </employee>
+  <employee>
+    <name>
+      <lastname>Chopra</lastname>
+      <firstname>Sanya</firstname>
+    </name>
+    <hiredate>September 9, 2021</hiredate>
+    <projects>
+      <project>
+        <id>117</id>
+        <product>Chatbot Service</product>
+        <price>$1500.00</price>
+      </project>
+      <project>
+        <id>118</id>
+        <product>Sentiment Analysis Tool</product>
+        <price>$1800.00</price>
+      </project>
+    </projects>
+  </employee>
+  <employee>
+    <name>
+      <lastname>Bose</lastname>
+      <firstname>Rahul</firstname>
+    </name>
+    <hiredate>December 27, 2022</hiredate>
+    <projects>
+      <project>
+        <id>119</id>
+        <product>Mobile App Framework</product>
+        <price>$2500.00</price>
+      </project>
+      <project>
+        <id>120</id>
+        <product>UI/UX Design System</product>
+        <price>$1700.00</price>
+      </project>
+    </projects>
+  </employee>
+</document>
