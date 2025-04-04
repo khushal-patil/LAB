@@ -3,30 +3,37 @@
   <xsl:template match="/">
     <html>
       <head>
-        <title>Employee Details</title>
+        <title>Employee List</title>
+        <style> table { border-collapse: collapse; width: 50%; margin: 20px; } th, td { border: 1px solid black; padding: 10px; text-align: left; } th { background-color: #f2f2f2; } </style>
       </head>
       <body>
         <h2>Employee Details</h2>
-        <table border="1">
+        <table>
           <tr>
-            <th>Last Name</th>
-            <th>First Name</th>
-            <th>Hire Date</th>
-            <th>Project ID</th>
-            <th>Product</th>
-            <th>Price</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Designation</th>
+            <th>Salary</th>
           </tr>
-          <xsl:for-each select="document/employee">
-            <xsl:for-each select="projects/project">
-              <tr>
-                <td><xsl:value-of select="../name/lastname"/></td>
-                <td><xsl:value-of select="../name/firstname"/></td>
-                <td><xsl:value-of select="../hiredate"/></td>
-                <td><xsl:value-of select="id"/></td>
-                <td><xsl:value-of select="product"/></td>
-                <td><xsl:value-of select="price"/></td>
-              </tr>
-            </xsl:for-each>
+          <xsl:for-each select="employees/employee">
+            <tr>
+              <td>
+                <xsl:value-of select="@id"/>
+              </td>
+              <td>
+                <xsl:value-of select="name"/>
+              </td>
+              <td>
+                <xsl:value-of select="department"/>
+              </td>
+              <td>
+                <xsl:value-of select="designation"/>
+              </td>
+              <td>
+                <xsl:value-of select="salary"/>
+              </td>
+            </tr>
           </xsl:for-each>
         </table>
       </body>

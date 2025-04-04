@@ -1,12 +1,7 @@
-<!ELEMENT document (heading, employee+)>
-<!ELEMENT heading (#PCDATA)>
-<!ELEMENT employee (name, hiredate, projects)>
-<!ELEMENT name (lastname, firstname)>
-<!ELEMENT lastname (#PCDATA)>
-<!ELEMENT firstname (#PCDATA)>
-<!ELEMENT hiredate (#PCDATA)>
-<!ELEMENT projects (project+)>
-<!ELEMENT project (id, product, price)>
-<!ELEMENT id (#PCDATA)>
-<!ELEMENT product (#PCDATA)>
-<!ELEMENT price (#PCDATA)>
+<!ELEMENT employees (employee+)> 
+<!ELEMENT employee (name, department, designation, salary)> 
+<!ATTLIST employee id ID #REQUIRED> 
+<!ELEMENT name (#PCDATA)> 
+<!ELEMENT department (#PCDATA)> 
+<!ELEMENT designation (#PCDATA)> 
+<!ELEMENT salary (#PCDATA)>
