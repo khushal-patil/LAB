@@ -1,0 +1,27 @@
+# Start Hadoop DFS services (if not already running)
+sudo su hadoop
+start-dfs.sh
+
+# Check if the services are running
+jps
+
+# Compile the Java program
+javac -classpath "$(hadoop classpath)" -d classes WordCount.java
+
+# Create the JAR file
+jar cf wordcount.jar -C classes/ .
+
+# Remove any existing input/output in HDFS
+hdfs dfs -rm -r input/sample.txt
+hdfs dfs -rm -r output
+
+# Create input directory in HDFS and put the sample text file
+hdfs dfs -mkdir -p input
+hdfs dfs -put /home/khushal/WordCount/input/sample.txt input/
+
+# Run the WordCount program with Hadoop
+hadoop jar wordcount.jar WordCount input/sample.txt output
+
+# Retrieve the output from HDFS to the local machine
+hdfs dfs -get output/part-r-00000 ./output/result.txt
+
