@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="./Employees.xsl"?>
+<employees>
+  <employee id="E101">
+    <name>Arjun Sharma</name>
+    <department>IT</department>
+    <designation>Frontend Developer</designation>
+    <salary>72000</salary>
+    <hiredate>2023-06-15</hiredate>
+    <projects>
+      <project>UI Redesign</project>
+      <project>Landing Page</project>
+    </projects>
+  </employee>
+  <employee id="E102">
+    <name>Ravi Kulkarni</name>
+    <department>IT</department>
+    <designation>Backend Developer</designation>
+    <salary>75000</salary>
+    <hiredate>2022-11-10</hiredate>
+    <projects>
+      <project>API Integration</project>
+    </projects>
+  </employee>
+  <employee id="E103">
+    <name>Manoj Patil</name>
+    <department>IT</department>
+    <designation>DevOps Engineer</designation>
+    <salary>79000</salary>
+    <hiredate>2023-01-20</hiredate>
+    <projects>
+      <project>CI/CD Setup</project>
+    </projects>
+  </employee>
+  <employee id="E104">
+    <name>Sachin Rane</name>
+    <department>IT</department>
+    <designation>System Administrator</designation>
+    <salary>68000</salary>
+    <hiredate>2021-12-05</hiredate>
+    <projects>
+      <project>Server Maintenance</project>
+    </projects>
+  </employee>
+  <employee id="E105">
+    <name>Vivek Desai</name>
+    <department>IT</department>
+    <designation>QA Tester</designation>
+    <salary>62000</salary>
+    <hiredate>2022-03-17</hiredate>
+    <projects>
+      <project>Automation Scripts</project>
+      <project>Bug Reporting</project>
+    </projects>
+  </employee>
+  <employee id="E106">
+    <name>Kunal Joshi</name>
+    <department>IT</department>
+    <designation>Software Engineer</designation>
+    <salary>70000</salary>
+    <hiredate>2023-09-12</hiredate>
+    <projects>
+      <project>Core Module</project>
+    </projects>
+  </employee>
+  <employee id="E107">
+    <name>Rahul Kapoor</name>
+    <department>IT</department>
+    <designation>Technical Lead</designation>
+    <salary>85000</salary>
+    <hiredate>2020-08-08</hiredate>
+    <projects>
+      <project>Team Management</project>
+    </projects>
+  </employee>
+  <employee id="E108">
+    <name>Amit Reddy</name>
+    <department>IT</department>
+    <designation>Database Administrator</designation>
+    <salary>74000</salary>
+    <hiredate>2021-04-25</hiredate>
+    <projects>
+      <project>Data Backup</project>
+    </projects>
+  </employee>
+  <employee id="E109">
+    <name>Nikhil Verma</name>
+    <department>IT</department>
+    <designation>Cloud Engineer</designation>
+    <salary>78000</salary>
+    <hiredate>2022-10-03</hiredate>
+    <projects>
+      <project>AWS Migration</project>
+    </projects>
+  </employee>
+  <employee id="E110">
+    <name>Rajesh Pawar</name>
+    <department>IT</department>
+    <designation>Data Analyst</designation>
+    <salary>76000</salary>
+    <hiredate>2023-02-14</hiredate>
+    <projects>
+      <project>Data Visualization</project>
+    </projects>
+  </employee>
+  <employee id="E111">
+    <name>Sandeep Chavan</name>
+    <department>IT</department>
+    <designation>AI/ML Engineer</designation>
+    <salary>88000</salary>
+    <hiredate>2021-07-30</hiredate>
+    <projects>
+      <project>Model Training</project>
+    </projects>
+  </employee>
+  <employee id="E112">
+    <name>Pranav Naik</name>
+    <department>IT</department>
+    <designation>Cybersecurity Specialist</designation>
+    <salary>82000</salary>
+    <hiredate>2022-05-05</hiredate>
+    <projects>
+      <project>Security Audit</project>
+      <project>Penetration Testing</project>
+    </projects>
+  </employee>
+</employees>
