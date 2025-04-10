@@ -5,6 +5,8 @@ start-dfs.sh
 # Check if the services are running
 jps
 
+sudo chown -R $(whoami):$(whoami) classes
+
 # Compile the Java program
 javac -classpath "$(hadoop classpath)" -d classes WordCount.java
 
