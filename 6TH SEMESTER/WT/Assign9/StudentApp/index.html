@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html ng-app="studentApp">
+<head>
+    <base href="/">
+    <meta charset="UTF-8">
+    <title>Student Registration & Login</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
+    <script src="app.js"></script>
+    <script src="controllers/loginController.js"></script>
+    <script src="controllers/registerController.js"></script>
+    <script src="controllers/homeController.js"></script>
+
+    <style>
+        /* Navigation Styles */
+nav {
+    background-color: #333;
+    padding: 15px 0;
+    text-align: center;
+    margin: 20px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 20px;
+    margin: 0 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+nav a:hover {
+    background-color: #4CAF50;
+}
+
+/* Header Styles */
+h1 {
+    text-align: center;
+    color: #333;
+    margin: 20px 0;
+    font-size: 2em;
+}
+    </style>
+</head>
+<body>
+    <h1>Student Portal</h1>
+    <nav>
+        <a href="#!/login">Login</a> |
+        <a href="#!/register">Register</a>
+    </nav>
+    <div ng-view></div>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<html>
+
+<head>
+    <style>
+      
+
+        .registration-form {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .student-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .btn-register {
+            grid-column: 1 / -1;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn-register:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="registration-form">
+        <h2>Student Registration</h2>
+        <form ng-submit="register()" class="student-form">
+            <div class="form-group">
+                <label>Full Name:</label>
+                <input type="text" ng-model="student.name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" ng-model="student.email" required>
+            </div>
+
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" ng-model="student.password" required>
+            </div>
+
+            <div class="form-group">
+                <label>Registration Number:</label>
+                <input type="text" ng-model="student.registration_number" required>
+            </div>
+
+            <div class="form-group">
+                <label>Branch:</label>
+                <select ng-model="student.branch" required>
+                    <option value="">Select Branch</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Mechanical">Mechanical</option>
+                    <option value="Electrical">Electrical</option>
+                    <option value="Civil">Civil</option>
+                    <option value="Electronics">Electronics</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Semester:</label>
+                <select ng-model="student.semester" required>
+                    <option value="">Select Semester</option>
+                    <option value="1">1st Semester</option>
+                    <option value="2">2nd Semester</option>
+                    <option value="3">3rd Semester</option>
+                    <option value="4">4th Semester</option>
+                    <option value="5">5th Semester</option>
+                    <option value="6">6th Semester</option>
+                    <option value="7">7th Semester</option>
+                    <option value="8">8th Semester</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number:</label>
+                <input type="tel" ng-model="student.phone" required>
+            </div>
+
+            <div class="form-group">
+                <label>Date of Birth:</label>
+                <input type="date" ng-model="student.date_of_birth" required>
+            </div>
+
+            <div class="form-group">
+                <label>Gender:</label>
+                <select ng-model="student.gender" required>
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Batch Year:</label>
+                <input type="text" ng-model="student.batch_year" placeholder="2023-2027" required>
+            </div>
+
+            <div class="form-group">
+                <label>Blood Group:</label>
+                <select ng-model="student.blood_group">
+                    <option value="">Select Blood Group</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Address:</label>
+                <textarea ng-model="student.address" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Parent/Guardian Name:</label>
+                <input type="text" ng-model="student.parent_name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Parent/Guardian Phone:</label>
+                <input type="tel" ng-model="student.parent_phone" required>
+            </div>
+
+            <button type="submit" class="btn-register">Register</button>
+        </form>
+    </div>
+</body>
+
+</html>
