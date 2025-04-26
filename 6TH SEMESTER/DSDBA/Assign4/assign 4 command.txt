@@ -1,0 +1,92 @@
+# Import necessary libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
+
+# Load the dataset
+df = pd.read_csv(r"C:\\Users\\UNKNOWN_CODER\\DSDBA\\Assign4\\BostonHousing.csv")
+
+# Load the dataset
+df.head()
+
+df.describe()
+
+df.shape
+
+df.dtypes
+
+# Display basic information about the dataset
+print("Dataset Information:")
+df.info()
+
+# Check for missing values
+print("\nMissing Values in Dataset:")
+print(df.isna().sum())
+
+# Define target and feature variables
+target_feature = "medv"  # Ensure this column name matches the dataset
+if target_feature not in df.columns:
+    raise ValueError(f"Target column '{target_feature}' not found in dataset!")
+
+y = df[target_feature]  # Target variable
+X = df.drop(columns=[target_feature])  # Feature variables
+
+X.head()
+
+y.head()
+
+# Split the dataset into training and testing sets (80% training, 20% testing)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=7)
+
+# Initialize and train the Linear Regression model
+regression = LinearRegression()
+regression.fit(X_train, y_train)
+
+# Evaluate the model
+train_score = regression.score(X_train, y_train) * 100
+print(f"\nTrain Score of Linear Regression: {train_score:.2f}%")
+
+# Make predictions
+y_pred = regression.predict(X_test)
+
+# Calculate performance metrics
+r2 = r2_score(y_test, y_pred) * 100
+mae = mean_absolute_error(y_test, y_pred)
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+
+print(f"\nModel Performance on Test Data:")
+print(f"R² Score: {r2:.2f}%")
+print(f"Mean Absolute Error: {mae:.4f}")
+print(f"Mean Squared Error: {mse:.4f}")
+print(f"Root Mean Squared Error: {rmse:.4f}")
+
+# Create a DataFrame to compare actual vs. predicted values
+df_results = pd.DataFrame({"Actual": y_test, "Predicted": y_pred, "Variance": y_test - y_pred})
+print("\nComparison of Actual and Predicted Values:")
+print(df_results.head(10))
+
+# Visualization: Actual vs. Predicted
+plt.figure(figsize=(10, 5))
+plt.scatter(range(len(y_test)), y_test, color="green", label="Actual Prices")
+plt.scatter(range(len(y_pred)), y_pred, color="red", label="Predicted Prices")
+plt.legend()
+plt.xlabel("Test Sample Index")
+plt.ylabel("House Price (in $1000s)")
+plt.title("Actual vs. Predicted House Prices")
+plt.show()
+
+# Line Plot for better visualization
+plt.figure(figsize=(10, 5))
+plt.plot(range(len(y_test)), y_test, color="green", label="Actual Prices")
+plt.plot(range(len(y_pred)), y_pred, color="red", linestyle="dashed", label="Predicted Prices")
+plt.legend()
+plt.xlabel("Test Sample Index")
+plt.ylabel("House Price (in $1000s)")
+plt.title("Actual vs. Predicted House Prices (Line Plot)")
+plt.show()
+

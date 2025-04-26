@@ -1,0 +1,94 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from scipy.stats import skew
+from scipy.stats import boxcox
+data = pd.read_csv(r'C:\Users\UNKNOWN_CODER\DSDBA\Assign2\academic_performace.csv')
+
+data.head()
+
+df = pd.DataFrame(data)
+
+#missing values
+missing_values = df.isnull().sum()
+print(missing_values)
+
+df['Age'].fillna(df['Age'].median(), inplace=True)
+df['MathScore'].fillna(df['MathScore'].mean(), inplace=True)
+df['EnglishScore'].fillna(df['EnglishScore'].mean(), inplace=True)
+
+df['Attendance'] = pd.to_numeric(df['Attendance'], errors='coerce')
+df['Attendance'].fillna(df['Attendance'].mean(), inplace=True)
+df['Gender'] = df['Gender'].replace('Unknown', df['Gender'].mode()[0])
+df['Gender'].fillna(df['Gender'].mode()[0], inplace=True)
+df['ScienceScore'].fillna(df['ScienceScore'].mean(), inplace=True)
+
+df
+
+#missing values
+missing_values = df.isnull().sum()
+print(missing_values)
+
+def detect_outliers(df,column):
+    Q1 = df[column].quantile(0.25)
+    Q3 = df[column].quantile(0.75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    return df[(df[column] < lower_bound) | (df[column] > upper_bound)]
+
+outliers_math = detect_outliers(df,'MathScore')
+outliers_math
+
+outliers_science = detect_outliers(df,'ScienceScore')
+outliers_science
+
+outliers_english = detect_outliers(df,'EnglishScore')
+outliers_english
+
+# Handle outliers using IQR method
+for col in ['MathScore']:
+    Q1 = df[col].quantile(0.25)
+    Q3 = df[col].quantile(0.75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    df[col] = np.where(df[col] < lower_bound, lower_bound, df[col])
+    df[col] = np.where(df[col] > upper_bound, upper_bound, df[col])
+
+print("\nDataset After Handling Outliers:")
+print(df)
+
+outliers_math = detect_outliers(df,'MathScore')
+outliers_math
+
+attendance_df = df
+# Min-Max Scaling
+scaler = MinMaxScaler()
+attendance_df['MinMax_Scaled'] = scaler.fit_transform(attendance_df[['Attendance']])
+
+# Standardization
+standard_scaler = StandardScaler()
+attendance_df['Standardized'] = standard_scaler.fit_transform(attendance_df[['Attendance']])
+
+# Log Transformation
+attendance_df['Log_Transformed'] = np.log(attendance_df['Attendance'])
+
+# Square Root Transformation
+attendance_df['Sqrt_Transformed'] = np.sqrt(attendance_df['Attendance'])
+
+# Box-Cox Transformation
+attendance_df['BoxCox_Transformed'], _ = boxcox(attendance_df['Attendance'])
+
+# Check skewness
+print("Skewness before:", skew(attendance_df['Attendance']))
+print("Skewness after Log Transformation:", skew(attendance_df['Log_Transformed']))
+print("Skewness after Sqrt Transformation:", skew(attendance_df['Sqrt_Transformed']))
+print("Skewness after Box-Cox Transformation:", skew(attendance_df['BoxCox_Transformed']))
+
+# Plot histograms
+import matplotlib.pyplot as plt
+attendance_df[['Attendance', 'Log_Transformed', 'Sqrt_Transformed', 'BoxCox_Transformed']].hist(bins=10, figsize=(12, 8))
+plt.show()
+

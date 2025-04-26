@@ -1,0 +1,47 @@
+import pandas as pd
+import numpy as np
+
+df = pd.read_csv(r"C:\\Users\\UNKNOWN_CODER\\DSDBA\\Assign3\\data-income-age-group.csv")
+
+df
+
+print("Statistical Summary: \n",)
+df.describe()
+
+# Define age groups
+bins = [0, 20, 40, 60, 100]  # Age groups: <20, 20-40, 40-60, >60
+labels = ['<20', '20-40', '40-60', '>60']
+df['Age Group'] = pd.cut(df['Age'], bins=bins, labels=labels, right=False)
+grouped = df.groupby('Age')['Income'].describe()
+grouped
+
+df = pd.read_csv(r"C:\\Users\\UNKNOWN_CODER\\DSDBA\\Assign3\\iris.csv")
+
+df.head()
+
+grouped_species = df.groupby('Species')
+
+print("\nBasic Statistical Details of each Species:")
+for species, group in grouped_species:
+    print(f"\nStatistics for {species}:")
+    numeric_group = group.select_dtypes(include=[np.number])
+    # Calculate and display basic statistics: mean, standard deviation, min, and max
+    print("Mean:")
+    print(numeric_group.mean())
+    
+    print("\nStandard Deviation:")
+    print(numeric_group.std())
+    
+    print("\nMinimum Values:")
+    print(numeric_group.min())
+    
+    print("\nMaximum Values:")
+    print(numeric_group.max())
+
+    print("\nPercentiles:")
+    percentiles = np.percentile(numeric_group, [25, 50, 75], axis=0)
+    print(f"25th Percentile: {percentiles[0]}")
+    print(f"50th Percentile (Median): {percentiles[1]}")
+    print(f"75th Percentile: {percentiles[2]}")
+    print("="*40)
+
