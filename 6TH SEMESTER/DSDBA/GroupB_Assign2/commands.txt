@@ -40,7 +40,7 @@ sudo update-alternatives --config java
  
  
  
-hadoop installation steps
+ hadoop installation steps
 java -version
 
 sudo apt install ssh
@@ -80,7 +80,7 @@ nano ~/.bashrc
 	export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
 	export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
 	export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
-	
+
 source ~/.bashrc	
 
 nano $HADOOP_HOME/etc/hadoop/hadoop-env.sh
@@ -99,7 +99,6 @@ nano $HADOOP_HOME/etc/hadoop/core-site.xml
 	</configuration>
 
 nano $HADOOP_HOME/etc/hadoop/hdfs-site.xml
-
 	<configuration>
 	    <property>
 		<name>dfs.replication</name>

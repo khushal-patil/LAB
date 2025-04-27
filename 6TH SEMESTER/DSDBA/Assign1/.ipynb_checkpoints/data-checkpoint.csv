@@ -2,8 +2,8 @@ Car,Model,Volume,Weight,CO2
 Toyoty,Aygo,1000,790,99
 Mitsubishi,Space Star,1200,1160,95
 Skoda,Citigo,1000,929,95
-Fiat,500,,865,
-Mini,Cooper,1500,,105
+Fiat,500,900,865,90
+Mini,Cooper,1500,1140,105
 VW,Up!,1000,929,105
 Skoda,Fabia,1400,1109,90
 Mercedes,A-Class,1500,1365,92

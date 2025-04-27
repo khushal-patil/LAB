@@ -1,0 +1,78 @@
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+
+df = sns.load_dataset('iris')
+
+df.head()
+
+print(df.dtypes)
+
+#Dataset Info
+df.info()
+
+# Histogram for all Numeric Features
+features = df.columns[:-1]
+
+plt.figure(figsize=(15,10))
+for i, feature in enumerate(features,1):
+    plt.subplot(2,2,i)
+    ax = sns.histplot(df[feature])
+    for container in ax.containers:
+        ax.bar_label(container)
+    plt.title("Histogram for "+feature)
+plt.tight_layout()
+plt.show()
+
+# Boxplot for all Numeric Features
+plt.figure(figsize=(12, 8))
+for i, feature in enumerate(features, 1):
+    plt.subplot(2, 2, i)
+    sns.boxplot(x=df[feature],palette="Set2",hue=df['species'])
+    plt.ylabel(feature)
+    plt.xlabel(feature)
+    plt.title("Boxplot for " + feature)
+plt.tight_layout()
+plt.show()
+
+me = np.mean(df['sepal_length'])
+median = np.median(df['sepal_length'])
+std_dev = np.std(df['sepal_length'])
+
+# Identifying outliers using 1.5*IQR rule
+q1 = np.percentile(df['sepal_length'], 0.25)
+q3 = np.percentile(df['sepal_length'], 0.75)
+iqr = q3 - q1
+lower_bound = q1 - 1.5 * iqr
+upper_bound = q3 + 1.5 * iqr
+outliers = [x for x in df['sepal_length'] if x < lower_bound or x > upper_bound]
+
+print(f"Mean: {me:.2f}")
+print(f"Median: {median:.2f}")
+print(f"Standard Deviation: {std_dev:.2f}")
+print(f"Outliers: {outliers}")
+
+for column in df.columns[:-1]:
+    me = np.mean(df[column])
+    median = np.median(df[column])
+    std_dev = np.std(df[column])
+
+    q1 = np.percentile(df[column], 25)
+    q3 = np.percentile(df[column], 75)
+    iqr = q3 - q1
+    lower_bound = q1 - 1.5 * iqr
+    upper_bound = q3 + 1.5 * iqr
+
+    outliers = df[column][(df[column] < lower_bound) | (df[column] > upper_bound)].tolist()
+
+    print(f"\nColumn: {column}")
+    print(f"Mean: {me:.2f}, Mdian: {median:.2f}, Standard Deviation: {std_dev:.2f}")
+    print(f"Outliers: {outliers}" if outliers else "No outliers found.")
+    
+sns.pairplot(df, hue="species", palette="Set2", markers=["o", "s", "D"])
+plt.show()
+
+
+    
+    

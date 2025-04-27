@@ -1,0 +1,58 @@
+!pip install seaborn
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+df = sns.load_dataset("titanic")
+df
+
+df.isnull().sum()
+
+df['age'] = df['age'].fillna(df['age'].mean())
+
+df.isnull().sum()
+
+plt.figure(figsize=(10,10))
+
+sns.boxplot(data=df, x='sex', y='age', hue='survived', palette='coolwarm')
+plt.title("Boxplot for gender distribution with respect to age")
+plt.show()
+
+
+df.info()
+
+Q1 = df['age'].quantile(0.25)
+Q3 = df['age'].quantile(0.75)
+IQR = Q3 - Q1
+
+upper_bound = Q3 + 1.5 * IQR
+lower_bound = Q1 - 1.5 * IQR
+
+outliers = df[(df['age'] < lower_bound) | (df['age'] > upper_bound)]
+num_outliers = len(outliers)
+print("No. of Outliers", num_outliers)
+
+median_age = df['age'].median()
+df.loc[(df['age'] < lower_bound)  | (df['age'] >upper_bound), 'age'] = median_age
+
+outliers = df[(df['age'] < lower_bound) | (df['age'] > upper_bound)]
+
+num_outliers = len(outliers)
+print("No. of Outliers", num_outliers)
+
+plt.figure(figsize=(10,10))
+sns.boxplot(data=df, x='sex', y='age', hue='survived', palette='coolwarm')
+plt.title("Boxplot for gender distribution with respect to age")
+plt.ylabel('Count')
+plt.show()
+
+counts = df.groupby(['sex', 'survived']).size().unstack()
+
+print(counts)
+
+
+
+
