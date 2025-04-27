@@ -1,0 +1,89 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df = pd.read_csv(r'C:\\Users\\UNKNOWN_CODER\\DSDBA\\Assign6\\iris.csv')
+
+print("-----------Dataframe Head------------")  
+print(df.head())
+print("\n")
+
+print("-----------Dataframe Describe------------")
+print(df.describe())
+print("\n")
+
+print("-----------Dataframe Info------------")
+print(df.info())
+print("\n")
+
+print("----------------Data Preprocessing----------------")
+X = df.iloc[:,0:4]
+Y = df['Species'].values
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=0)
+sc_X = StandardScaler()
+X_train = sc_X.fit_transform(X_train)
+X_test = sc_X.transform(X_test)
+
+print(f'Train Dataset Size - X: {X_train.shape}, Y: {Y_train.shape}')
+print(f'Test  Dataset Size - X: {X_test.shape}, Y: {Y_test.shape}')
+print("\n")
+
+print("---------------Naive Bayes Classifier----------------------")
+from sklearn.naive_bayes import GaussianNB
+
+classifier = GaussianNB()
+classifier.fit(X_train, Y_train)
+predictions = classifier.predict(X_test)
+
+mapper = {'setosa': 0, 'versicolor': 1, 'virginica': 2}
+predictions_ = [mapper[i] for i in predictions]
+
+fig, axs = plt.subplots(2, 2, figsize = (12, 10), constrained_layout = True);
+_ = fig.suptitle('Regression Line Tracing')
+for i in range(4):
+    x, y = i // 2, i % 2
+    _ = sns.regplot(x = X_test[:, i], y = predictions_, ax=axs[x, y])
+    _ = axs[x, y].scatter(X_test[:, i][::-1], Y_test[::-1], marker = '+', color="white")
+    _ = axs[x, y].set_xlabel(df.columns[i + 1][:-2])
+plt.show()
+print("\n")
+
+print("------------Confusion Matrix-------------")
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+
+import numpy as np
+y = df.iloc[:, -1]
+# Get unique class labels from the dataset
+labels = y.unique()
+
+# Generate the confusion matrix using test labels and predictions
+cm = confusion_matrix(Y_test, predictions, labels=labels)
+
+# Display TP, FP, FN, TN for each class
+for i, label in enumerate(labels):
+    TP = cm[i, i]
+    FP = cm[:, i].sum() - TP
+    FN = cm[i, :].sum() - TP
+    TN = cm.sum() - (TP + FP + FN)
+    
+    print(f"\nClass: {label}")
+    print(f"True Positives (TP): {TP}")
+    print(f"False Positives (FP): {FP}")
+    print(f"False Negatives (FN): {FN}")
+    print(f"True Negatives (TN): {TN}")
+    
+cm = classification_report(Y_test, predictions)
+print('Classification report : \n', cm)
+
+
+
+
+
+
+

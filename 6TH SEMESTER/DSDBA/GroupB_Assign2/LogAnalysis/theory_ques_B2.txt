@@ -1,0 +1,286 @@
+Here are detailed responses to the questions from the documents you've shared:
+
+---
+
+### **Big Data Questions**
+**1. Explain Data Structure of Big Data:**
+Big data uses distributed storage systems where data is represented in different formats, such as structured, semi-structured, and unstructured data. Examples include relational databases (structured), JSON or XML files (semi-structured), and images or videos (unstructured). The data is processed using frameworks like Hadoop or Spark, which allow parallel processing.
+
+**2. Applications of Hadoop:**
+Hadoop is widely used in fields like:
+- **Data Warehousing**: Managing large datasets efficiently.
+- **Sentiment Analysis**: Analyzing social media and customer feedback.
+- **Healthcare**: Storing medical records and analyzing trends.
+- **Fraud Detection**: Identifying unusual patterns in financial transactions.
+- **IoT**: Processing data generated from connected devices.
+
+**3. Hadoop Ecosystem:**
+The ecosystem includes:
+- **HDFS**: Distributed storage.
+- **MapReduce**: Processing framework.
+- **Hive**: Data warehousing.
+- **Pig**: High-level scripting for data processing.
+- **YARN**: Resource management.
+
+---
+
+### **Iris Dataset Questions**
+**1. List of Features and Types:**
+- Sepal Length (Numeric, cm)
+- Sepal Width (Numeric, cm)
+- Petal Length (Numeric, cm)
+- Petal Width (Numeric, cm)
+- Species (Categorical: Setosa, Versicolour, Virginica)
+
+**2. Code for Histograms:**
+```python
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+import pandas as pd
+
+iris = load_iris()
+df = pd.DataFrame(iris.data, columns=iris.feature_names)
+
+for column in df.columns:
+    plt.figure()
+    sns.histplot(df[column], kde=True)
+    plt.title(f"Histogram of {column}")
+    plt.show()
+```
+
+**3. Code for Boxplots:**
+```python
+for column in df.columns:
+    plt.figure()
+    sns.boxplot(x=df[column])
+    plt.title(f"Boxplot of {column}")
+    plt.show()
+```
+
+**4. Identifying Outliers:**
+Outliers are values that lie beyond the whiskers in boxplots. Use IQR method for detection:
+\[
+\text{Outlier} = \text{Value} < Q1 - 1.5 \times IQR \, \text{or} \, \text{Value} > Q3 + 1.5 \times IQR
+\]
+
+---
+
+### **Hadoop Questions**
+**1. Explain Hadoop Daemons:**
+Hadoop runs several daemons:
+- **NameNode**: Manages metadata for HDFS.
+- **DataNode**: Stores actual data blocks.
+- **ResourceManager**: Allocates resources for tasks.
+- **NodeManager**: Runs tasks and manages resources on nodes.
+- **Secondary NameNode**: Keeps snapshots of NameNode metadata.
+
+**2. Explain HDFS:**
+Hadoop Distributed File System splits data into blocks, replicates them for fault tolerance (default: 3 copies), and distributes them across nodes for parallel access.
+
+**3. Explain MapReduce Framework:**
+MapReduce processes data as:
+1. **Map Phase**: Converts input into key-value pairs (e.g., word counts).
+2. **Shuffle Phase**: Groups and sorts key-value pairs by keys.
+3. **Reduce Phase**: Aggregates grouped data (e.g., total word counts).
+
+---
+
+### **Text Analytics Questions**
+**1. Basic Concepts of Text Analytics:**
+Text analytics extracts patterns and insights from text data using natural language processing (NLP) techniques. Applications include sentiment analysis, topic modeling, and spam detection.
+
+**2. Explain Inverse Document Frequency (IDF):**
+IDF measures how unique a word is across documents:
+\[
+\text{IDF}(t) = \log\left(\frac{\text{Total Documents}}{\text{Documents Containing t}}\right)
+\]
+It reduces the weight of common words.
+
+**3. Perform Stemming and Lemmatization:**
+- **Stemming** (e.g., "studies", "study", "cries", "cry"): Produces root forms like "studi" and "cri."
+- **Lemmatization**: Generates meaningful forms like "study" and "cry."
+
+**4. Python Code for Stop Word Removal and TFIDF:**
+```python
+from sklearn.feature_extraction.text import TfidfVectorizer
+from nltk.corpus import stopwords
+import nltk
+
+nltk.download('stopwords')
+stop_words = set(stopwords.words('english'))
+
+documents = ['Jupiter is the largest Planet', 'Mars is the fourth planet from the Sun']
+processed_docs = [' '.join([word.lower() for word in doc.split() if word.lower() not in stop_words]) for doc in documents]
+
+vectorizer = TfidfVectorizer()
+tfidf_matrix = vectorizer.fit_transform(processed_docs)
+print(vectorizer.get_feature_names_out())
+print(tfidf_matrix.toarray())
+```
+
+---
+
+### **Data Visualization Questions**
+**1. Types of Plots for Patterns:**
+- Distribution: Histogram, KDE.
+- Categorical: Box plot, Violin plot.
+- Relational: Scatter plot, Line plot.
+
+**2. Distribution vs. Categorical Plots:**
+- Use distribution plots for numerical data (e.g., age, weight).
+- Use categorical plots for relationships between categories (e.g., survival by gender).
+
+**3. Swarm Plot Conclusion (Titanic):**
+Survival trends:
+- Children and females had higher survival rates.
+- Males showed lower survival rates.
+
+**4. Adding Another Variable to Violin Plot:**
+Use the `hue` parameter:
+```python
+sns.violinplot(x="gender", y="age", hue="survived", data=titanic, split=True)
+```
+
+Let me know if you'd like any clarifications!
+
+
+#############################################################################
+CODE EXPLANATION
+Absolutely — let's **unpack** this **Hadoop MapReduce code** like a pro, keeping it **exam-ready, concise, and powerful** 🔥:
+
+---
+
+# 📚 Detailed Explanation of the Code (10-Mark Level)
+
+---
+
+## 1. **Objective of this Program**
+
+➔ This MapReduce program **counts how many times each IP address appears** in a log file.
+
+✅ **In simple words:**  
+- **Mapper** ➔ Extracts IPs and emits (IP, 1).  
+- **Reducer** ➔ Adds all the 1’s for the same IP ➔ gives total count.
+
+---
+
+## 2. **Main Components in the Code**
+
+| Part | Role |
+|:---|:---|
+| **IPMapper** | Mapper class that emits (IP address, 1). |
+| **IntSumReducer** | Reducer class that sums counts for each IP. |
+| **main() method** | Configures and runs the MapReduce Job. |
+
+---
+
+## 3. **Flow Breakdown**
+
+---
+
+### ① **Mapper Class** → `IPMapper`
+
+- **Input**: (Key: Line offset, Value: Line text)  
+- **Output**: (Key: IP Address, Value: 1)
+
+```java
+String line = value.toString();
+StringTokenizer tokenizer = new StringTokenizer(line);
+```
+- It **tokenizes** the line (splits it into words).
+- The **first token** is assumed to be the **IP address**.
+
+```java
+ip.set(tokenizer.nextToken());
+context.write(ip, one);
+```
+- Emits (IP, 1).
+
+**🧠 Exam Tip:** _"Mapper reads each line, extracts IP, and emits a pair (IP, 1)."_
+
+---
+
+### ② **Reducer Class** → `IntSumReducer`
+
+- **Input**: (Key: IP, Iterable of 1’s)
+- **Output**: (Key: IP, Value: Sum of 1's)
+
+```java
+for (IntWritable val : values) {
+    sum += val.get();
+}
+result.set(sum);
+context.write(key, result);
+```
+- Iterates over all 1’s and **adds** them to get total count.
+- Emits (IP, total count).
+
+**🧠 Exam Tip:** _"Reducer aggregates all counts associated with an IP to get total visits."_
+
+---
+
+### ③ **Driver (Main) Class** → `main()`
+
+- **Sets up the job:**
+  - Name: "IP Address Count"
+  - Links classes: Mapper, Combiner, Reducer
+  - Defines input and output formats.
+
+```java
+Configuration conf = new Configuration();
+Job job = Job.getInstance(conf, "IP Address Count");
+job.setJarByClass(Process.class);
+job.setMapperClass(IPMapper.class);
+job.setCombinerClass(IntSumReducer.class);
+job.setReducerClass(IntSumReducer.class);
+job.setOutputKeyClass(Text.class);
+job.setOutputValueClass(IntWritable.class);
+```
+
+- **Input and Output Paths** are passed via command-line args (`args[0]` and `args[1]`).
+
+```java
+FileInputFormat.addInputPath(job, new Path(args[0]));
+FileOutputFormat.setOutputPath(job, new Path(args[1]));
+```
+
+✅ **Combiner:**  
+- Uses `IntSumReducer` as a **Combiner** to optimize data transfer during shuffle phase.
+
+✅ **Exit Status:**
+- 0 ➔ Success
+- 1 ➔ Failure
+
+---
+
+# ✍️ Quick Key Concepts You Must Say in Exam:
+
+| Concept | Meaning |
+|:---|:---|
+| **Mapper** | Breaks input into key-value pairs (IP, 1). |
+| **Reducer** | Aggregates values (sums 1’s per IP). |
+| **Combiner** | Local mini-reducer to optimize performance. |
+| **Context.write()** | Emits intermediate or final output. |
+| **Configuration** | Provides job settings. |
+| **Job Instance** | Defines and controls entire MapReduce job. |
+| **FileInputFormat / FileOutputFormat** | Tells Hadoop where to read/write data. |
+
+---
+
+# ⚡ Ultimate Summary for Viva
+
+_"This Hadoop MapReduce program processes a text file where each line begins with an IP address. The Mapper extracts IPs and outputs (IP, 1). The Reducer aggregates the counts to determine how many times each IP appears. The driver configures the job, defines input/output, and triggers execution. It uses a Combiner to enhance efficiency."_ 🚀
+
+---
+
+# 🚀 Bonus: Viva Questions You Might Get
+- What is the role of a **Combiner** here?
+- Why use **Text** and **IntWritable** instead of String and int?
+- What happens if you **don't use Combiner**?
+- What if the input file doesn't have IP addresses first?
+
+---
+
+Would you also like me to give you a **diagram** of how **input → mapper → reducer → output** happens? 📈  
+Just say "**send diagram**" — it’ll make you unbeatable! 🎯

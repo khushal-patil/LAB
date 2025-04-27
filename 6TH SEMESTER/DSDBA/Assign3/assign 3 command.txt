@@ -15,6 +15,9 @@ df['Age Group'] = pd.cut(df['Age'], bins=bins, labels=labels, right=False)
 grouped = df.groupby('Age')['Income'].describe()
 grouped
 
+import pandas as pd
+import numpy as np
+
 df = pd.read_csv(r"C:\\Users\\UNKNOWN_CODER\\DSDBA\\Assign3\\iris.csv")
 
 df.head()

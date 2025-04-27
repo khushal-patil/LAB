@@ -33,3 +33,9 @@ print(df.dtypes)
 print("\nApplying One-Hot Encoding to Categorical Variables...")
 df_encoded = pd.get_dummies(df, columns=['Car', 'Model'], drop_first=True)
 print(df_encoded.head())
+
+
+
+###############################################################################################################################if dataset sirani dila asel tr ani jr missing values asel tr aapnas hya commands run karaychya aahet
+
+df['Col_name'].fillna(df['Col_name'].mean(),inplace=True)

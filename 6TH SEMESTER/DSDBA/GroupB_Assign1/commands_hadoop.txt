@@ -1,0 +1,59 @@
+su - hadoop
+
+jps
+
+start-dfs.sh
+
+jps
+
+# Remove any existing input/output in HDFS
+hdfs dfs -rm -r input/sample.txt
+hdfs dfs -rm -r output
+
+mkdir wordcount
+
+cd wordcount
+
+mkdir input
+
+mkdir output
+
+mkdir classes
+
+cd input
+
+touch sample.txt
+
+nano sample.txt
+
+cd ..
+
+touch WordCount.java
+
+nano WordCount.java
+
+javac -classpath "$(hadoop classpath)" -d classes WordCount.java
+
+jar cf wordcount.jar -C classes/ .
+
+hdfs dfs -mkdir -p input
+
+pwd
+
+hdfs dfs -put /home/khushal/WordCount/input/sample.txt input/
+
+hadoop jar wordcount.jar WordCount input/sample.txt output
+
+hdfs dfs -get output/part-r-00000 ./output/result.txt
+
+cd output
+
+cat result.txt
+
+
+
+
+
+
+
+

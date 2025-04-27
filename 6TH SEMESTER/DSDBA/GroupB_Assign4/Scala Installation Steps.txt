@@ -24,8 +24,8 @@ start-workers.sh spark://localhost:7077
 source ~/.bashrc
 
 
-Sample Program Run
-create a file name Hello.scala
+#Sample Program Run
+#create a file name Hello.scala
 
 object HelloWorld {
   def main(args: Array[String]): Unit = {
@@ -34,11 +34,11 @@ object HelloWorld {
 }
 
 
-how to Run it in terminal
+#how to Run it in terminal
 spark-shell
 
-type
+#type
 :load /home/username/Hello.scala
 
-how to run 
+#how to run 
 HelloWorld.main(Array.empty[String])

@@ -1,0 +1,229 @@
+!pip install seaborn
+!pip install matplotlib
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+df = sns.load_dataset('titanic')
+df.head()
+
+df.info()
+
+df.isnull().sum()
+
+df.describe()
+
+df.describe().transpose()
+
+sns.distplot(df['fare'],bins=10,kde=True)
+
+# Distribution Plot
+ax = sns.distplot(x=df['fare'],bins=20,kde=False)
+plt.title('Fare Distribution')
+
+
+# Join Plot
+sns.jointplot(x=df['age'],y=df['fare'],kind='scatter')
+
+#Join Plot
+sns.jointplot(x=df['age'],y=df['fare'],kind='hex')
+
+less100=0
+great100=0
+for i in df['fare']:
+  if i<100:
+    less100 +=1
+  else:
+    great100 +=1
+
+print("Total No. of People of Less than 100: ", less100)
+print("Total No. of People of Greater than 100: ", great100)
+
+df['pclass']
+
+count1=0
+count2=0
+count3=0
+
+for i in df['pclass']:
+  if i==1:
+            count1 +=1
+  elif i==2:
+            count2 +=1
+  elif i==3:
+            count3 +=1
+print(f"frequency of {count1}, frequency of {count2}, frequency of {count3}")
+
+# Rug Plot
+sns.rugplot(x=df['age'],y=df['fare'])
+
+# Bar Plot
+#ax = sns.barplot(x=df['class'],y=df['alive'])
+ad = sns.countplot(x=df['class'],data=df,hue='survived',palette='magma')
+ad.set_xticklabels(ad.get_xticklabels(),rotation=90)
+for i in ad.containers:
+  ad.bar_label(i)
+plt.title('Class Distribution Counts')
+
+df.describe()
+
+# Box Plot
+#ab = sns.boxplot(x=df['class'],y=df['age'],palette='magma')
+ab = sns.boxplot(x=df['class'],y=df['age'],palette='viridis')
+df.describe().transpose()
+
+# Violin Plot
+ax = sns.violinplot(x=df['class'],y=df['age'],palette='viridis')
+
+#swarm Plot
+sns.swarmplot(x=df['class'],y=df['age'],palette='viridis')
+
+ab = sns.histplot(x=df['fare'],kde=False,bins=10,hue='survived',data=df,palette='viridis')
+
+for i in ab.containers:
+  ab.bar_label(i)
+
+# Hist Plot
+ab = sns.histplot(x=df['alive'],kde=False,bins=10,hue='survived',data=df,palette='viridis')
+
+for i in ab.containers:
+  ab.bar_label(i)
+  
+ # Heatmap
+corr = df.corr(numeric_only=True)
+
+plt.figure(figsize=(8, 6))
+sns.heatmap(corr, annot=True, cmap="coolwarm", linewidths=0.5)
+
+plt.title("Correlation Heatmap of Titanic Dataset")
+plt.show()
+
+# Count Plot
+sns.countplot(data=df, x="fare")
+
+# Strip Plot
+sns.stripplot(data=df, x="class", y="fare", jitter=True, palette='viridis')
+
+# Density Chart
+sns.kdeplot(data=df, x="fare", hue="class", fill=True)
+
+# TreeMap
+import plotly.express as ex
+
+fig = ex.treemap(df, path=["class", "sex"], values="fare", title="Treemap of Fare Distribution by Class and Sex")
+
+fig.show()
+
+#Radar Chart
+titanic_grouped = df.groupby("class")[["survived", "fare", "age"]].mean()
+
+
+categories = ["Survival Rate", "Average Fare", "Average Age"]
+labels = titanic_grouped.index
+values = titanic_grouped.values
+
+values = values / values.max(axis=0)
+
+angles = np.linspace(0, 2 * np.pi, len(categories), endpoint=False).tolist()
+values = np.concatenate((values, values[:, [0]]), axis=1)
+angles += angles[:1]
+
+fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+for i, label in enumerate(labels):
+    ax.plot(angles, values[i], label=label)
+    ax.fill(angles, values[i], alpha=0.3)
+
+ax.set_xticks(angles[:-1])
+ax.set_xticklabels(categories)
+ax.set_title("Radar Chart of Survival Rate, Fare, and Age by Class")
+ax.legend()
+
+plt.show()
+
+#Bubble Chart
+grouped = df.groupby(["class", "sex"]).agg({"fare": "mean", "age": "mean", "survived": "count"}).reset_index()
+
+plt.figure(figsize=(10, 6))
+sns.scatterplot(data=grouped, x="class", y="fare", size="survived", hue="sex", sizes=(50, 1000), alpha=0.7)
+
+plt.xlabel("Passenger Class")
+plt.ylabel("Average Fare")
+plt.title("Bubble Chart of Passenger Class vs. Average Fare (Bubble Size = Count)")
+plt.legend(title="Sex")
+plt.grid(True)
+
+plt.show()
+
+# Pie Chart
+class_counts = df["class"].value_counts()
+
+plt.figure(figsize=(7, 7))
+plt.pie(class_counts, labels=class_counts.index, autopct="%1.1f%%", colors=["lightblue", "lightcoral", "gold"], startangle=140)
+
+plt.title("Passenger Class Distribution")
+plt.show()
+
+#Area Chart
+fare_by_age_class = df.groupby(["age", "class"])["fare"].mean().unstack()
+
+plt.figure(figsize=(10, 6))
+fare_by_age_class.plot(kind="area", stacked=True, alpha=0.5, colormap="coolwarm", figsize=(10, 6))
+
+
+plt.xlabel("Age")
+plt.ylabel("Average Fare")
+plt.title("Area Chart of Average Fare by Age and Class")
+plt.legend(title="Passenger Class")
+plt.grid(True)
+
+plt.show()
+
+import plotly.graph_objects as go
+# Calculate total fare per class
+fare_by_class = df.groupby("class")["fare"].sum().reset_index()
+
+# Sort by class order
+fare_by_class = fare_by_class.sort_values(by="fare", ascending=False)
+
+# Create Waterfall Chart
+fig = go.Figure(go.Waterfall(
+    name="Fare Contribution",
+    orientation="v",
+    x=fare_by_class["class"],
+    y=fare_by_class["fare"],
+    text=fare_by_class["fare"].round(2),
+    textposition="outside",
+    decreasing={"marker": {"color": "red"}},
+    increasing={"marker": {"color": "green"}},
+    totals={"marker": {"color": "blue"}}
+))
+
+# Layout adjustments
+fig.update_layout(
+    title="Waterfall Chart of Total Fare Contribution by Class",
+    xaxis_title="Passenger Class",
+    yaxis_title="Total Fare",
+    showlegend=False
+)
+
+# Show the figure
+fig.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

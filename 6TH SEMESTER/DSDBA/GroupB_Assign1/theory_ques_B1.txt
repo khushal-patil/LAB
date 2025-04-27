@@ -1,0 +1,236 @@
+Based on the questions extracted from your uploaded images, here are detailed answers:
+
+---
+
+### **1. Hadoop Daemons**
+Hadoop operates using several key daemons, each serving specific purposes:
+1. **NameNode**: Manages the metadata for HDFS (file system hierarchy, block locations, etc.).
+2. **DataNode**: Stores the actual data in the form of blocks and communicates with the NameNode.
+3. **ResourceManager**: Handles resource allocation for job scheduling.
+4. **NodeManager**: Manages resources and tasks on individual nodes.
+5. **Secondary NameNode**: Creates snapshots of NameNode's metadata as a backup mechanism.
+
+---
+
+### **2. Explain HDFS (Hadoop Distributed File System)**
+HDFS is Hadoop's primary storage system designed for distributed data storage:
+- **Block Storage**: Files are split into fixed-size blocks (default 128 MB), stored across multiple nodes.
+- **Replication**: Blocks are replicated across nodes (default replication factor: 3) for fault tolerance.
+- **Write Once, Read Many**: Optimized for reading rather than frequent write operations.
+- **Scalability**: Handles large-scale datasets across clusters.
+
+---
+
+### **3. MapReduce Framework**
+MapReduce is a programming model for processing large datasets:
+1. **Map Phase**: Processes the input data and converts it into key-value pairs.
+   - Example: For a text file, the Map phase splits lines and creates `(word, 1)` pairs for each word.
+2. **Shuffle Phase**: Groups and sorts the key-value pairs by keys (intermediate step).
+3. **Reduce Phase**: Aggregates grouped data and produces the final output.
+   - Example: Counts occurrences of each word, producing `(word, count)` pairs.
+
+The framework divides tasks across multiple nodes, providing parallelism and scalability.
+
+---
+
+### **Iris Dataset Questions**
+1. **Features and Types**:
+   - **Sepal Length**: Numeric (in cm)
+   - **Sepal Width**: Numeric (in cm)
+   - **Petal Length**: Numeric (in cm)
+   - **Petal Width**: Numeric (in cm)
+   - **Species**: Categorical (Setosa, Versicolour, Virginica)
+
+2. **Histogram Code**:
+   ```python
+   import seaborn as sns
+   import matplotlib.pyplot as plt
+   from sklearn.datasets import load_iris
+   import pandas as pd
+
+   iris = load_iris()
+   df = pd.DataFrame(iris.data, columns=iris.feature_names)
+
+   for column in df.columns:
+       plt.figure()
+       sns.histplot(df[column], kde=True, color="green")
+       plt.title(f"Histogram of {column}")
+       plt.show()
+   ```
+
+3. **Boxplot Code**:
+   ```python
+   for column in df.columns:
+       plt.figure()
+       sns.boxplot(x=df[column])
+       plt.title(f"Boxplot of {column}")
+       plt.show()
+   ```
+
+4. **Identifying Outliers**:
+   Outliers are points outside the whiskers of the boxplot. For numeric features like **Sepal Width**, check for values outside the \( Q1 - 1.5 \times IQR \) or \( Q3 + 1.5 \times IQR \) range.
+
+Let me know if you'd like detailed steps to calculate or visualize the outliers!
+
+########################################################################
+CODE EXPLANATION
+Sure! Let me break this down step-by-step and explain each part of the provided Hadoop WordCount program.
+
+---
+
+### **1. Overview**
+This Java program implements the classic **WordCount example** using the Hadoop MapReduce framework. It reads text input files, tokenizes the text into words, and counts the occurrences of each word. The program consists of the following key components:
+- **Mapper Class**: Processes each line of the input text and generates intermediate key-value pairs (word, 1).
+- **Reducer Class**: Aggregates the intermediate key-value pairs to calculate the final count for each word.
+- **Driver Code**: Sets up the job configuration and specifies input/output paths, classes, and other settings.
+
+---
+
+### **2. Key Components**
+#### **(a) Mapper Class (`TokenizerMapper`)**
+The Mapper class transforms the input data into intermediate key-value pairs, where the key is a word, and the value is `1`.
+
+```java
+public static class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable> {
+    private final static IntWritable one = new IntWritable(1);
+    private Text word = new Text();
+
+    public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
+        StringTokenizer itr = new StringTokenizer(value.toString());
+        while (itr.hasMoreTokens()) {
+            word.set(itr.nextToken().toLowerCase().replaceAll("[^a-zA-Z0-9]", ""));
+            if (!word.toString().isEmpty()) {
+                context.write(word, one);
+            }
+        }
+    }
+}
+```
+
+- **`extends Mapper<Object, Text, Text, IntWritable>`**: The `Mapper` class takes in:
+  - **Input Key (`Object`)**: The byte offset of the line in the input file.
+  - **Input Value (`Text`)**: A single line of text from the input file.
+  - **Output Key (`Text`)**: A word.
+  - **Output Value (`IntWritable`)**: The number `1` (indicating one occurrence).
+
+- **Key Logic**:
+  - `StringTokenizer`: Splits each line of text into individual tokens (words).
+  - `toLowerCase()`: Converts each word to lowercase for case-insensitive counting.
+  - `replaceAll("[^a-zA-Z0-9]", "")`: Removes special characters and punctuation.
+  - `context.write(word, one)`: Emits the key-value pair `(word, 1)` for each word.
+
+#### **(b) Reducer Class (`IntSumReducer`)**
+The Reducer aggregates the counts for each word generated by the Mapper.
+
+```java
+public static class IntSumReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+    private IntWritable result = new IntWritable();
+
+    public void reduce(Text key, Iterable<IntWritable> values, Context context)
+            throws IOException, InterruptedException {
+        int sum = 0;
+        for (IntWritable val : values) {
+            sum += val.get();
+        }
+        result.set(sum);
+        context.write(key, result);
+    }
+}
+```
+
+- **`extends Reducer<Text, IntWritable, Text, IntWritable>`**:
+  - **Input Key (`Text`)**: A word from the Mapper output.
+  - **Input Value (`Iterable<IntWritable>`)**: All counts for that word (e.g., [1, 1, 1]).
+  - **Output Key (`Text`)**: The word.
+  - **Output Value (`IntWritable`)**: The total count for the word.
+
+- **Key Logic**:
+  - Iterates through the values (all `1`s) for a word.
+  - Computes the sum (total occurrences of the word).
+  - Emits the key-value pair `(word, total_count)`.
+
+#### **(c) Driver Code (`main` method)**
+This part sets up and runs the MapReduce job.
+
+```java
+public static void main(String[] args) throws Exception {
+    if (args.length != 2) {
+        System.err.println("Usage: WordCount <input path> <output path>");
+        System.exit(-1);
+    }
+
+    Configuration conf = new Configuration();
+    Job job = Job.getInstance(conf, "word count");
+
+    job.setJarByClass(WordCount.class);
+    job.setMapperClass(TokenizerMapper.class);
+    job.setCombinerClass(IntSumReducer.class); // optional
+    job.setReducerClass(IntSumReducer.class);
+
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(IntWritable.class);
+
+    FileInputFormat.addInputPath(job, new Path(args[0]));
+    FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+    System.exit(job.waitForCompletion(true) ? 0 : 1);
+}
+```
+
+- **Input and Output Paths**:
+  - The program expects two arguments: the input directory path and the output directory path.
+  - `FileInputFormat.addInputPath`: Specifies the input directory.
+  - `FileOutputFormat.setOutputPath`: Specifies the output directory.
+
+- **Configuration**:
+  - Creates a `Configuration` object to set up the Hadoop job.
+  - Registers the Mapper, Reducer, and Combiner (optional optimization step that performs partial aggregation before shuffling).
+
+- **Job Execution**:
+  - `job.waitForCompletion(true)`: Submits the job to the Hadoop cluster and waits for its completion. The exit code (`0` for success, `1` for failure) is returned.
+
+---
+
+### **3. Workflow**
+1. **Input**: A text file or directory containing multiple text files (e.g., a book, logs, etc.).
+2. **Mapper**:
+   - Reads each line of text.
+   - Splits the line into words.
+   - Emits `(word, 1)` for each word.
+3. **Shuffle and Sort**:
+   - Groups all values (`1`s) by key (word) across Mappers.
+   - Produces pairs like `("word1", [1, 1, 1])`.
+4. **Reducer**:
+   - Sums the counts for each word.
+   - Outputs the final result `(word1, total_count)`.
+5. **Output**: A file containing each word and its count.
+
+---
+
+### **4. Example Execution**
+- **Input File** (sample.txt):
+```
+Hello Hadoop
+Hello World
+```
+
+- **Command**:
+```bash
+hadoop jar WordCount.jar WordCount /input /output
+```
+
+- **Output File** (/output/part-r-00000):
+```
+hadoop   1
+hello    2
+world    1
+```
+
+---
+
+### **5. Combiner Optimization**
+- The `Combiner` class (same as Reducer here) performs local aggregation at each Mapper node before the shuffle phase, reducing the volume of data transferred across the network. This is optional but improves efficiency.
+
+---
+
+If you'd like further explanations or assistance with running this program, let me know!
