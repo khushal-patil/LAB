@@ -1,0 +1,259 @@
+Here is a comprehensive **theory-based Q\&A guide** based on your RSA encryption-decryption code, ideal for **viva/oral exams**:
+
+---
+
+### 🔐 **1. What is RSA Algorithm? Explain its Purpose.**
+
+**Definition:**
+RSA (Rivest–Shamir–Adleman) is a public-key cryptographic algorithm used for secure data transmission. It is based on the mathematical difficulty of factoring large prime numbers.
+
+**Purpose:**
+To encrypt and decrypt messages such that only the intended recipient can read the message, even if the public key is known.
+
+**Applications:**
+
+* Secure emails
+* Digital signatures
+* SSL/TLS in web security
+* Blockchain (e.g., wallet keys)
+
+---
+
+### 🔣 **2. Explain the RSA Key Generation Process.**
+
+**Steps in Code:**
+
+1. **Choose two distinct primes**: `p`, `q`
+2. **Compute `n = p * q`**: modulus for keys
+3. **Calculate Euler’s Totient `phi = (p-1)(q-1)`**
+4. **Choose `e`** such that `1 < e < phi` and `gcd(e, phi) = 1` (public exponent)
+5. **Calculate `d`**: modular inverse of `e` modulo `phi`
+
+   * i.e., `(e * d) % phi == 1` → private exponent
+
+**Returned Keys:**
+
+* Public key: `(e, n)`
+* Private key: `(d, n)`
+
+---
+
+### 🧮 **3. What is the Role of `gcd` and `modInverse` Functions?**
+
+* `gcd(a, b)`: Ensures `e` and `phi` are coprime for valid encryption.
+* `modInverse(e, phi)`: Finds `d` such that encryption and decryption are inverse operations under modulo `phi`.
+
+---
+
+### ⚙️ **4. How Does Modular Exponentiation Work?**
+
+**Function:** `power(base, expo, m)`
+Performs fast exponentiation:
+
+* Reduces time complexity from **O(e)** to **O(log e)**
+* Essential for large numbers in RSA to prevent overflow and reduce time
+
+**Used in:**
+
+* `encrypt()` → $C = M^e \mod n$
+* `decrypt()` → $M = C^d \mod n$
+
+---
+
+### 🧠 **5. Why Must `p` and `q` Be Prime Numbers?**
+
+* Security of RSA relies on the fact that factoring `n = p * q` is hard.
+* If `p` or `q` is not prime, `phi` calculation is incorrect, breaking the key generation and encryption.
+
+---
+
+### 📦 **6. Explain the Functions: `encrypt()` and `decrypt()`**
+
+* `encrypt(m, e, n)` → Encrypts message `m` using public key
+* `decrypt(c, d, n)` → Decrypts ciphertext `c` using private key
+
+**Encryption Equation:**
+$C = M^e \mod n$
+
+**Decryption Equation:**
+$M = C^d \mod n$
+
+---
+
+### 🧠 **7. What is Euler’s Totient Function and Why is it Used?**
+
+**Euler’s Totient (φ):**
+Number of integers less than `n` that are coprime to `n`.
+
+In RSA,
+
+$$
+\phi(n) = (p-1)(q-1)
+$$
+
+Used to find a valid public exponent `e` and compute `d`.
+
+---
+
+### 🧮 **8. What is Time and Space Complexity of RSA Implementation?**
+
+**Time Complexity:**
+
+* Key generation (modInverse): O(φ)
+* Encryption/Decryption (`power()`): O(log e) or O(log d)
+
+**Space Complexity:**
+
+* O(1) for scalar operations
+* O(log n) if recursion/stack were used in `power()`
+
+---
+
+### ⚠️ **9. Limitations and Disadvantages of RSA**
+
+* **Slow for large files**: Not ideal for large-scale encryption
+* **Vulnerable to quantum attacks** (Shor’s algorithm)
+* **Key length** must be large (2048+ bits) for modern security
+
+---
+
+### 📌 **10. What Happens If `modInverse()` Returns -1?**
+
+* This means modular inverse doesn't exist → `e` is not coprime to `phi`.
+* The system should raise an error or retry with a different `e`.
+
+---
+
+Would you like this turned into a printable **PDF summary** or **exam notes format**?
+**********************************************************************************************************************
+Example:---------
+p = 7
+q = 11
+m = 3
+
+n = p*q = 7 * 11 = 77
+phi(n) = (p-1)(q-1) = 6 * 10 = 60
+factor phi(n) = 2 * 2 * 3 * 5
+here biggest is 5 and near to is 7 i.e. co-prime
+e = 7
+ed mod 60 = 1
+61
+121
+181
+241
+301
+
+here 301 is completely divided by e = 7 therefore
+d = 301/7 = 43
+
+#encryption ----
+c = m^e mod(n)
+  = 3^7 mod(77)
+  = 2187 mod (77)
+  = 31
+#decryption -----
+m = c^d mod(n)
+  = 31^43 mod(77)
+  = 3
+  
+*****************************************************************************************************************
+Here are **concise, clear, and complete answers** to your RSA viva questions:
+
+---
+
+### ✅ **Q1: What Are Possible Attacks on RSA Algorithm? Explain**
+
+RSA is secure under proper use, but certain vulnerabilities exist:
+
+#### **1. Factoring Attack**
+
+* **Core weakness** of RSA lies in factoring `n = p × q`.
+* Large `n` makes this computationally hard.
+* **Example:** For small `n`, attackers can easily factor and break encryption.
+
+#### **2. Low Public Exponent Attack**
+
+* Using a small `e` (like `e = 3`) can leak information if the same message is sent to multiple recipients or is too small.
+
+#### **3. Chosen Ciphertext Attack (CCA)**
+
+* Attacker tricks system into decrypting selected ciphertexts, learning patterns or recovering keys.
+
+#### **4. Timing Attack**
+
+* By measuring how long decryption takes, attacker can infer bits of the private key.
+
+#### **5. Man-in-the-Middle (MITM)**
+
+* During key exchange, attacker intercepts and replaces keys to decrypt/modify messages.
+
+#### ✅ Applications of Understanding These Attacks:
+
+* Secure implementations (e.g., OAEP padding, large key sizes)
+* Cybersecurity audits, cryptanalysis research, cryptographic protocol design
+
+---
+
+### ✅ **Q2: How Does RSA Work for M = 5, p = 11, q = 13? Solve It**
+
+We walk through the RSA algorithm step-by-step:
+
+#### **Step 1: Compute `n` and `ϕ(n)`**
+
+* $n = p × q = 11 × 13 = 143$
+* $ϕ(n) = (p-1)(q-1) = 10 × 12 = 120$
+
+#### **Step 2: Choose Public Exponent `e`**
+
+* Let’s choose `e = 7` (gcd(7, 120) = 1)
+
+#### **Step 3: Compute Private Exponent `d`**
+
+* Find `d` such that $(d × e) \mod 120 = 1$
+* Try `d = 103` → $103 × 7 = 721 \mod 120 = 1$ ✅
+
+#### **Step 4: Public and Private Keys**
+
+* Public Key: $(e = 7, n = 143)$
+* Private Key: $(d = 103, n = 143)$
+
+---
+
+#### **Encryption:**
+
+Message $M = 5$
+
+$$
+C = M^e \mod n = 5^7 \mod 143 = 78125 \mod 143 = 101
+$$
+
+🔐 **Encrypted Ciphertext: `C = 101`**
+
+---
+
+#### **Decryption:**
+
+$$
+M = C^d \mod n = 101^{103} \mod 143
+$$
+
+Use modular exponentiation:
+
+$$
+M = 5
+$$
+
+🔓 **Decrypted Message: `M = 5`**
+
+---
+
+### ✅ Applications of RSA:
+
+* **Secure Email (PGP)**
+* **Web Security (HTTPS/TLS)**
+* **Banking & Payments**
+* **Digital Signatures**
+* **Blockchain Wallets**
+
+Let me know if you'd like an animated breakdown or code version of this solved RSA example.
+

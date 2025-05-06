@@ -1,0 +1,307 @@
+Here is a **comprehensive theory Q\&A** set for your **Medical Expert System** code, tailored for an oral viva exam. It covers all key technical, logical, and practical concepts a faculty examiner may focus on.
+
+---
+
+### 🔷 **GENERAL QUESTIONS**
+
+**Q1: What is the purpose of this Medical Expert System?**
+**A:** It simulates a basic rule-based healthcare assistant that can diagnose conditions based on symptoms, suggest treatments, check hospital resources, trigger emergency alerts, and maintain patient history.
+
+**Q2: What kind of AI technique is this system based on?**
+**A:** It uses a **rule-based expert system** model, where predefined rules (symptoms and treatments) are used to infer a diagnosis using symptom matching.
+
+---
+
+### 🔷 **FUNCTIONALITY QUESTIONS**
+
+**Q3: How does the diagnosis process work in this system?**
+**A:** The `diagnose()` method matches input symptoms with known disease symptoms and calculates a score for each. The disease with the highest match score is selected as the diagnosis.
+
+**Q4: How are symptoms matched in the system?**
+**A:** Each symptom is compared with the disease’s symptom list. For every match, the disease’s score is incremented. The disease with the maximum score is considered the best match.
+
+**Q5: What happens if no symptoms match any disease?**
+**A:** The system returns `"Unknown Condition"` and suggests the user consult a doctor.
+
+**Q6: What is the use of the `check_resources()` function?**
+**A:** It reports how many hospital **beds** and **doctors** are currently available as stored in the `resources` dictionary.
+
+**Q7: What does the emergency alert system check for?**
+**A:** The `emergency_alert()` method looks for **critical symptoms** like `"chest pain"`, `"shortness of breath"`, or `"severe headache"`. If found, it triggers an emergency alert.
+
+---
+
+### 🔷 **DATA STRUCTURE QUESTIONS**
+
+**Q8: How is patient history stored and retrieved?**
+**A:** Patient history is stored in a dictionary called `patient_history`, where each key is a patient’s name, and the value is a list of records with symptoms, diagnosis, and treatment.
+
+**Q9: What happens if the same patient visits again?**
+**A:** A new record is appended to their existing history list. This allows multiple entries per patient over time.
+
+---
+
+### 🔷 **PROGRAMMING CONCEPTS**
+
+**Q10: What is the purpose of `__init__()` in this code?**
+**A:** It initializes the class variables: predefined rules, hospital resources, and patient history storage.
+
+**Q11: Why are dictionaries used for diseases and resources?**
+**A:** They allow fast lookup and structured storage of related data like symptoms and treatment under a disease key.
+
+**Q12: How does the program handle input and looping?**
+**A:** It runs in an infinite `while True` loop, offering a menu to the user. Based on input, it performs diagnosis, retrieves history, or exits.
+
+---
+
+### 🔷 **SCENARIO / APPLICATION QUESTIONS**
+
+**Q13: Suppose a user enters symptoms “fever” and “cough”. What will the system likely diagnose?**
+**A:** Both “Flu” and “COVID-19” contain these symptoms, but depending on the number of matching symptoms overall, one with the higher score (probably “Flu”) will be selected.
+
+**Q14: How can the system be improved?**
+**A:**
+
+* Add more diseases and symptoms
+* Use ML/NLP for more flexible symptom interpretation
+* Include medicine dosage, doctor suggestions, and alerting staff in real-time
+* Interface with hospital databases
+
+**Q15: Can this system handle multiple diagnoses?**
+**A:** Currently no—it only returns the **single best match**. To allow multiple, the code could be modified to return all diseases with scores above a certain threshold.
+
+---
+
+### 🔷 **LIMITATIONS QUESTIONS**
+
+**Q16: What are the limitations of this expert system?**
+**A:**
+
+* Only works on exact symptom match
+* Cannot handle typos or synonyms (e.g., “high temperature” ≠ “fever”)
+* No real-time learning or patient personalization
+* Relies on manually updated rules
+
+**Q17: Why might this system give incorrect diagnoses?**
+**A:**
+
+* Limited rule set
+* Symptom overlap between diseases
+* Ignores duration, severity, or order of symptoms
+* Doesn’t consider patient history in the diagnosis phase
+
+---
+
+### 🔷 **CODE UNDERSTANDING & LOGIC**
+
+**Q18: Explain this line: `scores[disease] = sum(1 for symptom in symptoms if symptom in details["symptoms"])`**
+**A:** It counts how many input symptoms match the disease’s symptom list and stores the total in the `scores` dictionary for that disease.
+
+**Q19: Why do we use `max(scores, key=scores.get)`?**
+**A:** To get the disease with the highest matching symptom count. `scores.get` returns the score for each disease, and `max` finds the one with the highest value.
+
+**Q20: How would you add a new disease like "Asthma"?**
+**A:** Add a new entry to `self.rules` like:
+
+```python
+"Asthma": {
+    "symptoms": ["wheezing", "shortness of breath", "chest tightness"],
+    "treatment": "Inhalers, avoid triggers, bronchodilators."
+}
+```
+
+---
+
+Would you like me to generate a printable **cheat sheet PDF** or a **mock viva script** between examiner and student?
+##############################################################################################################################
+Here are **detailed answers** to all four questions from your screenshot, complete with definitions, examples, advantages, disadvantages, applications, time complexity, and space complexity (where applicable):
+
+---
+
+### **1. What is a Rule-Based Expert System?**
+
+**Definition:**
+A Rule-Based Expert System is an AI program that uses a set of logical rules (IF-THEN statements) derived from domain knowledge to simulate human reasoning in a specific area of expertise.
+
+**Example:**
+In a **Medical Expert System**, if a patient has fever and cough, then the rule might conclude flu or COVID-19.
+
+**Structure:**
+
+* **Rule Base:** Contains expert knowledge in the form of rules.
+* **Inference Engine:** Applies rules to input data (facts) to derive conclusions.
+* **Working Memory (Fact Base):** Stores user inputs and intermediate conclusions.
+
+**Advantages:**
+
+* Easy to implement for well-defined domains
+* Transparent reasoning
+* Modular and extensible
+
+**Disadvantages:**
+
+* Not adaptive; can't learn from data
+* Limited scalability
+* Difficult to handle uncertainty or vague inputs
+
+**Applications:**
+
+* Medical diagnosis
+* Fraud detection
+* Troubleshooting systems
+* Loan approval systems
+
+**Time Complexity:**
+
+* Worst case: O(n) where n is the number of rules (sequential matching)
+  **Space Complexity:**
+* O(n + m), where `n` = number of rules, `m` = number of facts stored
+
+---
+
+### **2. How to Do Analysis of Data Sets**
+
+**Definition:**
+Data set analysis is the process of examining, cleaning, transforming, and modeling data to extract useful information, detect patterns, and support decision-making.
+
+**Steps:**
+
+1. **Data Collection**
+2. **Data Cleaning** (removing nulls, duplicates)
+3. **Exploratory Data Analysis (EDA)** – using statistics and visuals
+4. **Feature Selection** – choosing relevant attributes
+5. **Modeling** – applying machine learning or statistical techniques
+6. **Validation & Testing**
+
+**Example:**
+Analyzing patient data to find correlations between symptoms and diseases using pandas and matplotlib in Python.
+
+**Advantages:**
+
+* Reveals trends and patterns
+* Supports predictive modeling
+* Enables evidence-based decisions
+
+**Disadvantages:**
+
+* Time-consuming
+* Requires domain knowledge
+* May be biased or incomplete
+
+**Applications:**
+
+* Business intelligence
+* Healthcare analytics
+* Customer segmentation
+* Predictive maintenance
+
+**Time Complexity:**
+
+* Varies with analysis method; basic EDA is O(n), ML models vary (e.g., O(n log n) for tree models)
+  **Space Complexity:**
+* O(n × d), where `n` = rows, `d` = features/columns
+
+---
+
+### **3. Explain in Detail What is Problem Decomposition**
+
+**Definition:**
+Problem decomposition is the process of breaking a complex problem into smaller, manageable sub-problems which can be solved independently and combined for the final solution.
+
+**Example:**
+In developing a medical expert system:
+
+* Decompose into modules: symptom input, rule engine, diagnosis, patient history.
+
+**Types:**
+
+* Functional Decomposition
+* Data Decomposition
+* Control Decomposition
+
+**Advantages:**
+
+* Simplifies complexity
+* Encourages parallel development
+* Improves debugging and testing
+* Enhances reusability of modules
+
+**Disadvantages:**
+
+* Requires clear boundaries between sub-problems
+* Integration challenges
+* Not always obvious how to decompose
+
+**Applications:**
+
+* Software development
+* Systems design
+* Project management
+* AI knowledge engineering
+
+**Time Complexity:**
+
+* Depends on the number and depth of sub-problems; generally, the divide-and-conquer pattern is O(log n) in recursion depth.
+  **Space Complexity:**
+* O(n) if using recursive stack space for decomposed modules
+
+---
+
+### **4. What are the Principal Components of an Expert System**
+
+**Definition:**
+An Expert System mimics human decision-making using domain-specific knowledge and reasoning rules. Its core architecture includes several interacting components.
+
+**Principal Components:**
+
+1. **Knowledge Base**
+
+   * Stores facts and rules from domain experts
+   * Example: Rules for medical diagnosis
+
+2. **Inference Engine**
+
+   * Applies logic to the knowledge base to deduce conclusions
+   * Uses forward/backward chaining
+
+3. **User Interface**
+
+   * Allows user to interact with the system
+   * Example: input symptoms, receive diagnosis
+
+4. **Explanation System**
+
+   * Explains reasoning behind decisions
+   * Builds user trust and transparency
+
+5. **Knowledge Acquisition Module**
+
+   * Helps experts update rules and facts
+
+**Advantages:**
+
+* High accuracy in specific domains
+* Reduces human error
+* Available 24/7
+* Consistent decision-making
+
+**Disadvantages:**
+
+* Difficult to build and maintain
+* Limited flexibility
+* No learning capability (unless hybridized)
+
+**Applications:**
+
+* MYCIN (medical), DENDRAL (chemical analysis), CLIPS (NASA), financial advising
+
+**Time Complexity:**
+
+* Depends on rule chaining and matching; Forward chaining: O(n) to O(n²)
+  **Space Complexity:**
+* O(n), where `n` = total number of facts + rules stored
+
+---
+
+Would you like this content formatted into a **presentation slide deck** or **PDF for printing**?
+

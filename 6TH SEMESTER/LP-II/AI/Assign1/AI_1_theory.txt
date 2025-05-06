@@ -1,0 +1,169 @@
+Here are high-impact **viva questions and answers** based on your graph code — **ideal for oral exams** and covering all critical concepts:
+
+---
+
+### 🔍 **Graph Basics**
+
+**Q1. What is a graph and how is it represented here?**
+**A:** A graph is a collection of vertices (nodes) and edges (connections). In this code, it's represented using an **adjacency list**, implemented with a Python dictionary.
+
+---
+
+### 🧩 **Graph Operations**
+
+**Q2. How do you add and remove a vertex?**
+**A:** Adding a vertex inserts a new key in the adjacency list if it doesn't already exist. Removing a vertex deletes the key and also removes the vertex from all neighbor lists.
+
+**Q3. How is an edge added or removed?**
+**A:** To add an edge between `u` and `v`, both are added to each other's adjacency list (undirected). To remove it, both `u` and `v` are deleted from each other's list.
+
+---
+
+### 🔁 **Traversals**
+
+**Q4. What is the difference between DFS and BFS?**
+**A:**
+
+* **DFS** (Depth First Search) goes deep before backtracking; it's recursive.
+* **BFS** (Breadth First Search) explores neighbors level by level; it's iterative or recursive using a queue.
+
+**Q5. Why is BFS implemented both iteratively and recursively here?**
+**A:** To demonstrate both possible approaches: iterative uses a queue explicitly, recursive simulates it with function calls and a helper function.
+
+---
+
+### 🧠 **Logical Checks**
+
+**Q6. How do you check if a path exists between two vertices?**
+**A:** Using a recursive DFS-based function `has_path(u, v)` that searches from `u` to `v` and returns `True` if a path is found.
+
+**Q7. How are the number of vertices and edges counted?**
+**A:**
+
+* Vertices = number of keys in the graph dictionary.
+* Edges = sum of lengths of all adjacency lists divided by 2 (since each edge is counted twice in an undirected graph).
+
+---
+
+### 🧪 **Code Understanding**
+
+**Q8. Why is `deque` used in BFS?**
+**A:** `deque` (double-ended queue) allows efficient O(1) time appends and pops from both ends, ideal for queue operations in BFS.
+
+**Q9. What happens if you try to remove a vertex or edge that doesn’t exist?**
+**A:** The code checks for existence using `if` statements, avoiding errors by only removing if the vertex or edge exists.
+
+---
+
+### 🧵 **Design and Extensibility**
+
+**Q10. Is this graph directed or undirected? How would you change it to be directed?**
+**A:** It's undirected. To make it directed, **remove the second insertion** in `add_edge` (i.e., `self.graph[v].append(u)`).
+
+**Q11. Can this implementation handle weighted graphs?**
+**A:** Not currently. To support weights, change each list to store tuples: `(neighbor, weight)` instead of just `neighbor`.
+
+---
+
+### 🔄 **Algorithms**
+
+**Q12. Is DFS implemented recursively or iteratively?**
+**A:** DFS is implemented recursively using a visited set to avoid cycles.
+
+**Q13. What will happen if there is a cycle in the graph?**
+**A:** Both DFS and BFS handle cycles correctly by marking visited nodes, preventing infinite loops.
+
+---
+
+Would you like me to prepare a **printable Q\&A sheet** or turn this into **flashcards** for revision?
+
+###############################################################################################################
+Based on the screenshot, the questions revolve around **Depth-First Search (DFS) and Breadth-First Search (BFS)** algorithms. Below, I provide a detailed explanation of both, including **definitions, examples, advantages, disadvantages, applications, time complexity, and space complexity**.
+
+---
+
+## **1. Difference between DFS and BFS**
+### **Definition**
+- **Depth-First Search (DFS):** An algorithm for traversing or searching tree or graph data structures. DFS explores as far as possible along one branch before backtracking.
+- **Breadth-First Search (BFS):** An algorithm that explores all the neighbors of a node before moving to the next level in a hierarchical order.
+
+### **Examples**
+#### **DFS Example (Binary Tree Traversal)**
+Consider a binary tree:
+```
+       A
+      / \
+     B   C
+    / \   \
+   D   E   F
+```
+DFS would explore in this order:
+1. **Start at A**
+2. **Go to B → D → (Backtrack) → E**
+3. **Backtrack to A, then visit C → F**
+
+Traversal Order: **A → B → D → E → C → F**
+
+#### **BFS Example (Binary Tree Traversal)**
+Using the same tree structure, BFS would explore:
+1. **Visit A first**
+2. **Visit B and C (children of A)**
+3. **Visit D, E, and F (children of B and C)**
+
+Traversal Order: **A → B → C → D → E → F**
+
+---
+
+## **2. Advantages and Disadvantages**
+### **DFS Advantages**
+✅ Uses less memory compared to BFS since it only stores the path nodes.  
+✅ Efficient for solving puzzles like mazes.  
+✅ Suitable for path-finding when the goal is deep within the graph/tree.
+
+### **DFS Disadvantages**
+❌ May get stuck in loops if cycles exist (requires cycle detection).  
+❌ Does not guarantee the shortest path in unweighted graphs.  
+
+### **BFS Advantages**
+✅ Guarantees finding the shortest path in an unweighted graph.  
+✅ Finds all connected nodes efficiently in a graph.  
+✅ Works well for shortest path problems, like navigating maps.
+
+### **BFS Disadvantages**
+❌ Requires more memory since it stores all nodes at the current depth.  
+❌ Can be slower for large graphs compared to DFS.  
+
+---
+
+## **3. Applications of DFS and BFS**
+### **DFS Applications**
+📌 Solving mazes  
+📌 Topological sorting  
+📌 Detecting cycles in graphs  
+📌 Searching hierarchical structures  
+📌 Pathfinding in AI algorithms  
+
+### **BFS Applications**
+📌 Shortest path search (e.g., Google Maps)  
+📌 Peer-to-peer networking (finding closest neighbors)  
+📌 Web crawlers (finding new links in webpages)  
+📌 Level-wise traversal in tree-based structures  
+📌 Finding connected components in graphs  
+
+---
+
+## **4. Time Complexity and Space Complexity**
+### **DFS Complexity**
+- **Time Complexity:** **O(V + E)** (where V = vertices, E = edges)
+- **Space Complexity:** **O(V)** (for recursion stack or explicit stack storage)
+
+### **BFS Complexity**
+- **Time Complexity:** **O(V + E)** (since every vertex and edge is processed)
+- **Space Complexity:** **O(V)** (stores all nodes at the current level in the queue)
+
+---
+
+### **Conclusion**
+DFS and BFS are fundamental graph traversal algorithms with different applications. DFS is **memory-efficient** but does not guarantee the shortest path, while BFS **always finds the shortest path** but can be **memory-intensive**.
+
+Would you like a **Python implementation** for DFS and BFS? 🚀

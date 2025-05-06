@@ -1,0 +1,312 @@
+Here is a **comprehensive viva-style Q\&A guide** for your **Greedy Algorithm Application Code** covering **Selection Sort**, **Job Scheduling**, **Prim's MST**, and **Kruskal's MST**. This will prepare you to confidently answer theory-based and implementation-specific questions during oral exams.
+
+---
+
+## 🧵 **PART 1: Selection Sort**
+
+**Q1. What is selection sort?**
+**A:** Selection sort is a comparison-based sorting algorithm that repeatedly selects the minimum element from the unsorted part and places it at the beginning. It divides the array into sorted and unsorted parts.
+
+**Q2. What is the time complexity of selection sort?**
+**A:**
+
+* Worst case: **O(n²)**
+* Best case: **O(n²)** (even if sorted)
+* Space: **O(1)** (in-place)
+
+**Q3. Is selection sort stable?**
+**A:** No, because it may swap non-adjacent elements and change their order.
+
+**Q4. Where is selection sort useful?**
+**A:** In small datasets where memory usage is a priority over performance.
+
+---
+
+## 🧵 **PART 2: Job Scheduling Problem**
+
+**Q5. What is the job scheduling problem?**
+**A:** Given a set of jobs with deadlines and profits, schedule jobs to maximize total profit ensuring no two jobs overlap and each takes unit time.
+
+**Q6. What strategy is used here?**
+**A:** **Greedy Algorithm** — Sort jobs by descending profit and assign each to the latest available time slot before its deadline.
+
+**Q7. What is the time complexity?**
+**A:**
+
+* Sorting: O(n log n)
+* Slot filling: O(n²) (can be optimized with DSU to O(n log n))
+
+**Q8. Why do we schedule from latest possible slot?**
+**A:** To keep earlier slots free for other jobs with tighter deadlines, maximizing job count and profit.
+
+**Q9. Can multiple jobs be done at same time?**
+**A:** No, each time slot can hold only one job.
+
+---
+
+## 🧵 **PART 3: Prim’s Algorithm (Adjacency List)**
+
+**Q10. What is Prim’s algorithm?**
+**A:** A greedy algorithm to find the Minimum Spanning Tree (MST) of a connected weighted graph by growing MST one vertex at a time using the minimum edge.
+
+**Q11. What data structure is used?**
+**A:**
+
+* **Min-heap** (priority queue) for selecting the next edge with the smallest weight
+* **Visited array** to track included vertices
+
+**Q12. Why is the first edge initialized with weight 0?**
+**A:** It acts as a dummy to start the MST from any vertex.
+
+**Q13. Time and space complexity?**
+**A:**
+
+* Time: **O(E log V)** with min-heap and adjacency list
+* Space: O(V + E)
+
+**Q14. When should you use Prim’s algorithm?**
+**A:** Best when the graph is **dense**, i.e., has many edges.
+
+---
+
+## 🧵 **PART 4: Kruskal’s Algorithm**
+
+**Q15. What is Kruskal’s algorithm?**
+**A:** A greedy algorithm that sorts all edges by weight and adds them to the MST if they don’t form a cycle.
+
+**Q16. How are cycles avoided?**
+**A:** Using **Disjoint Set Union (DSU)** or Union-Find with `find` and `union` operations.
+
+**Q17. How does DSU work?**
+**A:**
+
+* `find(u)` returns the representative of the set u belongs to
+* `union(u, v)` joins the sets containing u and v
+
+**Q18. Time complexity?**
+**A:**
+
+* Sorting edges: **O(E log E)**
+* Union-Find: nearly **O(1)** with optimizations
+
+**Q19. When is Kruskal’s preferred over Prim’s?**
+**A:** When the graph is **sparse**, i.e., fewer edges.
+
+---
+
+## 🧠 **Conceptual Summary**
+
+| Concept            | Approach      | Best Case  | Use Case        |
+| ------------------ | ------------- | ---------- | --------------- |
+| **Selection Sort** | Comparison    | O(n²)      | Small datasets  |
+| **Job Scheduling** | Greedy        | O(n log n) | Max profit jobs |
+| **Prim's MST**     | Greedy + Heap | O(E log V) | Dense graphs    |
+| **Kruskal's MST**  | Greedy + DSU  | O(E log E) | Sparse graphs   |
+
+---
+
+## ⚙️ **Code Logic Questions**
+
+**Q20. How is the main menu controlled?**
+**A:** Using an infinite loop with `while True`, breaking only on choice `5`.
+
+**Q21. How is user input handled?**
+**A:** With `input()` followed by conversion using `int()` or `map()` and list construction.
+
+**Q22. What will happen if an invalid choice is entered?**
+**A:** It prints "Invalid choice. Try again." and prompts again.
+
+**Q23. How are the graphs represented in Prim’s and Kruskal’s?**
+**A:**
+
+* Prim’s: **Adjacency list**
+* Kruskal’s: **Edge list**
+
+---
+
+Would you like a **viva prep sheet PDF**, **presentation slides**, or an **annotated code file** next?
+
+*********************************************************************************************************************
+# **Greedy Algorithms: Detailed Explanation**
+
+## **1. Definition**
+A **greedy algorithm** is a problem-solving approach that makes the **locally optimal choice** at each step with the hope of finding a global optimum. It never reconsider its choices, always taking the best immediate (greedy) option available.
+
+## **2. Key Characteristics of Greedy Algorithms**
+✔ **Makes locally optimal choices** at each step  
+✔ **Never revisits or reverses decisions** (no backtracking)  
+✔ **Top-down approach** (builds solution step-by-step)  
+✔ **Doesn't guarantee global optimum** (but often finds good approximations)  
+✔ **Efficient** (usually faster than dynamic programming)  
+
+### **Example Problems:**
+- **Coin Change Problem** (Minimum coins for a given amount)
+- **Huffman Coding** (Data compression)
+- **Dijkstra's Algorithm** (Shortest path in graphs)
+- **Kruskal's/Prim's Algorithm** (Minimum Spanning Tree)
+- **Activity Selection Problem** (Scheduling)
+
+---
+
+## **3. Advantages of Greedy Method**
+✅ **Simple & Easy to Implement**  
+✅ **Fast Execution** (Low time complexity in many cases)  
+✅ **Memory Efficient** (No need to store past decisions)  
+✅ **Works Well for Optimization Problems** (e.g., Minimum Spanning Tree)  
+
+### **Example Where Greedy Works Perfectly:**
+**Activity Selection Problem**  
+- Given activities with start/end times, select max number of non-overlapping activities.  
+- Greedy choice: Always pick the activity with the **earliest finish time**.  
+- **Optimal solution guaranteed** for this problem.  
+
+---
+
+## **4. Disadvantages of Greedy Method**
+❌ **Not Always Optimal** (May get stuck in local optima)  
+❌ **Requires Problem-Specific Proof** (Must verify if greedy choice leads to global optimum)  
+❌ **Limited Applicability** (Only works for problems with greedy-choice property)  
+
+### **Example Where Greedy Fails:**
+**Coin Change Problem (General Case)**  
+- Coins: {1, 3, 4}, Target: 6  
+- Greedy picks: 4 → 1 → 1 (Total coins = 3)  
+- **Optimal solution:** 3 + 3 (Total coins = 2)  
+
+---
+
+## **5. Time & Space Complexity**
+| **Algorithm**       | **Time Complexity** | **Space Complexity** |  
+|---------------------|---------------------|----------------------|  
+| **Huffman Coding**  | O(n log n)          | O(n)                 |  
+| **Dijkstra's**      | O(V²) (Basic)       | O(V)                 |  
+| **Kruskal's MST**   | O(E log E)          | O(E)                 |  
+| **Prim's MST**      | O(E log V)          | O(V)                 |  
+
+---
+
+## **6. Applications**
+- **Networking:** Dijkstra's algorithm for shortest path routing  
+- **Data Compression:** Huffman coding for file compression  
+- **Scheduling:** Activity selection, job sequencing  
+- **Finance:** Coin change problems (with certain coin systems)  
+
+---
+
+## **7. When to Use Greedy?**
+✔ Problem exhibits **optimal substructure** (solution depends on optimal sub-solutions)  
+✔ Problem has the **greedy-choice property** (local optimum → global optimum)  
+✔ Efficiency is prioritized over guaranteed optimality  
+
+### **Example:**
+**Fractional Knapsack Problem**  
+- Greedy works (choose items with highest value/weight ratio first).  
+- **0/1 Knapsack Problem** (no fractions) → Greedy fails, DP required.  
+
+---
+
+## **8. Key Takeaways**
+- Greedy algorithms are **fast but not always optimal**.  
+- They work best for problems where **local choices lead to global solutions**.  
+- Always verify if the problem has the **greedy-choice property** before implementation.  
+
+Would you like a Python implementation of any greedy algorithm? 🚀
+
+#########################################################################################################
+Here are clear, **concise examples** for each of the **greedy algorithms** from your code, ready for viva or practical demonstrations:
+
+---
+
+## 🟡 1. **Selection Sort**
+
+**Input:**
+`arr = [64, 25, 12, 22, 11]`
+
+**Execution:**
+Step-by-step selection of the smallest element:
+
+```
+[11, 25, 12, 22, 64]  
+[11, 12, 25, 22, 64]  
+[11, 12, 22, 25, 64]  
+[11, 12, 22, 25, 64]
+```
+
+**Output:**
+`Sorted array: [11, 12, 22, 25, 64]`
+
+---
+
+## 🟡 2. **Job Scheduling**
+
+**Input:**
+Jobs = `[('a', 2, 100), ('b', 1, 19), ('c', 2, 27), ('d', 1, 25), ('e', 3, 15)]`
+
+**Sorted by profit:**
+`[('a', 2, 100), ('c', 2, 27), ('d', 1, 25), ('b', 1, 19), ('e', 3, 15)]`
+
+**Slot allocation (Latest possible before deadline):**
+
+```
+Job a → Slot 1  
+Job c → Slot 2  
+Job e → Slot 3
+```
+
+**Output:**
+`Scheduled Jobs: ['a', 'c', 'e']`
+`Total Profit: 100 + 27 + 15 = 142`
+
+---
+
+## 🟡 3. **Prim’s MST (Adjacency List)**
+
+**Input Graph:**
+Vertices = 4
+Edges:
+
+```
+0-1 (10), 0-2 (6), 0-3 (5), 1-3 (15), 2-3 (4)
+```
+
+**Adjacency List:**
+
+```python
+{
+ 0: [(1,10), (2,6), (3,5)],
+ 1: [(0,10), (3,15)],
+ 2: [(0,6), (3,4)],
+ 3: [(0,5), (1,15), (2,4)]
+}
+```
+
+**MST Edges (Prim’s output):**
+`(0, 3), (3, 2), (0, 1)`
+**Total Cost:** `5 + 4 + 10 = 19`
+
+---
+
+## 🟡 4. **Kruskal’s MST (Edge List)**
+
+**Same Graph as above**
+
+**Edges Sorted by Weight:**
+
+```
+(2, 3, 4), (0, 3, 5), (0, 2, 6), (0, 1, 10), (1, 3, 15)
+```
+
+**MST Selected Edges:**
+
+```
+(2, 3), (0, 3), (0, 1)
+```
+
+**Output:**
+`Edges in MST: [(2, 3), (0, 3), (0, 1)]`
+`Total Cost: 4 + 5 + 10 = 19`
+
+---
+
+Would you like me to turn this into a **printable cheat sheet** or a **one-slide presentation**?
+

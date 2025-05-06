@@ -1,0 +1,192 @@
+Here are **crisp, viva-ready answers** to all the theory questions listed:
+
+---
+
+### 🔐 **Theory Answers**
+
+#### **Basic Concepts**
+
+1. **Difference between AND and XOR gates:**
+
+   * **AND**: Outputs 1 only if both inputs are 1.
+   * **XOR**: Outputs 1 if inputs are different (1,0 or 0,1).
+
+2. **Why is 127 used in bitwise operation?**
+
+   * 127 = `01111111` in binary. It's used to mask or modify the **7-bit ASCII** value, effectively removing the MSB (Most Significant Bit).
+   ### 🧠 MSB Meaning
+
+**MSB = Most Significant Bit**
+
+* It is the **leftmost bit** in a binary number.
+* Represents the **highest place value** (like the hundreds place in decimal).
+* In an 8-bit number:
+
+  * **MSB is bit 7** (indexing from 0)
+  * Example:
+
+    * `10000001` → MSB = 1
+
+---
+
+### 🔍 Why MSB matters
+
+* **In signed numbers** (like in two's complement), MSB indicates **sign**:
+
+  * `0` → Positive
+  * `1` → Negative
+* Used in **bit masking, encryption, compression**, and **network protocols**.
+
+---
+
+Want a visual breakdown of bits (MSB to LSB)?
+
+
+3. **What is ASCII value and its role?**
+
+   * ASCII assigns a numeric value to characters (e.g., 'A' = 65). Used here for bitwise operations on text.
+   ### 🔡 ASCII: Quick Summary
+
+**ASCII (American Standard Code for Information Interchange)**
+A **7-bit character encoding** standard that maps **characters to numeric values** used by computers.
+
+---
+
+### 🧠 **Key Facts**
+
+* **Total characters**: 128 (from 0 to 127)
+* **Character Types**:
+
+  * **0–31**: Control characters (e.g., `\n`, `\t`, `Backspace`)
+  * **32–126**: Printable characters (letters, numbers, symbols)
+  * **127**: DEL (delete character)
+
+---
+
+### 🔢 **Examples**
+
+| Character | ASCII Decimal | Binary   |
+| --------- | ------------- | -------- |
+| A         | 65            | 01000001 |
+| a         | 97            | 01100001 |
+| 0         | 48            | 00110000 |
+| Space     | 32            | 00100000 |
+| !         | 33            | 00100001 |
+
+---
+
+### 💡 Why ASCII matters
+
+* It's the foundation for modern encodings like **UTF-8**.
+* Enables **text processing**, **communication protocols**, **encryption**, and **programming**.
+* ASCII values are used in **bitwise operations** for tasks like encoding, comparison, and security.
+
+---
+
+Want a complete printable ASCII table or just top 50 values?
+
+
+4. **How bitwise AND and XOR work:**
+
+   * `AND`: Keeps bits that are 1 in **both** numbers.
+   * `XOR`: Flips bits when bits differ.
+
+5. **Use of `ord()` in Python:**
+
+   * Converts a character to its ASCII value. Example: `ord('A')` → 65.
+
+---
+
+#### **Program Understanding**
+
+6. **Python code logic summary:**
+
+   * Takes a string → gets ASCII of each char → performs `AND 127` and `XOR 127` → prints results in table format.
+
+7. **What happens if 127 is replaced with 255?**
+
+   * `255 = 11111111`, so:
+
+     * `AND` with 255 returns the **original ASCII**.
+     * `XOR` with 255 **inverts all bits** of the character.
+
+8. **Why XOR and AND give different results:**
+
+   * `AND` filters bits.
+   * `XOR` changes bits based on difference—acts like a toggler.
+
+9. **Code modification for OR:**
+
+   ```python
+   or_result = ascii_value | 127
+   print(f"{or_result:<10}")
+   ```
+
+10. **Why bitwise ops in security/data:**
+
+    * Lightweight, fast.
+    * Used in **encryption, hashing**, **data compression**, and **networking**.
+
+---
+
+#### **Advanced Thought**
+
+11. **Use in encryption:**
+
+    * XOR is a base of **symmetric encryption** (e.g., One-Time Pad).
+    * `cipher = plain XOR key` → reversible.
+
+12. **Can we reverse XOR to get original?**
+
+    * Yes. `Original = (cipher XOR 127)` if 127 was used in encryption.
+
+13. **Real-world XOR applications:**
+
+    * RAID parity, checksums, cryptography, error detection, toggling states.
+
+14. **What if string has symbols/numbers?**
+
+    * No issue. `ord()` handles them. Bitwise logic works on all ASCII.
+
+15. **C vs Python implementation:**
+
+    * C uses `char` and `int` explicitly.
+    * Python is dynamic, simpler syntax.
+    * In C:
+
+      ```c
+      printf("%c %d %d %d", c, c, c & 127, c ^ 127);
+      ```
+
+---
+
+Would you like these in a printable format or flashcard style for revision?
+
+### ⚡ XOR Logic Table (Exclusive OR)
+
+The XOR (⊕) gate outputs **1 only when the two inputs are different**.
+
+---
+
+### 🧮 **Truth Table**
+
+| A | B | A ⊕ B |
+| - | - | ----- |
+| 0 | 0 | 0     |
+| 0 | 1 | 1     |
+| 1 | 0 | 1     |
+| 1 | 1 | 0     |
+
+---
+
+### 💡 XOR Properties
+
+* **Self-inverse**: `A ⊕ A = 0`
+* **Identity**: `A ⊕ 0 = A`
+* **Inversion**: `A ⊕ 1 = ¬A`
+* **Reversible**: Used in encryption (e.g., `C = A ⊕ K`, then `A = C ⊕ K`)
+
+---
+
+Would you like a bitwise XOR example between two 8-bit numbers?
+
