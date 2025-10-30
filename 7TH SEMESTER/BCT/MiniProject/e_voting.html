@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dApp E-Voting System</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Load Ethers.js library for Web3 interaction -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fafc;
+        }
+        .card {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .button-primary {
+            background-color: #4c51bf; /* Indigo-600 */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        .button-primary:hover {
+            background-color: #5a62d3; /* Indigo-700 hover */
+        }
+        .button-secondary {
+            background-color: #f0f4f8; /* Gray-200 */
+            color: #4c51bf;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            border: 1px solid #4c51bf;
+            transition: background-color 0.2s;
+        }
+        .button-secondary:hover {
+            background-color: #dee2e6; /* Gray-300 hover */
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #4c51bf;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen">
+
+    <div id="app" class="max-w-4xl mx-auto">
+        <header class="text-center py-6 border-b border-indigo-200 mb-6">
+            <h1 class="text-4xl font-extrabold text-gray-900 flex justify-center items-center">
+                🗳️ Decentralized E-Voting dApp
+            </h1>
+            <p class="text-indigo-600 mt-2 text-lg">Secure & Transparent Governance on Ethereum</p>
+        </header>
+
+        <!-- Connection and Status Panel -->
+        <div class="card bg-white p-6 rounded-xl mb-8 border border-indigo-100">
+            <h2 class="text-xl font-semibold mb-3 text-indigo-700">Account Status</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <p><strong>Network:</strong> <span id="network-id" class="font-medium text-gray-600">...</span></p>
+                <p><strong>Connected Account:</strong> <span id="account-address" class="font-medium text-gray-600 truncate">...</span></p>
+                <p><strong>User Role:</strong> <span id="user-role" class="font-bold text-gray-800">...</span></p>
+            </div>
+            <button id="connect-wallet" onclick="connectWallet()" class="button-primary mt-4 w-full md:w-auto">
+                Connect Wallet
+            </button>
+        </div>
+
+        <!-- Main Content Area -->
+        <div id="content-area" class="card bg-white p-6 rounded-xl border border-indigo-100 min-h-96">
+            <div id="loading" class="text-center py-10 hidden">
+                <div class="spinner mx-auto mb-4"></div>
+                <p class="text-lg text-indigo-600">Initializing dApp and checking registration...</p>
+            </div>
+
+            <div id="message-box" class="hidden p-4 rounded-lg text-center font-medium my-4"></div>
+
+            <div id="voter-view" class="hidden">
+                <h2 class="text-3xl font-bold text-indigo-800 mb-6">Cast Your Vote</h2>
+                <div id="candidates-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Candidate cards will be injected here -->
+                </div>
+            </div>
+
+            <div id="admin-view" class="hidden">
+                <h2 class="text-3xl font-bold text-red-600 mb-6">Admin Dashboard</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Add Candidate -->
+                    <div class="p-6 bg-red-50 border border-red-200 rounded-lg">
+                        <h3 class="text-xl font-semibold text-red-700 mb-4">Add New Candidate</h3>
+                        <input id="candidate-name" type="text" placeholder="Candidate Name" class="w-full p-3 border border-red-300 rounded-lg focus:ring-red-500 focus:border-red-500 mb-3">
+                        <button onclick="addCandidate()" class="button-primary w-full bg-red-600 hover:bg-red-700">Submit Candidate</button>
+                    </div>
+
+                    <!-- Register Voter -->
+                    <div class="p-6 bg-red-50 border border-red-200 rounded-lg">
+                        <h3 class="text-xl font-semibold text-red-700 mb-4">Register New Voter</h3>
+                        <input id="voter-address" type="text" placeholder="Voter Ethereum Address (0x...)" class="w-full p-3 border border-red-300 rounded-lg focus:ring-red-500 focus:border-red-500 mb-3">
+                        <button onclick="registerVoter()" class="button-primary w-full bg-red-600 hover:bg-red-700">Register Voter</button>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h3 class="text-2xl font-bold text-red-700 mb-4">Current Election Status</h3>
+                    <button onclick="fetchCandidates()" class="button-secondary mb-4">Refresh Candidates List</button>
+                    <div id="admin-candidates-list" class="space-y-3">
+                        <!-- Admin candidate list will be injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="results-view" class="hidden">
+                <h2 class="text-3xl font-bold text-green-700 mb-6">Election Results</h2>
+                <div id="winner-display" class="p-6 bg-green-50 border border-green-200 rounded-xl mb-6 text-center">
+                    <h3 class="text-2xl font-semibold text-green-800 mb-2">Current Winner: <span id="winner-name" class="text-3xl font-extrabold">...</span></h3>
+                    <p class="text-lg text-green-600">With <span id="winner-votes" class="font-bold">...</span> votes</p>
+                </div>
+                <button onclick="fetchResults()" class="button-secondary mb-4 bg-green-500 text-white hover:bg-green-600 border-green-500">Refresh Results</button>
+                <div id="results-candidates-list" class="space-y-3">
+                    <!-- Results candidate list will be injected here -->
+                </div>
+            </div>
+
+            <div id="unregistered-view" class="hidden text-center py-10">
+                <h2 class="text-3xl font-bold text-gray-700 mb-4">Access Denied</h2>
+                <p class="text-lg text-gray-500">You are not registered to vote in this election. Please contact the election administrator (Owner).</p>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="scripts/contract.js"></script>
+    <script src="scripts/ui.js"></script>
+    <script src="scripts/wallet.js"></script>
+    <script src="scripts/user.js"></script>
+    <script src="scripts/admin.js"></script>
+</body>
+</html>
