@@ -1,0 +1,472 @@
+Great — below you get a complete, exam-ready package for your practical: runnable Python code for **K-Means** and **Hierarchical** clustering on `sales_data_sample.csv`, a **line-by-line explanation** of every command, the **math/formulas** used (WCSS/inertia, distances, silhouette), how to pick cluster count with the **elbow method**, plus compact **viva Q&A** and the three theory answers you asked. Use this in a notebook (Colab / Jupyter). Replace the CSV path if needed.
+
+---
+
+# 1 — Ready-to-run code (copy → Jupyter / Colab)
+
+```python
+# Clustering on sales_data_sample.csv
+# 1) K-Means (elbow method)
+# 2) Hierarchical clustering (dendrogram + flat clusters)
+# 3) Evaluation & comparison
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
+
+# --------- 1. Load dataset ----------
+df = pd.read_csv("sales_data_sample.csv")   # <- change path if needed
+print("Rows, cols:", df.shape)
+display(df.head())
+
+# --------- 2. Quick inspection & select numeric features ----------
+print(df.info())
+print(df.describe().T)
+
+# For clustering we need numeric features. Choose typical numeric columns (example):
+# If dataset has columns like 'Unit price','Quantity','Tax 5%','Total','Date','City'...
+# Select a subset of numeric columns. Adjust column names to match your CSV.
+numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+print("Numeric columns detected:", numeric_cols)
+
+X = df[numeric_cols].copy()
+
+# Optional: drop ID / irrelevant numeric columns if present (example 'Order ID')
+# X = X.drop(columns=['Order ID'], errors='ignore')
+
+# --------- 3. Preprocessing: missing values, scaling ----------
+# 3.a handle missing values (simple strategy: drop, or fill with median)
+print("Missing values per column:\n", X.isnull().sum())
+X = X.dropna()   # simple option; or: X = X.fillna(X.median())
+
+# 3.b Scale features (important for distance-based clustering)
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# --------- 4. Elbow method to choose k for K-Means ----------
+wcss = []   # within-cluster sum of squares (inertia)
+K_range = range(1, 11)
+for k in K_range:
+    kmeans = KMeans(n_clusters=k, init='k-means++', random_state=42, n_init=10, max_iter=300)
+    kmeans.fit(X_scaled)
+    wcss.append(kmeans.inertia_)
+
+plt.figure(figsize=(7,4))
+plt.plot(K_range, wcss, 'bo-')
+plt.xlabel('Number of clusters k')
+plt.ylabel('WCSS (inertia)')
+plt.title('Elbow Method for K selection')
+plt.xticks(K_range)
+plt.grid(True)
+plt.show()
+
+# Optionally compute silhouette for k >= 2
+sil_scores = []
+for k in range(2, 11):
+    kmeans = KMeans(n_clusters=k, init='k-means++', random_state=42, n_init=10)
+    labels = kmeans.fit_predict(X_scaled)
+    sil = silhouette_score(X_scaled, labels)
+    sil_scores.append(sil)
+plt.figure(figsize=(7,4))
+plt.plot(range(2,11), sil_scores, 'go-')
+plt.xlabel('k')
+plt.ylabel('Silhouette score')
+plt.title('Silhouette scores for k')
+plt.grid(True)
+plt.show()
+print("Silhouette scores:", dict(zip(range(2,11), np.round(sil_scores,3))))
+
+# --------- 5. Fit final KMeans (choose k from elbow/silhouette) ----------
+k_final = 4   # set based on elbow + silhouette inspection
+kmeans_final = KMeans(n_clusters=k_final, init='k-means++', random_state=42, n_init=10)
+k_labels = kmeans_final.fit_predict(X_scaled)
+df['kmeans_cluster'] = k_labels
+
+# cluster centers (in original feature scale)
+centers_scaled = kmeans_final.cluster_centers_
+centers = scaler.inverse_transform(centers_scaled)
+centers_df = pd.DataFrame(centers, columns=X.columns)
+print("KMeans centers (original scale):")
+display(centers_df)
+
+# --------- 6. Hierarchical clustering (dendrogram) ----------
+# Compute linkage matrix (Ward's method minimizes variance within clusters)
+Z = linkage(X_scaled, method='ward')  
+
+plt.figure(figsize=(12, 5))
+dendrogram(Z, truncate_mode='lastp', p=30, leaf_rotation=90., leaf_font_size=12.)
+plt.title('Truncated hierarchical dendrogram (last 30 merges)')
+plt.xlabel('Cluster size')
+plt.ylabel('Distance')
+plt.show()
+
+# Extract flat clusters from linkage (cut at k clusters)
+h_k = 4
+h_labels = fcluster(Z, h_k, criterion='maxclust') - 1  # make 0-based
+df['hier_cluster'] = h_labels
+
+# --------- 7. Compare clusters and sizes ----------
+print("KMeans cluster sizes:")
+print(df['kmeans_cluster'].value_counts().sort_index())
+print("\nHierarchical cluster sizes:")
+print(df['hier_cluster'].value_counts().sort_index())
+
+# --------- 8. Visualize clusters on first two principal components (if many features) ----------
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2, random_state=42)
+X_pca = pca.fit_transform(X_scaled)
+
+plt.figure(figsize=(12,5))
+plt.subplot(1,2,1)
+sns.scatterplot(x=X_pca[:,0], y=X_pca[:,1], hue=k_labels, palette='tab10', s=30, alpha=0.8)
+plt.title('KMeans clusters (PCA projection)')
+plt.xlabel('PC1'); plt.ylabel('PC2'); plt.legend(title='kmeans')
+
+plt.subplot(1,2,2)
+sns.scatterplot(x=X_pca[:,0], y=X_pca[:,1], hue=h_labels, palette='tab10', s=30, alpha=0.8)
+plt.title('Hierarchical clusters (PCA projection)')
+plt.xlabel('PC1'); plt.ylabel('PC2'); plt.legend(title='hier')
+plt.tight_layout()
+plt.show()
+
+# --------- 9. Inspect cluster profiles (means of original features) ----------
+profile_k = df.groupby('kmeans_cluster')[numeric_cols].mean()
+profile_h = df.groupby('hier_cluster')[numeric_cols].mean()
+print("KMeans cluster profiles (means):")
+display(profile_k)
+print("Hierarchical cluster profiles (means):")
+display(profile_h)
+
+# Save results
+df.to_csv("sales_data_with_clusters.csv", index=False)
+print("Saved annotated CSV with clusters.")
+```
+
+---
+
+# 2 — Line-by-line explanation (every important command & why)
+
+I'll explain the main sections and every critical command used above. Where appropriate I include the *mathematical formula*.
+
+### Imports
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+```
+
+* Load standard data & plotting libraries.
+
+```python
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
+```
+
+* `StandardScaler` — zero-mean, unit-variance scaling (important for distance).
+* `KMeans` — scikit-learn implementation of k-means.
+* `silhouette_score` — internal cluster validation metric.
+* `linkage`, `dendrogram`, `fcluster` — SciPy hierarchical clustering functions.
+
+### Load dataset
+
+```python
+df = pd.read_csv("sales_data_sample.csv")
+print(df.shape)
+display(df.head())
+```
+
+* Reads CSV into DataFrame; view size and a few rows to understand columns.
+
+### Select numeric features
+
+```python
+numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+X = df[numeric_cols].copy()
+```
+
+* `select_dtypes` finds numeric columns only, since clustering uses numeric distances. If important categorical variables exist, convert/encode them before clustering.
+
+### Handle missing values
+
+```python
+print(X.isnull().sum())
+X = X.dropna()
+```
+
+* We either drop rows with missing numeric entries or impute them (median/mean). Dropping is simplest; imputation retains more data.
+
+### Scale features
+
+```python
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+```
+
+* `fit_transform` computes mean & std on `X` and scales each feature:
+  [
+  z = \frac{x - \mu}{\sigma}
+  ]
+* Scaling is crucial because k-means and hierarchical (with Euclidean distance) are sensitive to variable scales.
+
+### Elbow method (WCSS / inertia)
+
+```python
+wcss = []
+for k in K_range:
+    kmeans = KMeans(n_clusters=k, init='k-means++', random_state=42, n_init=10, max_iter=300)
+    kmeans.fit(X_scaled)
+    wcss.append(kmeans.inertia_)
+```
+
+* For each k compute `inertia_` = within-cluster sum of squared distances (WCSS):
+  [
+  \text{WCSS} = \sum_{j=1}^{k} \sum_{x_i \in C_j} |x_i - \mu_j|^2
+  ]
+  where (\mu_j) is centroid of cluster (C_j). Plotting WCSS vs k: choose the k at which WCSS reduction slows down (the "elbow").
+
+### Silhouette score
+
+```python
+labels = kmeans.fit_predict(X_scaled)
+sil = silhouette_score(X_scaled, labels)
+```
+
+* Silhouette for a sample i:
+  [
+  s(i) = \frac{b(i) - a(i)}{\max{a(i), b(i)}}
+  ]
+  where (a(i)) = avg distance to points in same cluster, (b(i)) = min avg distance to points in other clusters. Score in [-1,1]; closer to 1 is better clustering.
+
+### Final KMeans
+
+```python
+kmeans_final = KMeans(n_clusters=k_final, ...)
+k_labels = kmeans_final.fit_predict(X_scaled)
+df['kmeans_cluster'] = k_labels
+```
+
+* Fit final k-means and attach labels to DataFrame.
+
+```python
+centers_scaled = kmeans_final.cluster_centers_
+centers = scaler.inverse_transform(centers_scaled)
+```
+
+* Centroids are in scaled space; inverse transform to original scale for interpretability.
+
+### Hierarchical clustering (linkage, dendrogram)
+
+```python
+Z = linkage(X_scaled, method='ward')
+dendrogram(Z, truncate_mode='lastp', p=30)
+```
+
+* `linkage` computes hierarchical clustering linkage matrix. `method='ward'` uses Ward’s criterion: at each merge choose pair of clusters that leads to minimum increase in total within-cluster variance.
+* Dendrogram visualizes merges; cut dendrogram at a height corresponding to desired cluster count.
+
+### Extracting clusters
+
+```python
+h_labels = fcluster(Z, h_k, criterion='maxclust') - 1
+```
+
+* `fcluster` flattens the hierarchy into `h_k` clusters; subtract 1 to make labels 0-based.
+
+### PCA projection for visualization
+
+```python
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_scaled)
+sns.scatterplot(x=X_pca[:,0], y=X_pca[:,1], hue=k_labels)
+```
+
+* When we have >2 features visualize clusters via first two principal components (PCA) which preserve most variance.
+
+### Cluster profiles
+
+```python
+profile_k = df.groupby('kmeans_cluster')[numeric_cols].mean()
+```
+
+* Compute mean of original numeric features per cluster → interpret cluster characteristics (e.g., high revenue, low quantity).
+
+---
+
+# 3 — Key formulas and concepts (compact)
+
+**Euclidean distance:**
+[
+d(x, y) = \sqrt{\sum_{i=1}^p (x_i - y_i)^2}
+]
+
+**KMeans objective (minimize inertia):**
+[
+\min_{C, \mu} \sum_{j=1}^{k} \sum_{x_i \in C_j} |x_i - \mu_j|^2
+]
+
+**WCSS (inertia):** same as above — plotted for elbow.
+
+**Silhouette score for sample i:**
+[
+s(i) = \frac{b(i) - a(i)}{\max{a(i), b(i)}}
+]
+where (a(i)) = mean intra-cluster distance, (b(i)) = mean nearest-cluster distance.
+
+**Ward linkage distance (merging criterion):** increases in total within-cluster variance; ideal for compact clusters.
+
+---
+
+# 4 — How to choose number of clusters (Elbow + silhouette)
+
+* **Elbow method:** plot WCSS vs k; pick k at elbow where marginal gain drops.
+* **Silhouette:** compute silhouette score for k >=2; choose k with highest silhouette (closer to 1).
+* **Dendrogram:** for hierarchical, visually inspect large jumps in linkage distance.
+* Combine methods and domain knowledge — clustering is exploratory.
+
+---
+
+# 5 — Practical tips & common examiner questions (with short answers)
+
+### Q: What if features are categorical?
+
+* Encode categories (one-hot, ordinal), or use Gower distance / k-modes algorithm for pure categorical clustering.
+
+### Q: How to treat outliers?
+
+* Remove or cap extremes prior to clustering, since k-means sensitive to outliers (they shift centroids).
+
+### Q: Why scale features?
+
+* Distances depend on scale; StandardScaler or MinMax ensures features contribute equally.
+
+### Q: Why is random_state used in KMeans?
+
+* KMeans is sensitive to initialization; `k-means++` + multiple `n_init` + random_state ensures reproducible, stable solutions.
+
+### Q: When is hierarchical better than k-means?
+
+* If dataset small and you want nested cluster structure or no need to pre-specify k. Hierarchical gives dendrogram and is deterministic (with a fixed linkage).
+
+---
+
+# 6 — Answers to your specific theory questions (exam-ready)
+
+### 1. Compare Hierarchical Clustering and K-Means Clustering.
+
+**K-Means**
+
+* Partitioning method that partitions data into k clusters minimizing within-cluster variance.
+* Requires **pre-specified k**.
+* Fast on large datasets (especially with efficient implementations), iterative.
+* Assumes spherical clusters of similar sizes (sensitive to initial centroids and outliers).
+* Complexity roughly O(n × k × t × p) (n samples, p features, t iterations).
+
+**Hierarchical Clustering**
+
+* Builds nested cluster tree (dendrogram) either **agglomerative** (bottom-up) or divisive (top-down).
+* No need to specify k initially (you can cut dendrogram later).
+* Computationally expensive for large n (naive O(n^3) for linkage); optimized methods exist but still heavier than k-means for big data.
+* Good for small datasets, provides multi-scale view, supports arbitrary cluster shapes depending on linkage.
+* Sensitive to noise and choice of linkage (single, complete, average, Ward).
+
+**Short viva line:**
+“K-Means: fast, needs k, good for spherical clusters. Hierarchical: interpretable dendrogram, no preset k, heavier compute, better for small datasets.”
+
+---
+
+### 2. What are some Stopping Criteria for K-Means Clustering?
+
+Common stopping rules:
+
+* **Centroid shift tolerance:** stop when maximum change in any centroid between iterations < ε.
+* **Assignment stability:** stop when cluster assignments do not change from previous iteration.
+* **Maximum iterations:** stop after a pre-set number of iterations (`max_iter`).
+* **Inertia improvement threshold:** stop when reduction in WCSS/inertia between iterations < small δ.
+* **Time budget:** stop if wall-clock time limit exceeded.
+
+**Exam line:** “K-Means stops when centroids converge (tiny shift), assignments stable, or when max iterations reached.”
+
+---
+
+### 3. How would you Pre-Process the data for K-Means?
+
+Essential preprocessing steps:
+
+1. **Select/clean relevant features** (drop IDs, timestamps, text unless featurized).
+2. **Handle missing values** — impute (median/mean) or drop rows.
+3. **Encode categorical variables** — one-hot, target encoding, or use methods for mixed data.
+4. **Scale features** (StandardScaler or MinMaxScaler) so distances are meaningful.
+5. **Remove or cap outliers** (z-score filtering or domain cap) — outliers distort centroids.
+6. **Optional dimensionality reduction** — PCA to reduce noise & speed clustering if many features.
+7. **Feature selection/engineering** — create meaningful aggregated metrics (e.g., total sales, avg order value).
+
+**Exam line:** “Clean, impute, encode, scale, remove outliers, optionally reduce dimensions.”
+
+---
+
+# 7 — Sample viva-style questions (and short model answers)
+
+1. Q: Why use Ward linkage?
+   A: Minimizes variance within clusters, often produces compact spherical clusters like K-Means.
+
+2. Q: Why PCA before clustering?
+   A: Reduces dimensionality and noise; speeds computation and often improves cluster separation.
+
+3. Q: How to validate clusters quantitatively?
+   A: Silhouette score, Davies-Bouldin index, Calinski-Harabasz index; domain-specific validation and stability checks across runs.
+
+4. Q: How to handle different units in features?
+   A: Scale features (standardization or min-max) so no single unit dominates distances.
+
+5. Q: What if elbow ambiguous?
+   A: Use silhouette, domain knowledge, cluster interpretability, stability across different initializations.
+
+---
+
+# 8 — Example answers you may be asked externally (short)
+
+* “If KMeans centroid for cluster 0 shows high average 'Total' and low 'Quantity' it indicates few high-value sales — treat as big-ticket customers.”
+* “If hierarchical dendrogram shows a large jump in vertical distance before merging two clusters, cut at that height to get meaningful clusters.”
+* “If silhouette is low (<0.25) across k, clustering may be weak — consider different features or clustering algorithm.”
+
+---
+
+# 9 — What to show in your lab report / demo
+
+* Display dataset head and chosen numeric columns.
+* Show missing values handling and scaling lines.
+* Show Elbow plot and Silhouette plot — explain chosen k.
+* Show dendrogram (truncated) and explain where you cut it.
+* Show PCA scatter plots colored by clusters for both methods.
+* Present cluster profiles (means) and interpret business meaning (e.g., cluster A = low sales, cluster B = high returns).
+* Save annotated CSV with cluster labels.
+
+---
+
+# 10 — Quick checklist before viva
+
+* Know the value of each major command and why scaling is used.
+* Be able to explain inertia mathematically and how elbow is interpreted.
+* Be prepared to justify chosen `k` with elbow + silhouette + domain logic.
+* Be ready to discuss alternatives for categorical features and large datasets (mini-batch k-means, k-modes, approximate methods).
+
+---
+
+If you want, I can now:
+
+* (A) **Annotate your actual `sales_data_sample.csv`** with clusters and produce the summary CSV and plots if you upload the CSV here, or
+* (B) create a **one-page PDF** with code + elbow plot + dendrogram + viva cheat-sheet for submission, or
+* (C) provide a short **slide deck** (4 slides) that you can present during viva showing pipeline, elbow, dendrogram, cluster profiles.
+
+Which of A / B / C would you like next?

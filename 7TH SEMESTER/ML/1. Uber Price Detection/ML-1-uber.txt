@@ -1,0 +1,595 @@
+
+## 🎯 1️⃣ RMSE — Root Mean Squared Error
+
+### 🔹 Definition
+
+RMSE measures the **average magnitude of prediction error** (how far predictions are from the actual values).
+It penalizes **larger errors more strongly** because it squares the differences.
+
+---
+
+### 🔹 Formula
+
+[
+\text{RMSE} = \sqrt{ \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y_i})^2 }
+]
+Where:
+
+* ( y_i ) = actual (true) value
+* ( \hat{y_i} ) = predicted value
+* ( n ) = total number of samples
+
+---
+
+### 🔹 Example
+
+| Trip | Actual Fare (USD) | Predicted Fare (USD) | Error = (y - ŷ) | Error² |
+| ---- | ----------------- | -------------------- | --------------- | ------ |
+| 1    | 10                | 9                    | 1               | 1      |
+| 2    | 12                | 15                   | -3              | 9      |
+| 3    | 8                 | 7                    | 1               | 1      |
+
+[
+\text{RMSE} = \sqrt{ \frac{1 + 9 + 1}{3} } = \sqrt{3.67} = 1.91
+]
+
+✅ So on average, the model’s predicted fare deviates **~1.9 USD** from the actual fare.
+
+**Smaller RMSE → Better model accuracy.**
+
+---
+
+### 🔹 Interpretation
+
+* RMSE is in the **same unit** as the target variable (e.g., USD for fares).
+* A low RMSE means predictions are close to actual values.
+* It’s sensitive to **outliers** because errors are squared.
+
+---
+
+## 🎯 2️⃣ R² — Coefficient of Determination
+
+### 🔹 Definition
+
+R² shows how well the model **explains the variability** in the actual data.
+It compares your model’s performance to a simple baseline that always predicts the **mean value** of the target.
+
+---
+
+### 🔹 Formula
+
+[
+R^2 = 1 - \frac{\sum (y_i - \hat{y_i})^2}{\sum (y_i - \bar{y})^2}
+]
+Where:
+
+* ( y_i ) = actual value
+* ( \hat{y_i} ) = predicted value
+* ( \bar{y} ) = mean of actual values
+
+---
+
+### 🔹 Example
+
+Suppose actual fares are: **[10, 12, 8]**
+Predicted fares: **[9, 15, 7]**
+Mean of actual values:
+[
+\bar{y} = (10 + 12 + 8) / 3 = 10
+]
+
+Now calculate:
+[
+\sum (y_i - \hat{y_i})^2 = (10-9)^2 + (12-15)^2 + (8-7)^2 = 1 + 9 + 1 = 11
+]
+[
+\sum (y_i - \bar{y})^2 = (10-10)^2 + (12-10)^2 + (8-10)^2 = 0 + 4 + 4 = 8
+]
+
+[
+R^2 = 1 - \frac{11}{8} = 1 - 1.375 = -0.375
+]
+
+✅ So (R^2 = -0.375), which means the model is **worse than just predicting the mean (10)** every time.
+
+---
+
+### 🔹 Interpretation
+
+| R² Value | Interpretation                       |
+| -------- | ------------------------------------ |
+| 1.0      | Perfect prediction                   |
+| 0.8      | Explains 80% of variance (good)      |
+| 0.0      | Predicts no better than mean         |
+| < 0      | Model worse than predicting the mean |
+
+---
+
+### 🧠 Intuitive Analogy
+
+* RMSE tells **“how far off, on average”** your predictions are.
+* R² tells **“how much of the variation”** in fares your model explains.
+
+---
+
+### 🔹 Example (Uber context)
+
+Let’s say:
+
+* Linear Regression → RMSE = 3.0, R² = 0.65
+* Random Forest → RMSE = 1.8, R² = 0.85
+
+That means Random Forest predicts fares with **smaller error (better precision)** and **explains 85%** of fare variation (better fit).
+
+---
+
+### 🔹 Viva-ready one-liners
+
+| Metric             | Key Line to Say                                                                               |
+| ------------------ | --------------------------------------------------------------------------------------------- |
+| **RMSE**           | "It measures the average prediction error; smaller RMSE means better accuracy."               |
+| **R²**             | "It shows how well the model explains the data variance; closer to 1 means a stronger model." |
+| **RMSE vs MAE**    | "RMSE penalizes large errors more; MAE treats all equally."                                   |
+| **If R² negative** | "Model performs worse than simply predicting the mean every time."                            |
+
+---
+
+Would you like me to make a **visual RMSE vs R² illustration** (a small plot showing how prediction spread affects both metrics)? It’s great to show in viva or report.
+
+
+# 1) Imports — what each line does
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+from math import radians, sin, cos, sqrt, atan2
+```
+
+* `pandas as pd` — dataframes, CSV I/O, data manipulation.
+* `numpy as np` — numerical arrays, math helpers.
+* `matplotlib.pyplot as plt` — basic plotting.
+* `seaborn as sns` — higher-level stats plotting (heatmaps, nicer plots).
+* `train_test_split` — split data into training and test sets.
+* `GridSearchCV` — hyperparameter search with cross-validation.
+* `LinearRegression` — ordinary least squares linear model.
+* `RandomForestRegressor` — ensemble of decision trees for regression.
+* `r2_score`, `mean_squared_error`, `mean_absolute_error` — evaluation metrics.
+* `math` functions — used inside Haversine distance computation (trigonometry).
+
+---
+
+# 2) Helper functions — what they compute & why
+
+### Haversine distance function
+
+```python
+def haversine_distance(lat1, lon1, lat2, lon2):
+    R = 6371.0
+    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    a = sin(dlat/2)**2 + cos(lat1)*cos(lat2)*sin(dlon/2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1-a))
+    return R * c
+```
+
+* Purpose: compute **great-circle distance** between two lat/lon points (in kilometers).
+* Formula (Haversine):
+
+  * (a = \sin^2(\frac{\Delta\varphi}{2}) + \cos(\varphi_1)\cos(\varphi_2)\sin^2(\frac{\Delta\lambda}{2}))
+  * (c = 2\arctan2(\sqrt{a},\sqrt{1-a}))
+  * (d = R \cdot c) where (R) = Earth radius (6371 km).
+* Why: distance is a key predictor for fare.
+
+### RMSE helper
+
+```python
+def rmse(y_true, y_pred):
+    return np.sqrt(mean_squared_error(y_true, y_pred))
+```
+
+* RMSE = ( \sqrt{\frac{1}{n}\sum_{i=1}^n (y_i-\hat y_i)^2} ) — root mean squared error: penalises large errors more than MAE.
+
+---
+
+# 3) Load data & initial inspection
+
+```python
+df = pd.read_csv(DATA_PATH)
+print("Initial rows:", len(df))
+df.head()
+print(df.info())
+print(df.describe(include='all').T)
+```
+
+* `pd.read_csv()` reads CSV into a DataFrame.
+* `len(df)` count rows.
+* `df.head()` preview top rows.
+* `df.info()` shows column names, non-null counts, and dtypes.
+* `df.describe().T` numeric summary (mean, std, min, max, quartiles). `include='all'` adds object cover.
+
+**Why:** verify columns present (pickup/drop coordinates, pickup_datetime, fare_amount, passenger_count), check missing values and data types.
+
+---
+
+# 4) Basic cleaning — remove invalid rows
+
+```python
+df = df[(df['fare_amount'] > 0)]
+if 'passenger_count' in df.columns:
+    df = df[df['passenger_count'] > 0]
+coords = ['pickup_longitude','pickup_latitude','dropoff_longitude','dropoff_latitude']
+df = df.dropna(subset=coords + ['fare_amount'])
+df = df[(df['pickup_latitude'].between(-90,90)) & (df['dropoff_latitude'].between(-90,90))]
+df = df[(df['pickup_longitude'].between(-180,180)) & (df['dropoff_longitude'].between(-180,180))]
+```
+
+* Remove negative/zero fares — unrealistic/invalid.
+* Remove zero passenger_count — dataset artifact.
+* `dropna` on coordinates & fare: remove rows missing required fields.
+* Clamp coordinates to valid ranges; catches garbage lat/lon values.
+
+**Why:** bad data causes garbage predictions and exploding errors.
+
+---
+
+# 5) Feature engineering — datetime & distance
+
+```python
+df['pickup_datetime'] = pd.to_datetime(df['pickup_datetime'], errors='coerce')
+df = df.dropna(subset=['pickup_datetime'])
+df['hour'] = df['pickup_datetime'].dt.hour
+df['dayofweek'] = df['pickup_datetime'].dt.dayofweek
+df['month'] = df['pickup_datetime'].dt.month
+
+df['distance_km'] = df.apply(lambda row: haversine_distance(
+    row['pickup_latitude'], row['pickup_longitude'],
+    row['dropoff_latitude'], row['dropoff_longitude']), axis=1)
+```
+
+* `pd.to_datetime(..., errors='coerce')` converts string to datetime; invalid parse → NaT.
+* Extracts `hour`, `dayofweek` (0=Monday), `month` — capture time patterns/surge.
+* Apply Haversine to create `distance_km` for each trip.
+
+**Why:** these features are directly relevant to fare.
+
+---
+
+# 6) Derived ratio & small cleaning
+
+```python
+df['fare_per_km'] = df['fare_amount'] / (df['distance_km'].replace(0, np.nan))
+df['fare_per_km'].replace([np.inf, -np.inf], np.nan, inplace=True)
+df = df[df['distance_km'] >= 0.01]
+df = df[df['fare_amount'] < 500]
+```
+
+* `fare_per_km` helps detect outliers (extremely high cost per km).
+* Replace division-by-zero and infinities with NaN and drop later.
+* Remove tiny distances (noise like same-location points) and cap crazy fare > 500 USD (domain-specific capping).
+
+---
+
+# 7) Outlier detection (IQR method)
+
+```python
+def iqr_filter(series, k=1.5):
+    q1 = series.quantile(0.25)
+    q3 = series.quantile(0.75)
+    iqr = q3 - q1
+    lower = q1 - k * iqr
+    upper = q3 + k * iqr
+    return lower, upper
+
+for col in ['fare_amount', 'distance_km', 'fare_per_km']:
+    lower, upper = iqr_filter(df[col].dropna(), k=1.5)
+    outliers = df[(df[col] < lower) | (df[col] > upper)]
+```
+
+* IQR (interquartile range) filter: identifies extremes beyond (Q_1 - k\cdot IQR) and (Q_3 + k\cdot IQR) where (IQR = Q_3 - Q_1). Typical (k=1.5).
+* Optionally remove those rows to get `df_filtered`.
+
+**Why:** reduce influence of extreme values on model fitting (especially linear models).
+
+---
+
+# 8) Correlation & heatmap
+
+```python
+numeric_cols = ['fare_amount','distance_km','fare_per_km','passenger_count','hour','dayofweek','month']
+corr = df_filtered[numeric_cols].corr()
+sns.heatmap(df_filtered[numeric_cols].corr(), annot=True, fmt=".2f", cmap='coolwarm')
+```
+
+* `.corr()` computes Pearson correlation coefficient matrix.
+* Heatmap visualises pairwise correlations; `annot=True` shows numbers.
+
+**Pearson r formula:**
+[
+r_{xy} = \frac{\sum (x_i - \bar x)(y_i - \bar y)}{\sqrt{\sum (x_i - \bar x)^2}\sqrt{\sum (y_i - \bar y)^2}}
+]
+
+* Interpretation: r in [-1,1]; closer to 1 means strong positive linear relation.
+
+**Why:** see which features are linearly related to fare (distance should be highest).
+
+---
+
+# 9) Prepare features for modelling
+
+```python
+features = []
+if 'distance_km' in df_filtered.columns:
+    features.append('distance_km')
+if 'passenger_count' in df_filtered.columns:
+    features.append('passenger_count')
+for f in ['hour','dayofweek','month']:
+    if f in df_filtered.columns:
+        features.append(f)
+
+X = df_filtered[features]
+y = df_filtered['fare_amount']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+```
+
+* Build feature list; common baseline features: `distance_km`, `passenger_count`, `hour`, `dayofweek`, `month`.
+* `train_test_split` with `random_state` ensures reproducible split (80% train, 20% test).
+
+**Why:** Keep test set unseen for final evaluation.
+
+---
+
+# 10) Linear Regression (OLS) — fit & predict
+
+```python
+lr = LinearRegression()
+lr.fit(X_train, y_train)
+y_pred_lr = lr.predict(X_test)
+```
+
+* `LinearRegression().fit(X, y)` solves normal equations for OLS:
+
+  * closed-form solution for coefficients: (\hat\beta = (X^\top X)^{-1} X^\top y) (with intercept handled internally).
+* `predict()` computes (\hat y = X \hat\beta).
+
+**Why:** baseline interpretable model — shows linear relationship and coefficients.
+
+---
+
+# 11) Evaluate linear model
+
+```python
+print("R2:", r2_score(y_test, y_pred_lr))
+print("RMSE:", rmse(y_test, y_pred_lr))
+print("MAE:", mean_absolute_error(y_test, y_pred_lr))
+```
+
+* **R² (coefficient of determination):**
+  [
+  R^2 = 1 - \frac{\sum (y_i - \hat{y}_i)^2}{\sum (y_i - \bar y)^2}
+  ]
+
+  * Fraction of variance in y explained by model. 1 = perfect, 0 = predicts mean.
+* **RMSE** formula given earlier.
+* **MAE (Mean Absolute Error):**
+  [
+  \text{MAE} = \frac{1}{n}\sum |y_i - \hat y_i|
+  ]
+
+  * Less sensitive to outliers than RMSE.
+
+**Why:** multiple metrics give full picture: R² for explained variance, RMSE for magnitude & penalty on large errors, MAE for average absolute error.
+
+---
+
+# 12) Random Forest — fit & predict
+
+```python
+rf = RandomForestRegressor(n_estimators=100, max_depth=15, random_state=42, n_jobs=-1)
+rf.fit(X_train, y_train)
+y_pred_rf = rf.predict(X_test)
+```
+
+* Random Forest builds many decision trees on bootstrapped samples and averages predictions (regression).
+* Hyperparameters:
+
+  * `n_estimators` = number of trees.
+  * `max_depth` limits tree depth to avoid overfitting.
+  * `n_jobs=-1` uses all cores.
+
+**Why RF:** captures non-linear interactions, usually improves predictive accuracy compared to linear model.
+
+---
+
+# 13) Evaluate Random Forest & feature importance
+
+```python
+print("R2:", r2_score(y_test, y_pred_rf))
+print("RMSE:", rmse(y_test, y_pred_rf))
+print("MAE:", mean_absolute_error(y_test, y_pred_rf))
+
+importances = pd.Series(rf.feature_importances_, index=features).sort_values(ascending=False)
+print("Feature importances:\n", importances)
+```
+
+* Compare metrics to determine which model performs better on test set.
+* `feature_importances_` show relative importance (based on reduction in impurity) — useful to explain model.
+
+---
+
+# 14) Optional: GridSearchCV
+
+```python
+grid = {'n_estimators':[100,200], 'max_depth':[10,15], 'min_samples_split':[2,5]}
+gs = GridSearchCV(RandomForestRegressor(random_state=42), grid, cv=3, scoring='r2', n_jobs=-1)
+gs.fit(X_train, y_train)
+```
+
+* `GridSearchCV` searches over hyperparameter grid using cross-validation (here 3-fold) and picks best params according to `scoring` (R²).
+* Then `gs.best_estimator_` can be used to predict.
+
+**Why:** tuning hyperparameters improves generalisation.
+
+---
+
+# 15) Save / show sample predictions
+
+```python
+sample = X_test.copy()
+sample['actual_fare'] = y_test
+sample['pred_lr'] = y_pred_lr
+sample['pred_rf'] = y_pred_rf
+print(sample.head(10))
+```
+
+* Shows comparison between actual fares and model predictions — useful to show concrete examples in report.
+
+---
+
+# 16) Common pitfalls & best practice notes
+
+* **Scale features if using distance with different magnitudes?** LR benefits, tree models do not require scaling.
+* **One-hot encode cyclical features**: hours are cyclical — you can use `sin(2π hour/24)` and `cos(...)` to capture wrap-around.
+* **Skewed target**: fare is right-skewed — consider `log(fare)` for linear model and back-transform predictions.
+* **Overfitting**: RF can overfit if `max_depth` very large; compare train vs test scores.
+
+---
+
+# 17) Formulas summary (all in one place)
+
+* **Haversine distance** (see Section 2)
+* **RMSE**: ( \sqrt{\frac{1}{n}\sum (y_i - \hat y_i)^2} )
+* **MSE**: ( \frac{1}{n}\sum (y_i - \hat y_i)^2 )
+* **MAE**: ( \frac{1}{n}\sum |y_i - \hat y_i| )
+* **R²**: ( 1 - \dfrac{\sum (y_i - \hat y_i)^2}{\sum (y_i - \bar y)^2} )
+* **Linear Regression closed form**: ( \hat\beta = (X^\top X)^{-1} X^\top y )
+
+---
+
+# 18) Likely viva questions (external) — short answers you can memorise
+
+1. **Why Haversine not Euclidean?**
+   Because lat/lon are on sphere; Euclidean underestimates distance at planetary scale.
+
+2. **Why remove outliers?**
+   They distort model estimates; for linear models extreme points affect coefficients.
+
+3. **Why choose Random Forest?**
+   Captures non-linearity and interactions; robust to outliers and needs little feature engineering.
+
+4. **What is bias-variance tradeoff?**
+   Bias = error from wrong assumptions (underfitting); Variance = sensitivity to training data (overfitting). RF reduces variance via averaging.
+
+5. **Why log-transform target?**
+   Stabilises variance and makes distribution more Gaussian — better for linear models.
+
+6. **How to evaluate model fairness?**
+   Use residual plots, check bias across segments (time, location), and error distribution.
+
+7. **How to improve feature set?**
+   Add zone encodings (cluster lat/lon), trip duration, real route distance (via API), weather and surge indicator.
+
+8. **Which metric to prefer?**
+   Use RMSE for penalising large errors, MAE for robustness, R² for overall variation explained.
+
+9. **How to handle categorical variables?**
+   One-hot encode or target-encode; careful about high-cardinality (use embedding or clustering).
+
+10. **How to deploy model?**
+    Save with `joblib`, serve via Flask/FastAPI, expose an endpoint to accept lat/lon/time and return predicted fare.
+
+---
+
+# 19) Answers to your three specific questions
+
+## Q1. What are applications of linear regression?
+
+* Predict continuous outcomes: house prices, stock returns (simple), demand forecasting, medical dosage response, economics (GDP vs indicators), engineering calibration. It’s the go-to baseline for regression tasks when relationships are (approximately) linear.
+
+## Q2. Important functions used for Linear Regression in program implementation and their purpose
+
+From `sklearn.linear_model.LinearRegression` pipeline:
+
+* `LinearRegression()` — instantiate model (OLS solver).
+* `.fit(X_train, y_train)` — estimate coefficients (\hat\beta).
+* `.predict(X_test)` — compute predictions (\hat y).
+* `r2_score(y_test, y_pred)` — compute R².
+* `mean_squared_error(y_test, y_pred)` — compute MSE; `np.sqrt` → RMSE.
+* `train_test_split(...)` — create reproducible train/test sets.
+* `StandardScaler()` (if used) — scale features (LR benefits).
+* `GridSearchCV` (if tuning) — cross-validated hyperparam search (usually for regularised linear models like Ridge/Lasso).
+
+## Q3. How does a Random Forest work? Advantages of Random Forest
+
+**How it works (core idea):**
+
+* Ensemble of decision trees.
+* Each tree trained on a bootstrapped sample (random sample with replacement) of training data.
+* At each split, a random subset of features is considered (feature bagging).
+* For regression, predictions are averaged across trees: (\hat y = \frac{1}{T}\sum_{t=1}^T \hat y^{(t)}).
+
+**Advantages:**
+
+* Handles non-linear relationships and interactions automatically.
+* Robust to outliers and noise.
+* Requires little feature scaling/engineering.
+* Reduces overfitting vs single tree via averaging (variance reduction).
+* Provides feature importance measures.
+
+---
+
+# 20) Short demo script you can run during viva
+
+* Show `df.head()` → point out columns.
+* Show `df.describe()` → mention skewed fare distribution.
+* Compute `distance_km` for first few rows using haversine and show number.
+* Show correlation heatmap and point to `distance_km` correlation with `fare_amount`.
+* Train both models (LR and RF). Show metrics table:
+
+  ```
+  Model         | R2    | RMSE   | MAE
+  LinearReg     | 0.45  | 3.20   | 1.80
+  RandomForest  | 0.72  | 1.85   | 0.95
+  ```
+
+  (numbers illustrative; show your actual results).
+* Show 5 sample predictions (actual vs predicted) — explain differences.
+
+---
+
+# 21) Common examiner / external trick questions & short answers
+
+* **Q:** Why not use trip duration instead of distance?
+  **A:** Duration is good but often missing or noisy; also affected by traffic, so combining both is ideal.
+* **Q:** Is fare linear in distance?
+  **A:** Base fare + per-km + time components → not strictly linear; hence trees help.
+* **Q:** Why not use KNN?
+  **A:** KNN could predict based on nearby similar trips, but scales poorly for large datasets and needs careful distance weighting.
+* **Q:** How to incorporate surge pricing?
+  **A:** Add timestamp and external data (demand, weather, events) or include categorical surge flag.
+
+---
+
+# 22) Final tips for your practical report & viva
+
+* Show explicit code snippets and short comments for each block — examiners like step-by-step.
+* For metrics show both absolute (RMSE in currency) and relative (R²).
+* If time, demonstrate `log(fare)` transformation for LR and show improved residual distribution.
+* Mention limitations: Haversine ≠ real route distance; dataset bias; missing external features.
+
+---
+
+If you want, I can:
+
+* produce a **line-by-line annotated notebook** (the same code, with inline comments + the formulae inserted), or
+* run this notebook on a **sample** you provide and produce the exact metrics and plots, or
+* generate a **one-page PDF cheat-sheet** containing the formulas and the demo script for viva.
+
+Which one should I prepare next?
