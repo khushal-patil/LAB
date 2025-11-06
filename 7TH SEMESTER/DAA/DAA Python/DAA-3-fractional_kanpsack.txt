@@ -1,0 +1,233 @@
+
+
+## 1) Exact inputs to give (copy-paste into your program)
+
+Use this interactive sequence when program prompts appear:
+
+```
+🔹 Fractional Knapsack using Greedy Method 🔹
+
+Enter the number of items: 3
+
+Enter the weight and value for each item:
+Weight of item 1: 10
+Value of item 1: 60
+Weight of item 2: 20
+Value of item 2: 100
+Weight of item 3: 30
+Value of item 3: 120
+
+Enter knapsack capacity: 50
+```
+
+### Expected output (approx)
+
+```
+Maximum value in Knapsack = 240.00
+Time taken = 0.0000xx seconds
+```
+
+(Your elapsed time will vary by machine; the value `240.00` is deterministic.)
+
+---
+
+## 2) Short worked example / dry run (why output = 240)
+
+Items (value,weight) and ratio value/weight:
+
+* Item1: (60,10) → ratio = 6.0 — take full (capacity left 40) → value += 60
+* Item2: (100,20) → ratio = 5.0 — take full (capacity left 20) → value += 100
+* Item3: (120,30) → ratio = 4.0 — capacity 20 < 30 → take fraction 20/30 = 2/3 → value += 120 * (2/3) = 80
+
+Total value = 60 + 100 + 80 = **240.00**
+
+---
+
+## 3) Complexity (brief)
+
+* Sorting by ratio: **O(n log n)**
+* Single pass filling knapsack: **O(n)**
+* **Overall:** **O(n log n)** time, **O(n)** space (to store items)
+
+---
+
+## 4) Quick improvements / exam tips (one-liners)
+
+* Use stable sort; tie-breaking not required for correctness.
+* For many queries, precompute ratios and reuse.
+* If some item has weight 0 and positive value — handle explicitly (infinite ratio).
+* For timing demos, run several iterations and show average.
+
+---
+
+## 5) Viva: most asked questions + short answers (memorize these)
+
+1. **What is fractional knapsack?**
+   Pick full or fractional items to maximize value under capacity.
+
+2. **Greedy choice here?**
+   Take item with maximum value/weight ratio first.
+
+3. **Why greedy works here but not for 0/1 knapsack?**
+   Fractional choices make the local optimum extendable to global; 0/1 has combinatorial constraints.
+
+4. **Input / output of program?**
+   Input: n, weights[], values[], capacity. Output: maximum achievable value (float).
+
+5. **What does ratio mean?**
+   Value per unit weight — benefit density.
+
+6. **When do you take a fraction?**
+   When remaining capacity < current item weight.
+
+7. **Time complexity?**
+   O(n log n).
+
+8. **Space complexity?**
+   O(n).
+
+9. **Edge cases to handle?**
+   Zero capacity, zero items, item with weight 0 (handle separately), negative values (usually invalid).
+
+10. **How to prove optimality?**
+    Exchange argument: replacing any lower-ratio part with higher-ratio part increases or keeps total value.
+
+11. **What if items have equal ratio?**
+    Any order among them yields same result.
+
+12. **Real-world uses?**
+    Resource allocation, cargo loading, fractional resource leasing.
+
+13. **Difference b/w fractional and 0/1?**
+    Fractional allows splitting; 0/1 does not — 0/1 requires DP for exact optimum.
+
+14. **Can greedy be modified for integer knapsack?**
+    No — greedy may fail; use dynamic programming or branch-and-bound.
+
+15. **What data structure to use if items stream in?**
+    Maintain a max-heap on ratio; extract as needed.
+
+16. **Handling precision?**
+    Use floats/doubles; print formatted to 2 decimals in practicals.
+
+17. **If values and weights are large integers?**
+    Use double precision or big integers for intermediate products if needed; but ratio is float.
+
+18. **How to measure time fairly?**
+    Use `time.perf_counter()` and average over multiple runs.
+
+19. **What happens if total weights ≤ capacity?**
+    Take all items — result = sum of all values.
+
+20. **Why sort by ratio and not by value or weight alone?**
+    Ratio captures benefit per unit weight — the right heuristic for capacity-constrained profit.
+
+21. **Is greedy always fastest?**
+    It's fast and optimal for fractional variant; complexity dominated by sorting.
+
+22. **How to return selected fractions?**
+    Record fraction taken per item (1.0 for full, <1.0 for partial) while iterating.
+
+23. **What if item weight is zero and value>0?**
+    The ratio is infinite — pick that first; handle separately to avoid division by zero.
+
+24. **How to adapt to integer weights only?**
+    Still fractional if you allow fractions; else use 0/1 knapsack DP.
+
+25. **Can you compute an upper bound for 0/1 knapsack using fractional knapsack?**
+    Yes — fractional solution gives an upper bound used in branch-and-bound.
+
+26. **What is the greedy invariant?**
+    After choosing k highest-ratio parts, the remaining capacity filled optimally by remaining items.
+
+27. **What metric to print in practical?**
+    Print max value, fractions chosen, and time taken.
+
+28. **Implementation pitfalls?**
+    Wrong sort key (use value/weight), integer division in some languages, division by zero.
+
+29. **Why value/weight (not weight/value)?**
+    We maximize value for limited weight; ratio must measure value per unit weight.
+
+30. **How to demonstrate in viva?**
+    Show sorted list by ratio, then stepwise filling, and final value (use n=3 example above).
+
+---
+
+
+
+## 6) Answers to your uploaded PDF questions
+
+I reviewed your `daa3a.pdf` and matched the answers above to the assignment scope (problem statement, greedy strategy, example and complexity). If you want the PDF’s **specific numbered questions** answered verbatim, paste the question numbers here and I’ll produce crisp, numbered answers with references. 
+
+---
+
+
+Nice screenshot — let’s answer those three review questions cleanly and show a worked example using the table on the page.
+
+### Given items
+
+| Item | Weight | Value |     Value/Weight |
+| ---- | -----: | ----: | ---------------: |
+| 1    |      5 |    30 |  30/5 = **6.00** |
+| 2    |     10 |    40 | 40/10 = **4.00** |
+| 3    |     15 |    45 | 45/15 = **3.00** |
+| 4    |     22 |    77 | 77/22 = **3.50** |
+| 5    |     25 |    90 | 90/25 = **3.60** |
+
+---
+
+## 1) Realistic applications (brief)
+
+* **Cargo loading / logistics:** maximize value of goods loaded into limited truck/container space (can take partial shipments).
+* **Cloud resource allocation / bandwidth:** allocate fractional resources to multiple customers to maximize revenue/utilization.
+  (Other quick examples: fractional investing, cutting-stock where pieces can be split.)
+
+---
+
+## 2) Explain Knapsack with example using greedy approach (worked example)
+
+**Problem:** fractional knapsack — you may take fractions of items. Goal: maximize total value subject to capacity.
+**Greedy rule:** pick items in descending order of **value/weight** (value per unit weight).
+
+**Choose capacity = 50 (typical practical example).**
+
+Step-by-step (sorted by ratio: 1 → 2 → 5 → 4 → 3):
+
+1. Take **Item 1** fully (weight 5 ≤ 50).
+
+   * Capacity left = 50 − 5 = **45**.
+   * Value taken = **30**.
+
+2. Take **Item 2** fully (weight 10 ≤ 45).
+
+   * Capacity left = 45 − 10 = **35**.
+   * Value taken = 30 + **40** = **70**.
+
+3. Take **Item 5** fully (weight 25 ≤ 35).
+
+   * Capacity left = 35 − 25 = **10**.
+   * Value taken = 70 + **90** = **160**.
+
+4. Next best is Item 4 (ratio 3.5) but weight 22 > remaining capacity 10 → take **fraction** = 10/22.
+
+   * Value added = 77 * (10/22) = 77 * 0.454545... = **35.00** (exact: 3.5 * 10 = 35).
+   * Capacity left = 0.
+   * Final total value = 160 + 35 = **195.00**.
+
+5. Item 3 not taken (no remaining capacity).
+
+**Result:**
+
+* Selected: Item1 (full), Item2 (full), Item5 (full), Item4 (10/22 fraction).
+* **Maximum value = 195.00** for capacity 50.
+
+---
+
+## 3) Time complexity (brief)
+
+* Main cost: sorting items by ratio → **O(n log n)**.
+* Single linear scan to fill knapsack → **O(n)**.
+  **Overall:** **O(n log n)** time, **O(n)** space (for items/ratios).
+
+---

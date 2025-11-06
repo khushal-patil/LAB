@@ -1,0 +1,180 @@
+Nice — I’ll keep this tight and exam-ready. Below you get:
+
+* exact **keyboard inputs** to paste into your program to reproduce a worked example (from the PDF),
+* the **expected output** your code will print,
+* a **short step-by-step DP explanation** showing how the table reaches the answer, and
+* a compact **viva Q&A** (most likely questions + crisp model answers), plus the short answers to the three review questions visible in your PDF.
+
+---
+
+## 1) Exact inputs to give (copy-paste when the program prompts)
+
+```
+🔹 0/1 Knapsack Problem using Dynamic Programming 🔹
+
+Enter the number of items: 4
+
+Enter the value and weight for each item:
+Value of item 1: 3
+Weight of item 1: 2
+Value of item 2: 7
+Weight of item 2: 2
+Value of item 3: 2
+Weight of item 3: 4
+Value of item 4: 9
+Weight of item 4: 5
+
+Enter the maximum capacity of the knapsack: 10
+```
+
+---
+
+## 2) Expected output (your program will print)
+
+```
+✅ Maximum value that can be obtained: 19
+
+Items included in the knapsack:
+  → Item 4 (Value: 9, Weight: 5)
+  → Item 2 (Value: 7, Weight: 2)
+  → Item 1 (Value: 3, Weight: 2)
+```
+
+(Traceback order may vary, but selected items 1,2,4 with total value 19 and total weight 9 is the result.)
+
+---
+
+## 3) Short worked example — how DP reaches 19 (step-by-step)
+
+Items:
+1: w=2, v=3
+2: w=2, v=7
+3: w=4, v=2
+4: w=5, v=9
+Capacity W = 10
+
+Algorithm idea: `dp[i][w]` = max value using first `i` items and capacity `w`. Build table for i=0..4 and w=0..10.
+
+Key transitions:
+
+* If current item weight > w → `dp[i][w] = dp[i-1][w]`
+* Else → `dp[i][w] = max( dp[i-1][w], value[i] + dp[i-1][w - weight[i]] )`
+
+Important rows (final reasoning):
+
+* After considering items 1 & 2, many capacities ≤4 get high value because item2 (value 7) is better than item1 (3).
+* Item3 has low value (2) so it rarely improves best combos.
+* When item4 (w=5, v=9) considered, combining it with best from capacity `w-5` yields best totals.
+
+Final entry `dp[4][10] = 19`. The traceback compares `dp[4][10]` vs `dp[3][10]`:
+
+* `dp[4][10] != dp[3][10]` → Item4 included → new capacity `10 - 5 = 5`.
+* At `i=3, w=5`: `dp[3][5] != dp[2][5]`? Check → item3 not included (since dp[3][5] == dp[2][5] typically), so skip.
+* At `i=2, w=5`: `dp[2][5] != dp[1][5]` → item2 included → capacity `5 - 2 = 3`.
+* At `i=1, w=3`: `dp[1][3] != dp[0][3]` → item1 included → capacity `3 - 2 = 1`.
+  Stop → selected items 4,2,1 → values 9+7+3 = **19**.
+
+Total weight = 5 + 2 + 2 = 9 ≤10.
+
+---
+
+## 4) Answers to the 3 questions visible in your PDF (brief)
+
+1. **Write time & space complexity of 0/1 knapsack using DP.**
+
+   * **Time:** `O(n * W)` (n = number of items, W = capacity).
+   * **Space:** `O(n * W)` for full 2D table. Can be reduced to `O(W)` using 1D optimization (iterate items and capacities in reverse).
+
+2. **Realistic applications (brief, at least two).**
+
+   * **Resource allocation:** choose projects/tasks under budget to maximize profit.
+   * **Cargo loading / shipping:** select subset of parcels to maximize value subject to weight limit.
+     (Also: budgeted portfolio selection, memory allocation, subset selection problems.)
+
+3. **The weight limit for this knapsack is 10 — find solution using DP.**
+
+   * **Answer:** Maximum value **= 19** by selecting items 1 (w2,v3), 2 (w2,v7) and 4 (w5,v9). (As shown above.)
+
+---
+
+## 5) Viva — likely questions + short model answers (study sheet)
+
+1. **What is the 0/1 knapsack problem?**
+   Choose items (0 or 1 of each) to maximize total value without exceeding capacity.
+
+2. **Why dynamic programming?**
+   Because subproblems overlap and optimal substructure holds — DP avoids recomputation.
+
+3. **Write the DP recurrence.**
+   `dp[i][w] = dp[i-1][w]` if `wt[i] > w`, else `dp[i][w] = max(dp[i-1][w], val[i] + dp[i-1][w - wt[i]])`.
+
+4. **Time complexity?**
+   `O(n * W)`.
+
+5. **Space complexity?**
+   `O(n * W)`, reducible to `O(W)` using 1D array.
+
+6. **How to reconstruct chosen items?**
+   Backtrack from `dp[n][W]`: if `dp[i][w] != dp[i-1][w]` then item `i` chosen and set `w -= wt[i]`.
+
+7. **Is it polynomial time?**
+   It is pseudopolynomial — polynomial in `n` and numeric `W` (not in input size in bits).
+
+8. **Difference between fractional and 0/1 knapsack?**
+   Fractional allows fractions of items (greedy solves it), 0/1 does not (requires DP/branch-and-bound).
+
+9. **Can greedy solve 0/1 knapsack?**
+   No — greedy by ratio can fail (counterexamples exist).
+
+10. **What is branch and bound?**
+    Search method using upper bounds (often using fractional knapsack as bound) to prune branches, used when DP is infeasible.
+
+11. **When to use branch and bound?**
+    When `W` large and `n` small/medium — to avoid `O(nW)` memory/time.
+
+12. **How to optimize space to O(W)?**
+    Use a 1D array `dp[w]` updated in reverse (for each item: for w from W down to wt: dp[w] = max(dp[w], dp[w-wt]+val)).
+
+13. **If weights are large, what then?**
+    Use branch-and-bound or meet-in-the-middle, or FPTAS (approximation).
+
+14. **What is FPTAS for knapsack?**
+    Fully Polynomial-Time Approximation Scheme — trade accuracy for faster time.
+
+15. **How to handle item values/weights = 0 or negative?**
+    Weight 0 & positive value → infinite; handle separately. Negative values typically invalid.
+
+16. **What are practical inputs to demonstrate in lab?**
+    Use a small set (3–6 items) where DP choice differs from greedy to show necessity of DP.
+
+17. **Why backwards loop when using 1D dp?**
+    To avoid using the same item more than once (ensuring 0/1 constraint).
+
+18. **What is 'pseudopolynomial'?**
+    Complexity depends on numeric value `W`, not its bit-length; can be exponential in input bits.
+
+19. **How to measure performance in experiments?**
+    Vary `n` and `W`, measure time and memory, plot curves — show `O(nW)` growth.
+
+20. **What if you need actual set with multiple solutions?**
+    Backtrack and collect alternatives from DP table.
+
+(You can memorize ~12–15 of these; examiners often ask about recurrence, complexity, traceback, and difference vs fractional.)
+
+---
+
+## 6) Small tips for your practical demo
+
+* Show the DP table or at least the final `dp` matrix entry `dp[n][W]`. If asked, show one row or a small snippet.
+* For space-optimized solution, mention 1D array trick and demonstrate quickly.
+* If the question asks branch-and-bound, explain upper bound = fractional knapsack of remaining items; prune when bound ≤ best found.
+* Show both correctness (why recurrence works) and runtime (why `O(nW)`) succinctly.
+
+---
+
+If you want I can next:
+
+* produce a **1-page PDF** with code, the worked example (table + trace), complexity, and the viva Q&A ready for submission, **or**
+* modify your code to print the entire `dp` table and the fraction of capacity used (helps during the lab demo).
+
+Which would you like?

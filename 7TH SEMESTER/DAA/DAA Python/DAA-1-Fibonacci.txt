@@ -1,0 +1,267 @@
+DAA-1 --- Fibonacci
+
+
+
+**1) Fibonacci Series:**
+A sequence where each term is the sum of the two preceding ones.
+Formula: **F(n) = F(n−1) + F(n−2)** with **F(0)=0, F(1)=1**.
+Example: 0, 1, 1, 2, 3, 5, 8, 13, …
+
+**2) Recursion:**
+A method where a function calls itself to solve smaller instances of the same problem until reaching a base condition.
+
+**3) Time & Space Complexity of Fibonacci Series:**
+
+* **Recursive Method:** Time = **O(2ⁿ)**, Space = **O(n)** (due to recursive calls).
+* **Iterative Method:** Time = **O(n)**, Space = **O(1)**.
+
+
+
+
+
+# 1) Instrumented Python code — counts steps and time
+
+Run this as-is. It prints number of function calls, additions (for recursion), loop iterations/assignments (for iterative), plus timings.
+
+```python
+import time
+from functools import lru_cache
+
+# Instrumented recursive fibonacci counting calls and additions
+def fibonacci_recursive_counts(n):
+    # returns (value, calls, additions)
+    if n <= 0:
+        return 0, 1, 0     # one call, 0 additions
+    if n == 1:
+        return 1, 1, 0     # one call, 0 additions
+    v1, c1, a1 = fibonacci_recursive_counts(n-1)
+    v2, c2, a2 = fibonacci_recursive_counts(n-2)
+    value = v1 + v2
+    calls = 1 + c1 + c2      # current call + calls from subcalls
+    additions = 1 + a1 + a2  # this call performs one addition + subcalls
+    return value, calls, additions
+
+# Instrumented iterative fibonacci counting loop steps
+def fibonacci_iterative_counts(n):
+    # returns (value, iterations, assignments)
+    if n <= 0:
+        return 0, 0, 0
+    if n == 1:
+        return 1, 0, 0
+    a, b = 0, 1
+    iterations = 0
+    assignments = 0
+    for _ in range(2, n + 1):
+        a, b = b, a + b
+        iterations += 1        # number of loop iterations
+        assignments += 2       # counting the two assignments in tuple swap
+    return b, iterations, assignments
+
+# Main test / example
+def run_example(n):
+    print(f"=== n = {n} ===")
+    t0 = time.time()
+    val_rec, calls, adds = fibonacci_recursive_counts(n)
+    t1 = time.time()
+    val_it, loops, assigns = fibonacci_iterative_counts(n)
+    t2 = time.time()
+
+    print(f"Recursive: Fib({n}) = {val_rec}, calls = {calls}, additions = {adds}, time = {t1-t0:.6f}s")
+    print(f"Iterative: Fib({n}) = {val_it}, loop iterations = {loops}, assignments = {assigns}, time = {t2-t1:.6f}s")
+
+if __name__ == "__main__":
+    n = int(input("Enter n: "))
+    run_example(n)
+```
+
+---
+
+
+
+
+
+
+# 2) Closed-form / recurrence for **step count** (naive recursive)
+
+Let:
+
+* `C(n)` = number of function **calls** made by `fibonacci_recursive(n)`.
+* `A(n)` = number of **additions** performed by the recursive algorithm.
+* Base: `C(0)=1`, `C(1)=1`; `A(0)=0`, `A(1)=0`.
+
+Recurrence (for n ≥ 2):
+
+* `C(n) = 1 + C(n-1) + C(n-2)`
+* `A(n) = 1 + A(n-1) + A(n-2)`
+
+Closed relationships (using Fibonacci numbers `F_k` with `F0=0, F1=1`):
+
+* `C(n) = 2 * F_{n+1} - 1`
+* `A(n) = F_{n+1} - 1`
+
+So the **number of additions grows ≈ F_{n}**, which is Θ(φ^n) (φ ≈ 1.618). That matches the time complexity O(2^n) (exponential).
+
+Example: n = 5
+
+* `F6 = 8` → `C(5) = 2*8 -1 = 15` calls
+* `A(5) = 8 -1 = 7` additions
+
+(You can verify these counts with the instrumented code above.)
+
+---
+
+
+
+
+
+
+# 3) Iterative step count (exact)
+
+For `fibonacci_iterative(n)`:
+
+* If n ≤ 1: zero loop iterations.
+* For n ≥ 2:
+
+  * loop iterations = `n - 1` (or `n - 1` if counting from 1; our code uses `n-1` iterations for `for _ in range(2,n+1)` which equals `n-1`).
+  * simple assignments per iteration (a,b = ...) — count them as constant k per iteration (commonly 2 simple assignments + 1 addition), so total basic ops = Θ(n).
+
+Thus **iterative is linear time O(n)** and constant extra space O(1) (if you ignore recursion stack).
+
+---
+
+
+
+
+
+
+
+
+
+# 4) Sample run (what you'll see for n=5)
+
+If you run the instrumented script and input `5` you should see something like:
+
+```
+=== n = 5 ===
+Recursive: Fib(5) = 5, calls = 15, additions = 7, time = 0.00xxxxs
+Iterative: Fib(5) = 5, loop iterations = 4, assignments = 8, time = 0.00xxxxs
+```
+
+(Exact times vary by machine; step counts are deterministic.)
+
+---
+
+
+
+
+
+
+
+
+# 5) Viva: probable questions & crisp answers
+
+I've packed the most likely viva questions (short, exam-ready). Memorize the short answers.
+
+1. Q: What does Fibonacci sequence look like?
+   A: 0, 1, 1, 2, 3, 5, 8, ... where F0=0, F1=1 and F(n)=F(n-1)+F(n-2).
+
+2. Q: Explain your recursive algorithm.
+   A: Base cases n<=0 -> 0, n==1 ->1. For n>1 return fib(n-1)+fib(n-2). Recursion tree grows exponentially.
+
+3. Q: Explain your iterative algorithm.
+   A: Start a=0,b=1; loop from 2..n doing (a,b)=(b,a+b). At end b holds F(n).
+
+4. Q: Time complexity of recursive?
+   A: Exponential — O(φ^n) ~ O(2^n). More formally number of calls C(n)=2F_{n+1}-1.
+
+5. Q: Space complexity of recursive?
+   A: O(n) due to the recursion stack in worst case (depth n).
+
+6. Q: Time/space complexity iterative?
+   A: Time O(n), Space O(1) (only constant extra variables).
+
+7. Q: How to count steps (what is a step)?
+   A: Pick a basic operation (additions, assignments, or function calls). Count how many times it executes. We instrumented function calls and additions for recursion; loop iterations and assignments for iteration.
+
+8. Q: Exact step formula for recursive calls?
+   A: C(n)=2F_{n+1}-1 (derived from recurrence C(n)=1+C(n-1)+C(n-2)).
+
+9. Q: Exact additions in recursion?
+   A: A(n)=F_{n+1}-1.
+
+10. Q: Why is recursion slow?
+    A: Because it recomputes the same subproblems many times (overlapping subproblems).
+
+11. Q: How to optimize recursive fib?
+    A: Memoization (top-down DP) or bottom-up DP (tabulation). Both reduce time to O(n). Further: matrix exponentiation or doubling method gets O(log n).
+
+12. Q: Show memoized code (one-liner answer):
+    A: Use `@lru_cache(None)` or store computed values in dictionary and reuse.
+
+13. Q: What is tail recursion? Is your recursive code tail-recursive?
+    A: Tail recursion does the final work as the recursive call. Standard Fibonacci recursion here is **not** tail-recursive. A tail-recursive version would pass accumulated a,b values.
+
+14. Q: Can recursion be converted to iteration?
+    A: Yes — DP or iterative loop. Conversion often reduces space and time overhead.
+
+15. Q: Are both algorithms correct for negative n?
+    A: Not in current form. We handle n<=0 by returning 0; negative indices are undefined in this simple implementation.
+
+16. Q: How would you test correctness?
+    A: Unit tests against known F(n) values, small n where manual calc possible, and compare recursive vs iterative outputs.
+
+17. Q: How to measure time precisely?
+    A: Use `time.time()` or `time.perf_counter()`; run multiple trials and average to reduce noise.
+
+18. Q: Why might measured time vary?
+    A: OS scheduling, CPU load, caching, interpreter warm-up, small-run timing doesn't reflect algorithmic complexity.
+
+19. Q: What's matrix exponentiation method? Complexity?
+    A: Use [[1,1],[1,0]]^n matrix; computing power by exponentiation by squaring gives O(log n) time.
+
+20. Q: Is iterative always better?
+    A: For time and space usually yes for plain fib. But memoized recursion is also O(n) and sometimes clearer.
+
+21. Q: Compare space usage precisely.
+    A: Recursive uses O(n) stack; iterative uses O(1) extra variables. DP tabulation uses O(n) if you store array, but can be O(1) if only last two stored.
+
+22. Q: How many additions in iterative?
+    A: `n-1` additions for n>=1 (one addition per loop iteration).
+
+23. Q: How to return F(n) modulo m (common exam question)?
+    A: Compute iteratively with `b = (a + b) % m` to avoid overflow.
+
+24. Q: Proof by induction for iterative correctness?
+    A: Base cases checked for n=0,1. Assume after k iterations values are correct for F(k) and F(k-1); next iteration computes F(k+1)=F(k)+F(k-1) — so invariant holds.
+
+25. Q: What is dynamic programming?
+    A: Solving complex problems by breaking into overlapping subproblems and storing results to avoid recomputation.
+
+26. Q: If n is very large (10^9), what method?
+    A: Use matrix exponentiation or fast doubling to compute in O(log n) with modular arithmetic if needed.
+
+27. Q: What is the recurrence relation for Fibonacci?
+    A: F(n)=F(n-1)+F(n-2) with F(0)=0,F(1)=1.
+
+28. Q: What is closed form (Binet’s formula)?
+    A: F(n) = (φ^n - ψ^n)/√5, where φ=(1+√5)/2, ψ=(1-√5)/2. Not used for exact integers due to floating errors but useful for asymptotics.
+
+29. Q: How to count memory usage?
+    A: Count number of active variables + size of recursion stack frames. For iterative, couple integers only.
+
+30. Q: If asked “explain complexity O(2^n)” — how to justify?
+    A: The recursion tree branches into two calls nearly each level producing exponential growth. The closed-form uses φ^n which is exponential.
+
+
+
+
+
+
+# 7) Quick exam/practical tips (one-liners)
+
+* If asked to **count steps**: state which primitive you count (function calls, additions, comparisons) and be consistent.
+* For timing: run each test multiple times and average. For small n, time differences are tiny — prefer step counts.
+* Always be prepared to show **one worked example** (n=5 or n=6) with the recursion tree drawn and counts annotated.
+* If asked about overflow: use big integers (Python OK) or modulo arithmetic when practical.
+* If asked to improve: mention memoization (O(n)), tabulation, and matrix exponentiation (O(log n)).
+

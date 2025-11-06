@@ -1,0 +1,109 @@
+
+### 1) Exact inputs to run your program (paste when prompted)
+
+```
+♕ N-Queens Problem using Backtracking ♕
+
+Enter the size of the chessboard (n x n): 8
+
+Enter position of the first queen (row and column, starting from 0):
+Row: 0
+Column: 0
+```
+
+(Any valid `first_row, first_col` between `0` and `n-1` is accepted. Use the above to reproduce the example below.)
+
+---
+
+### 2) One best example (n = 8) — explanation + one valid solution
+
+We place the first queen at (row 0, col 0). The program backtracks to place the remaining 7 queens so none attack each other.
+
+One valid solution (one of the standard 8-queens solutions) is the queen columns per row:
+`[0, 4, 7, 5, 2, 6, 1, 3]` — meaning:
+
+Row0 → col0, Row1 → col4, Row2 → col7, Row3 → col5, Row4 → col2, Row5 → col6, Row6 → col1, Row7 → col3.
+
+Matrix (1 = queen, 0 = empty):
+
+```
+1 0 0 0 0 0 0 0
+0 0 0 0 1 0 0 0
+0 0 0 0 0 0 0 1
+0 0 0 0 0 1 0 0
+0 0 1 0 0 0 0 0
+0 0 0 0 0 0 1 0
+0 1 0 0 0 0 0 0
+0 0 0 1 0 0 0 0
+```
+
+**Why it’s valid:** no two queens share a row, column or diagonal:
+
+* Columns are all distinct (0,4,7,5,2,6,1,3);
+* Diagonals (r+c and r-c) are all unique for these positions.
+
+Your program will print this (and any other solutions that fit the fixed first queen). If no solution exists for that first position, it prints “No valid solution found…”.
+
+---
+
+### 3) Short answers to the four theory questions (exam-ready)
+
+**1) What is backtracking? Characteristics & applications**
+
+* **Definition:** Systematic recursive search that builds partial solutions and abandons them (backtracks) when they cannot lead to full solutions.
+* **Characteristics:** recursive, depth-first, explores solution space, uses pruning, can enumerate all solutions, usually exponential worst-case.
+* **Applications:** N-Queens, Sudoku, crossword solvers, graph coloring, Hamiltonian path, subset-sum, constraint satisfaction problems.
+
+**2) Explicit vs Implicit constraints (8-Queens)**
+
+* **Explicit constraints:** stated in the problem and checked directly — e.g., “exactly one queen per row/column” (or “place n queens on n×n board”).
+* **Implicit constraints:** derived from partial placements or problem logic — e.g., “no two queens may share a diagonal” becomes a condition that prunes branches during search (you check `r+c` and `r-c` conflicts).
+
+**3) Compare space & time for Recursive vs Non-Recursive backtracking**
+
+* **Time (both):** exponential in general (≈ O(b^d), b = branching factor, d = depth) — same asymptotic worst-case.
+* **Space:**
+
+  * *Recursive:* O(d) stack frames (system call stack) plus any auxiliary structures.
+  * *Non-recursive (iterative with explicit stack):* O(d) for explicit stack.
+* **Practical difference:** recursion simpler to code; iterative gives explicit control (can avoid recursion limits or reduce overhead in some languages). Both use similar memory order; both exponential time.
+
+**4) Realistic applications (≥2)**
+
+* **Constraint satisfaction**: layout and scheduling problems (e.g., register allocation, timetable scheduling).
+* **Puzzle & AI solvers**: Sudoku, crossword filling, game move generation where legal positions must be enumerated/pruned.
+  (Also: design validation, combinatorial test generation.)
+
+---
+
+### 4) Viva checklist — likely questions + short answers
+
+Memorise these short lines:
+
+1. **What is N-Queens?** Place n queens on n×n so none attack.
+2. **Why backtracking here?** Must explore combinations and prune invalid partial boards.
+3. **How do you check conflicts?** Keep sets for columns, r+c (positive diag), r−c (negative diag).
+4. **Why skip `first_row` during recursion?** Because that row already has the forced queen.
+5. **How do you record a solution?** When `r == n`, snapshot the board.
+6. **How many solutions for n=8 normally?** 92 total symmetrically distinct placements (program may show fewer depending on fixed first queen).
+7. **What pruning do we use?** Column and diagonal occupancy checks — O(1) per test.
+8. **Time Complexity?** Exponential in n (roughly O(n! ) in worst dense branching; commonly estimated O(b^d)).
+9. **Space Complexity?** O(n) for column/diagonal sets + recursion depth.
+10. **How to make it faster?** Use symmetry breaks, bitmasking (for speed & memory), order heuristics (place row with fewer options first).
+11. **Iterative vs recursive?** Same asymptotic cost; iterative avoids recursion depth limits.
+12. **Can we count solutions without listing them?** Yes, same backtracking can increment a counter.
+13. **How to print only one solution fast?** Stop after first found.
+14. **What if first queen position makes no solution?** Program returns no solution — explain by showing a conflict that blocks all placements.
+
+---
+
+### 5) Small lab tips & demo script (2 minutes)
+
+* Show your code, run with `n=8, first_row=0, first_col=0`.
+* Display one solution matrix and explain r+c / r−c checks.
+* If tutor asks about performance, mention exponential time and show n=10 to demonstrate slow growth.
+* For extra credit: mention bitmask method (three integers for cols/diag1/diag2) for faster, low-memory implementation.
+
+---
+
+

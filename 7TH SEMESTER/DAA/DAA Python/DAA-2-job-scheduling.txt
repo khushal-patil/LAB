@@ -1,0 +1,318 @@
+
+**1. Greedy Approach:**
+It is a problem-solving strategy that builds up a solution piece by piece, always choosing the **locally optimal (best immediate)** choice at each step, with the hope of reaching a **globally optimal** solution.
+✅ Example – In Huffman coding, always pick two smallest frequency nodes first.
+
+---
+
+**2. Huffman Coding (using Greedy Approach):**
+Huffman coding is a **lossless data compression algorithm** that assigns **shorter codes to more frequent characters** and **longer codes to less frequent ones**.
+It repeatedly merges the **two least frequent symbols** into a new node until one tree remains.
+
+**Example:**
+Characters: A, B, C, D
+Frequencies: 5, 9, 12, 13
+
+Step 1: Combine (A,B)=14 → Nodes: [12,13,14]
+Step 2: Combine (12,13)=25 → Nodes: [14,25]
+Step 3: Combine (14,25)=39 → Final Tree
+
+Resulting codes:
+A=1100, B=1101, C=10, D=0 (shorter for frequent ones).
+
+---
+
+**3. Time Complexity of Huffman Coding:**
+
+* Building the min-heap: **O(n)**
+* Extracting two smallest and inserting combined node (n−1 times): **O(n log n)**
+  ✅ **Overall Time Complexity:** **O(n log n)**
+  ✅ **Space Complexity:** **O(n)** for storing the tree.
+
+
+### ✅ **Input (to type when you run the program)**
+
+```
+Enter number of jobs: 5
+Enter Job ID 1: A
+Enter deadline: 2
+Enter profit: 100
+Enter Job ID 2: B
+Enter deadline: 1
+Enter profit: 19
+Enter Job ID 3: C
+Enter deadline: 2
+Enter profit: 27
+Enter Job ID 4: D
+Enter deadline: 1
+Enter profit: 25
+Enter Job ID 5: E
+Enter deadline: 3
+Enter profit: 15
+```
+
+---
+
+### 🧮 **Expected Output**
+
+```
+Optimal Job Sequence: ['A', 'C', 'E']
+Maximum Profit: 142
+```
+
+*(Sometimes the order might print as `['C', 'A', 'E']` depending on sorting, but profit = 142 will be same.)*
+
+---
+
+### 💡 **How this output is formed (explained for viva)**
+
+| Job | Deadline | Profit | Scheduled Slot        |
+| --- | -------- | ------ | --------------------- |
+| A   | 2        | 100    | Slot 2                |
+| C   | 2        | 27     | Slot 1                |
+| D   | 1        | 25     | Rejected (slot taken) |
+| B   | 1        | 19     | Rejected (slot taken) |
+| E   | 3        | 15     | Slot 3                |
+
+✅ Scheduled jobs → A, C, E
+💰 Total Profit = 100 + 27 + 15 = **142**
+
+---
+
+
+
+## ✅ Job Sequencing with Deadlines (Greedy Method)
+
+```python
+# Job Sequencing with Deadlines using Greedy Approach
+
+class Job:
+    def __init__(self, job_id, deadline, profit):
+        self.job_id = job_id
+        self.deadline = deadline
+        self.profit = profit
+
+def job_sequencing(jobs):
+    # Step 1: Sort all jobs in descending order of profit
+    jobs.sort(key=lambda x: x.profit, reverse=True)
+
+    # Step 2: Find the maximum deadline
+    max_deadline = max(job.deadline for job in jobs)
+
+    # Step 3: Initialize time slots as empty
+    slots = [-1] * (max_deadline + 1)
+
+    total_profit = 0
+    sequence = []
+
+    # Step 4: Assign jobs greedily
+    for job in jobs:
+        for t in range(job.deadline, 0, -1):
+            if slots[t] == -1:   # free slot found
+                slots[t] = job.job_id
+                sequence.append(job.job_id)
+                total_profit += job.profit
+                break
+
+    return sequence, total_profit
+
+
+# Main Program
+if __name__ == "__main__":
+    n = int(input("Enter number of jobs: "))
+    jobs = []
+
+    for i in range(n):
+        job_id = input(f"Enter Job ID {i+1}: ")
+        deadline = int(input("Enter deadline: "))
+        profit = int(input("Enter profit: "))
+        jobs.append(Job(job_id, deadline, profit))
+
+    sequence, total_profit = job_sequencing(jobs)
+
+    print("\nOptimal Job Sequence:", sequence)
+    print("Maximum Profit:", total_profit)
+```
+
+---
+
+### 🧮 Example Dry Run
+
+| Job | Deadline | Profit |
+| --- | -------- | ------ |
+| A   | 2        | 100    |
+| B   | 1        | 19     |
+| C   | 2        | 27     |
+| D   | 1        | 25     |
+| E   | 3        | 15     |
+
+**Step 1:** Sort by profit → A(100), C(27), D(25), B(19), E(15)
+**Step 2:** Slots = [–1, –1, –1, –1]
+**Step 3:** Fill from each job’s last free slot:
+
+| Job | Tries to occupy              | Result |
+| --- | ---------------------------- | ------ |
+| A   | slot 2 → free                | ✅      |
+| C   | slot 2 → taken → slot 1 free | ✅      |
+| D   | slot 1 → taken               | ❌      |
+| B   | slot 1 → taken               | ❌      |
+| E   | slot 3 → free                | ✅      |
+
+✅ Final slots → [_, C, A, E]
+💰 Total Profit = 27 + 100 + 15 = **142**
+
+---
+
+## ⚙️ Time & Space Complexity
+
+| Operation      | Complexity          |
+| -------------- | ------------------- |
+| Sorting        | O(n log n)          |
+| Scheduling     | O(n × max_deadline) |
+| **Total Time** | **O(n log n + nD)** |
+| **Space**      | **O(D)**            |
+
+If deadlines are small → practically O(n log n).
+Greedy optimal because it always schedules the most profitable available job first.
+
+---
+
+## 🎯 Core Concept
+
+> “Select the job with the highest profit that can still be completed within its deadline.”
+
+This is a **classic greedy optimization problem** — making locally best (most profitable) choices leads to a globally optimal solution.
+
+---
+
+## 💬 Most Expected Viva Questions with Answers
+
+### **Basic Concepts**
+
+1️⃣ **What is the Job Sequencing with Deadlines problem?**
+To schedule jobs with deadlines and profits so that total profit is maximized while each job takes one unit time and must finish before its deadline.
+
+2️⃣ **What is the greedy approach?**
+Selecting the locally optimal choice (highest profit job) at each step, assuming it leads to a globally optimal solution.
+
+3️⃣ **Why greedy method here?**
+Because choosing highest profit first and placing it in the latest free slot guarantees maximum profit.
+
+4️⃣ **What are the inputs?**
+Jobs with their **deadline** and **profit**.
+
+5️⃣ **What is the output?**
+A job sequence (schedule) that gives the maximum total profit.
+
+---
+
+### **Algorithm Working**
+
+6️⃣ **Step 1 of algorithm?**
+Sort all jobs in decreasing order of profit.
+
+7️⃣ **Step 2?**
+Assign each job to the latest available slot before its deadline.
+
+8️⃣ **Why “latest slot”?**
+To leave earlier slots open for other jobs with earlier deadlines.
+
+9️⃣ **What data structures are used?**
+Array or list for time slots.
+
+🔟 **When do we skip a job?**
+If no free slot exists before its deadline.
+
+---
+
+### **Example & Output**
+
+11️⃣ **Give an example.**
+Jobs: A(2,100), B(1,19), C(2,27), D(1,25), E(3,15).
+Optimal sequence: C, A, E → Profit = 142.
+
+12️⃣ **How many slots are needed?**
+Equal to the maximum job deadline.
+
+13️⃣ **Can deadlines be unsorted?**
+Yes, because sorting is done by profit, not by deadline.
+
+---
+
+### **Complexity & Analysis**
+
+14️⃣ **Time complexity?**
+O(n log n + nD)
+
+15️⃣ **Space complexity?**
+O(D)
+
+16️⃣ **Why not dynamic programming?**
+Greedy works optimally; DP is unnecessary and more complex.
+
+17️⃣ **Is the greedy solution always optimal?**
+Yes, for this problem (proven via exchange argument).
+
+18️⃣ **Can two jobs share a slot?**
+No, each slot can hold only one job.
+
+---
+
+### **Implementation & Behavior**
+
+19️⃣ **What happens if two jobs have same profit?**
+Any order works; both are equally good.
+
+20️⃣ **What if deadlines exceed job count?**
+Extra slots remain empty, no effect.
+
+21️⃣ **Can we use heap or priority queue?**
+Yes, to pick highest profit efficiently (alternative implementation).
+
+22️⃣ **What kind of problem is this?**
+Optimization problem (maximize profit under time constraint).
+
+---
+
+### **Advanced / Conceptual**
+
+23️⃣ **Real-life example?**
+Scheduling advertising slots, manufacturing tasks, or CPU job scheduling.
+
+24️⃣ **Why sorting by profit first?**
+Ensures the most valuable jobs get priority.
+
+25️⃣ **Why “latest available slot”?**
+To maximize room for upcoming jobs.
+
+26️⃣ **What are the greedy choice & optimal substructure properties?**
+
+* *Greedy choice:* highest profit first.
+* *Optimal substructure:* optimal solution built from optimal sub-solutions.
+
+27️⃣ **Compare with Huffman Coding.**
+Both use greedy: Huffman minimizes cost (frequency × code length); Job sequencing maximizes profit.
+
+28️⃣ **Alternative methods?**
+Priority queue-based greedy or union–find based scheduling.
+
+29️⃣ **Is the algorithm stable?**
+Order among equal-profit jobs may change; stability not required.
+
+30️⃣ **Why “Job Sequencing with Deadlines” is taught early in DAA?**
+It’s the simplest problem illustrating greedy strategy, optimal substructure, and time–profit tradeoff.
+
+---
+
+## 🧠 Quick Recap
+
+| Aspect         | Greedy Job Sequencing       |
+| -------------- | --------------------------- |
+| Goal           | Maximize total profit       |
+| Approach       | Highest profit job first    |
+| Method         | Assign latest possible slot |
+| Time           | O(n log n + nD)             |
+| Space          | O(D)                        |
+| Example Result | Jobs: C, A, E → Profit 142  |
+
+
