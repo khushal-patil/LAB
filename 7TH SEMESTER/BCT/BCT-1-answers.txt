@@ -216,3 +216,69 @@ Tokens like **USDT, LINK, UNI, BAT** follow ERC-20, allowing them to be traded u
 * Always mention safety: never deploy untested code on mainnet.
 * Know that this contract is *stateful* (balance stored on-chain).
 * Mention that `transfer()` auto-reverts if it fails — safer than `send()`.
+
+
+
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.0;
+
+contract Bank {
+    // State variable
+    address public accOwner;
+
+    // Events for transaction tracking
+    event Deposited(address indexed user, uint256 amount);
+    event Withdrawn(address indexed user, uint256 amount);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event AccountClosed(address indexed owner, uint256 balanceTransferred);
+
+    // Constructor - sets initial account owner
+    constructor() {
+        accOwner = msg.sender;
+    }
+
+    // Modifier to restrict access only to owner
+    modifier onlyOwner() {
+        require(msg.sender == accOwner, "You are not the account owner!");
+        _;
+    }
+
+    // Deposit function
+    function deposit() public payable onlyOwner {
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        emit Deposited(msg.sender, msg.value);
+    }
+
+    // Withdraw function
+    function withdraw(uint256 amount) public onlyOwner {
+        require(amount > 0, "Withdraw amount must be greater than 0");
+        require(amount <= address(this).balance, "Insufficient balance!");
+
+        payable(msg.sender).transfer(amount);
+        emit Withdrawn(msg.sender, amount);
+    }
+
+    // Show account balance (only owner)
+    function showBalance() public view onlyOwner returns (uint256) {
+        return address(this).balance;
+    }
+
+    // Transfer ownership to a new address
+    function transferOwnership(address newOwner) public onlyOwner {
+        require(newOwner != address(0), "Invalid new owner address!");
+        emit OwnershipTransferred(accOwner, newOwner);
+        accOwner = newOwner;
+    }
+
+    // Close account and transfer all funds to owner
+    function closeAccount() public onlyOwner {
+        uint256 contractBalance = address(this).balance;
+        emit AccountClosed(accOwner, contractBalance);
+        selfdestruct(payable(accOwner));
+    }
+
+    // Fallback functions to accept ether
+    receive() external payable {}
+    fallback() external payable {}
+}
+
