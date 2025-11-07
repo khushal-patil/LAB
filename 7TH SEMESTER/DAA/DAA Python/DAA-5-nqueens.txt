@@ -106,4 +106,62 @@ Memorise these short lines:
 
 ---
 
+# N-Queens Problem using Backtracking
+# Description: Program to display all possible solutions for an n×n chessboard.
+
+def n_queens(n):
+    col = set()       # Columns where queens are placed
+    posDiag = set()   # Positive diagonals (r + c)
+    negDiag = set()   # Negative diagonals (r - c)
+    res = []          # Store all valid solutions
+
+    board = [["0"] * n for _ in range(n)]  # Initialize the chessboard
+
+    # Backtracking function
+    def backtrack(r):
+        if r == n:
+            # Found a valid configuration
+            copy = [" ".join(row) for row in board]
+            res.append(copy)
+            return
+
+        for c in range(n):
+            if c in col or (r + c) in posDiag or (r - c) in negDiag:
+                continue  # Skip invalid positions
+
+            # Place queen
+            col.add(c)
+            posDiag.add(r + c)
+            negDiag.add(r - c)
+            board[r][c] = "1"
+
+            # Move to next row
+            backtrack(r + 1)
+
+            # Backtrack (remove queen)
+            col.remove(c)
+            posDiag.remove(r + c)
+            negDiag.remove(r - c)
+            board[r][c] = "0"
+
+    # Start recursion from row 0
+    backtrack(0)
+
+    # Display all solutions
+    if res:
+        print(f"\n✅ Total Solutions found for {n}×{n} board: {len(res)}\n")
+        for index, sol in enumerate(res, 1):
+            print(f"Solution {index}:")
+            for row in sol:
+                print(row)
+            print()
+    else:
+        print("\n❌ No solution exists for this board size.")
+
+
+# --- MAIN PROGRAM ---
+if __name__ == "__main__":
+    print("♕ N-Queens Problem using Backtracking ♕\n")
+    n = int(input("Enter the size of the chessboard (n x n): "))
+    n_queens(n)
 
