@@ -105,18 +105,18 @@ int main() {
     int *B = new int[size];
     int *C = new int[size];
 
-    cout << "Enter elements of Matrix A:\n";
+    cout << "Enter elements of Matrix A (row-wise):\n";
     for (int i = 0; i < size; i++) cin >> A[i];
 
-    cout << "Enter elements of Matrix B:\n";
+    cout << "Enter elements of Matrix B (row-wise):\n";
     for (int i = 0; i < size; i++) cin >> B[i];
 
     int *d_A, *d_B, *d_C;
 
-    // Allocate memory on GPU
-    cudaMalloc(&d_A, size * sizeof(int));
-    cudaMalloc(&d_B, size * sizeof(int));
-    cudaMalloc(&d_C, size * sizeof(int));
+    // Allocate GPU memory
+    cudaMalloc((void**)&d_A, size * sizeof(int));
+    cudaMalloc((void**)&d_B, size * sizeof(int));
+    cudaMalloc((void**)&d_C, size * sizeof(int));
 
     // Copy data to GPU
     cudaMemcpy(d_A, A, size * sizeof(int), cudaMemcpyHostToDevice);
@@ -129,10 +129,15 @@ int main() {
     // Launch kernel
     matrixMul<<<blocks, threads>>>(d_A, d_B, d_C, n);
 
-    // IMPORTANT: wait for GPU to finish
+    // Check for errors
+    cudaError_t err = cudaGetLastError();
+    if (err != cudaSuccess) {
+        cout << "CUDA Error: " << cudaGetErrorString(err) << endl;
+    }
+
     cudaDeviceSynchronize();
 
-    // Copy result back to CPU
+    // Copy result back
     cudaMemcpy(C, d_C, size * sizeof(int), cudaMemcpyDeviceToHost);
 
     // Print result
@@ -142,12 +147,11 @@ int main() {
         if ((i + 1) % n == 0) cout << endl;
     }
 
-    // Free GPU memory
+    // Free memory
     cudaFree(d_A);
     cudaFree(d_B);
     cudaFree(d_C);
 
-    // Free CPU memory
     delete[] A;
     delete[] B;
     delete[] C;

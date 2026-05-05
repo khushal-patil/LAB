@@ -100,3 +100,18 @@ int main() {
 
     return 0;
 }
+
+
+
+
+// Vertices: 5
+// Edges: 4
+// 0 1
+// 0 2
+// 1 3
+// 2 4
+// Start: 0
+
+// Parallel DFS Traversal: 0 2 4 1 3
+
+// “DFS goes deep first. From 0 it may go to 2 → 4, then backtrack to 1 → 3. Output may vary due to parallel execution.”

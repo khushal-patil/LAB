@@ -68,7 +68,7 @@ data = []
 labels = []
 
 # Path to dataset folder containing one subfolder per disease class
-path = './New Plant Diseases Dataset(Augmented)/train/'
+path = './Datasets/plant/train/'
 categories = sorted(os.listdir(path))  # sort for consistent label ordering
 
 # Map each category name to a numeric index

@@ -50,17 +50,17 @@ void parallelMergeSortHelper(vector<int>& arr, int left, int right, int depth) {
 
     int mid = (left + right) / 2;
 
-    if (depth <= 0) {
-        sequentialMergeSort(arr, left, mid);
-        sequentialMergeSort(arr, mid + 1, right);
-    } else {
-        #pragma omp task
+    if (depth > 0) {
+        #pragma omp task shared(arr)
         parallelMergeSortHelper(arr, left, mid, depth - 1);
 
-        #pragma omp task
+        #pragma omp task shared(arr)
         parallelMergeSortHelper(arr, mid + 1, right, depth - 1);
 
         #pragma omp taskwait
+    } else {
+        sequentialMergeSort(arr, left, mid);
+        sequentialMergeSort(arr, mid + 1, right);
     }
 
     merge(arr, left, mid, right);
@@ -70,7 +70,9 @@ void parallelMergeSort(vector<int>& arr, int left, int right) {
     #pragma omp parallel
     {
         #pragma omp single
-        parallelMergeSortHelper(arr, left, right, 4); // depth control
+        {
+            parallelMergeSortHelper(arr, left, right, 3); // depth reduced
+        }
     }
 }
 

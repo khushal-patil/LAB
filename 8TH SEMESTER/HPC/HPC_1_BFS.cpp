@@ -105,3 +105,20 @@ int main() {
 
     return 0;
 }
+
+
+
+
+// Enter number of vertices: 5
+// Enter number of edges: 4
+// Enter edges:
+// 0 1
+// 0 2
+// 1 3
+// 2 4
+// Enter starting node: 0
+
+// Parallel BFS Traversal: 0 1 2 3 4
+
+// “Starting from node 0, BFS explores level by level. 
+// First neighbors (1,2), then next level (3,4). Parallelism is applied while exploring neighbors.”

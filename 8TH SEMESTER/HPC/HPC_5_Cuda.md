@@ -5,7 +5,7 @@
 
 //step 2
 %%writefile reduction.cu
-#include 
+#include <iostream>
 using namespace std;
 
 __global__ void reduce(int *arr, int *sum, int *minVal, int *maxVal, int n) {
